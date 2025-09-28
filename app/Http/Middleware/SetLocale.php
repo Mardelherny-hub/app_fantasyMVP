@@ -4,12 +4,13 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\URL; // 👈 import
 
 class SetLocale
 {
     public function handle($request, Closure $next)
     {
-        $supported = ['es', 'en', 'fr'];
+        $supported = ['es','en','fr'];
 
         $segment = $request->segment(1);
         $locale = in_array($segment, $supported)
@@ -21,6 +22,9 @@ class SetLocale
         }
 
         App::setLocale($locale);
+
+        // 👇 Esto hace que route('...') ya incluya {locale} automáticamente
+        URL::defaults(['locale' => $locale]);
 
         return $next($request);
     }

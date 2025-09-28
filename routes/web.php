@@ -25,4 +25,8 @@ Route::group([
     });
 
     // tus rutas de app...
+    /* Google socialite */
+    Route::get('auth/google', [SocialiteController::class, 'redirect']);
+    Route::get('auth/google/callback', [SocialiteController::class, 'callback']);
+
 });

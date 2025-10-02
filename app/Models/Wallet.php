@@ -130,7 +130,7 @@ class Wallet extends Model
     /**
      * Get or create wallet for user.
      */
-    public static function getOrCreateForUser(int $userId, string $currency = 'PES'): self
+    public static function getOrCreateForUser(int $userId, string $currency = 'CAN'): self
     {
         return static::firstOrCreate(
             ['user_id' => $userId, 'currency' => $currency],

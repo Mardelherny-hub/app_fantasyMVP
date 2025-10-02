@@ -17,7 +17,7 @@ return new class extends Migration
                   ->constrained('users')
                   ->onUpdate('cascade')
                   ->onDelete('cascade');
-            $table->string('currency', 10)->default('PES'); // PESetas, moneda del juego
+            $table->string('currency', 10)->default('CAN'); // CAN, moneda del juego
             $table->decimal('balance', 14, 2)->default(0);
             $table->timestamps();
 

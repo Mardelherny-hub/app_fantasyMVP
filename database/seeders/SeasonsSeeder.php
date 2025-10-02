@@ -25,7 +25,7 @@ class SeasonsSeeder extends Seeder
                 'code' => '2025-26',
                 'starts_at' => '2025-08-01',
                 'ends_at' => '2026-05-31',
-                'is_active' => true, // Temporada activa
+                'is_active' => true, // ⭐ Temporada activa
             ],
             [
                 'name' => '2026/27',
@@ -36,13 +36,13 @@ class SeasonsSeeder extends Seeder
             ],
         ];
 
-        foreach ($seasons as $season) {
+        foreach ($seasons as $seasonData) {
             Season::firstOrCreate(
-                ['code' => $season['code']],
-                $season
+                ['code' => $seasonData['code']],
+                $seasonData
             );
         }
 
-        $this->command->info('✅ Temporadas creadas');
+        $this->command->info('✅ Temporadas creadas (3)');
     }
 }

@@ -94,6 +94,6 @@ class Reward extends Model
      */
     public function getFormattedAmount(): string
     {
-        return number_format($this->amount, 2) . ' PES';
+        return number_format($this->amount, 2) . ' CAN';
     }
 }

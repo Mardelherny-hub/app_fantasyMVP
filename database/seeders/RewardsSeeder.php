@@ -187,7 +187,7 @@ class RewardsSeeder extends Seeder
             );
         }
 
-        $this->command->info("✅ {count($rewards)} recompensas creadas en el catálogo");
+        $this->command->info('✅ ' . count($rewards) . ' recompensas creadas en el catálogo');
         
         // Mostrar total de CAN en el sistema
         $totalCan = array_sum(array_column($rewards, 'amount'));

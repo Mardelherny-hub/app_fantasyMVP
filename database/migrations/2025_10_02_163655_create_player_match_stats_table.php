@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('player_match_stats', function (Blueprint $table) {
             $table->id();
             $table->foreignId('match_id')
-                  ->constrained('matches')
+                  ->constrained('football_matches')
                   ->onUpdate('cascade')
                   ->onDelete('cascade');
             $table->foreignId('player_id')

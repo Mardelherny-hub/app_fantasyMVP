@@ -10,18 +10,25 @@ return Application::configure(basePath: dirname(__DIR__))
         api: __DIR__.'/../routes/api.php',
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
+        then: function () {
+            require base_path('routes/admin.php');
+            require base_path('routes/manager.php');
+        },
     )
     ->withMiddleware(function (Middleware $middleware): void {
-         $middleware->appendToGroup('web', [
+        // Tu SetLocale
+        $middleware->appendToGroup('web', [
             \App\Http\Middleware\SetLocale::class,
         ]);
 
-        // (Opcional) Alias si querés usarlo por ruta: ->middleware('setlocale')
-        // $middleware->alias([
-        //     'setlocale' => \App\Http\Middleware\SetLocale::class,
-        // ]);
-
+        // ✅ Spatie v6+ usa "Middleware" (singular)
+        $middleware->alias([
+            'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
+            'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+            'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
+        ]);
     })
+
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();

@@ -221,12 +221,11 @@ class DemoQuestionsSeeder extends Seeder
         array $questionTexts,
         array $options
     ): void {
-        // Obtener categoría en español (base)
-        $category = QuizCategory::where('code', $categoryCode)
-                                ->where('locale', 'es')
-                                ->first();
+        // Obtener categoría por código (sin locale)
+        $category = QuizCategory::where('code', $categoryCode)->first();
 
         if (!$category) {
+            $this->command->warn("⚠️  Categoría '{$categoryCode}' no encontrada");
             return;
         }
 

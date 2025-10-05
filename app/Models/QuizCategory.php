@@ -20,7 +20,6 @@ class QuizCategory extends Model
     protected $fillable = [
         'code',
         'name',
-        'locale',
     ];
 
     /**
@@ -33,6 +32,28 @@ class QuizCategory extends Model
     // ========================================
     // RELACIONES
     // ========================================
+
+    public function translations()
+    {
+        return $this->hasMany(\App\Models\QuizCategoryTranslation::class);
+    }
+
+    public function translation(?string $locale = null)
+    {
+        $locale = $locale ?: app()->getLocale();
+        $fallback = config('app.fallback_locale', 'es');
+
+        return $this->translations
+            ->firstWhere('locale', $locale)
+            ?? $this->translations->firstWhere('locale', $fallback);
+    }
+
+    // Accesor conveniente: $category->name
+    public function getNameAttribute(): ?string
+    {
+        return optional($this->translation())->name;
+    }
+
 
     /**
      * Get the questions for this category.
@@ -62,13 +83,6 @@ class QuizCategory extends Model
         return $query->where('code', $code);
     }
 
-    /**
-     * Scope by locale.
-     */
-    public function scopeLocale($query, string $locale)
-    {
-        return $query->where('locale', $locale);
-    }
 
     // ========================================
     // MÉTODOS AUXILIARES

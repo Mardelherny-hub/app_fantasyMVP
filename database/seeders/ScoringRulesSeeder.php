@@ -148,6 +148,6 @@ class ScoringRulesSeeder extends Seeder
             );
         }
 
-        $this->command->info("✅ {count($rules)} scoring rules creadas para la temporada {$season->name}");
+        $this->command->info('✅ ' . count($rules) . " scoring rules creadas para la temporada {$season->name}");
     }
 }

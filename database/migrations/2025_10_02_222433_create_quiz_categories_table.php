@@ -6,29 +6,34 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
+        // Base (solo clave técnica)
         Schema::create('quiz_categories', function (Blueprint $table) {
             $table->id();
-            $table->string('code')->unique(); // 'rules', 'history', 'players', 'tournaments'
+            $table->string('code')->unique(); // p.ej. rules, history, players, tournaments
+            $table->timestamps();
+        });
+
+        // Traducciones (textos por idioma)
+        Schema::create('quiz_category_translations', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('quiz_category_id')
+                ->constrained('quiz_categories')
+                ->cascadeOnUpdate()
+                ->cascadeOnDelete();
+            $table->string('locale', 5); // es, en, fr
             $table->string('name');
-            $table->string('locale', 5)->default('es');
             $table->timestamps();
 
-            // Índices
-            $table->index('code');
+            $table->unique(['quiz_category_id', 'locale']);
             $table->index('locale');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
+        Schema::dropIfExists('quiz_category_translations');
         Schema::dropIfExists('quiz_categories');
     }
 };

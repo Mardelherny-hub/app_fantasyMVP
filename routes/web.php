@@ -5,6 +5,8 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use App\Support\DashboardRoute;
 
+use App\Http\Controllers\DashboardRouterController;
+
 
 Route::pattern('locale', 'es|en|fr');
 

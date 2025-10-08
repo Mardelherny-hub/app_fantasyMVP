@@ -34,7 +34,7 @@
         
         <ul x-show="open && sidebarOpen" x-collapse class="mt-1 space-y-1 ml-4">
             <li>
-                <a href="{{-- r#oute('admin.users.index', ['locale' => app()->getLocale()]) --}}#" 
+                <a href="{{ route('admin.users.index', ['locale' => app()->getLocale()]) }}" 
                    class="flex items-center px-3 py-2 text-sm rounded-lg transition-colors
                           {{ request()->routeIs('admin.users.*') 
                              ? 'bg-gray-800 text-white' 
@@ -44,7 +44,7 @@
                 </a>
             </li>
             <li>
-                <a href="{{-- route('admin.roles.index', ['locale' => app()->getLocale()]) --}}" 
+                <a href="{{ route('admin.roles.index', ['locale' => app()->getLocale()]) }}" 
                    class="flex items-center px-3 py-2 text-sm rounded-lg transition-colors
                           {{ request()->routeIs('admin.roles.*') 
                              ? 'bg-gray-800 text-white' 

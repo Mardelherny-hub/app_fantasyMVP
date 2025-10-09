@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\LeagueController;
+use App\Http\Controllers\Admin\SeasonController;
 
 Route::middleware(['web', 'auth', 'verified', 'role:admin'])
     ->prefix('{locale}/admin')
@@ -65,4 +66,24 @@ Route::middleware(['web','auth','verified','role:admin'])
         Route::get('/leagues/{league}/edit', [LeagueController::class, 'edit'])->name('leagues.edit');
         Route::put('/leagues/{league}', [LeagueController::class, 'update'])->name('leagues.update');
         Route::delete('/leagues/{league}', [LeagueController::class, 'destroy'])->name('leagues.destroy');
+    });
+
+/* 
+* Admin Routes - Seasons (CRUD)
+*/
+Route::middleware(['web', 'auth', 'verified', 'role:admin'])
+    ->prefix('{locale}/admin')
+    ->where(['locale' => 'es|en|fr'])
+    ->as('admin.')
+    ->group(function () {
+        // Seasons (CRUD)
+        Route::get('/seasons', [SeasonController::class, 'index'])->name('seasons.index');
+        Route::get('/seasons/create', [SeasonController::class, 'create'])->name('seasons.create');
+        Route::post('/seasons', [SeasonController::class, 'store'])->name('seasons.store');
+        Route::get('/seasons/{season}/edit', [SeasonController::class, 'edit'])->name('seasons.edit');
+        Route::put('/seasons/{season}', [SeasonController::class, 'update'])->name('seasons.update');
+        Route::delete('/seasons/{season}', [SeasonController::class, 'destroy'])->name('seasons.destroy');
+        
+        // Toggle active status
+        Route::patch('/seasons/{season}/toggle', [SeasonController::class, 'toggle'])->name('seasons.toggle');
     });

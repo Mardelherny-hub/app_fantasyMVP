@@ -90,8 +90,11 @@
                 </a>
             </li>
             <li>
-                <a href="{{-- route('admin.fantasy.gameweeks.index', ['locale' => app()->getLocale()]) --}}" 
-                   class="flex items-center px-3 py-2 text-sm rounded-lg transition-colors text-gray-400 hover:bg-gray-800 hover:text-white">
+                <a href="{{ route('admin.gameweeks.index', ['locale' => app()->getLocale()]) }}" 
+                class="flex items-center px-3 py-2 text-sm rounded-lg transition-colors
+                        {{ request()->routeIs('admin.gameweeks.*') 
+                            ? 'bg-gray-800 text-white' 
+                            : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
                     <span class="w-2 h-2 bg-current rounded-full mr-3"></span>
                     {{ __('Jornadas') }}
                 </a>

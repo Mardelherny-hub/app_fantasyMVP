@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\LeagueController;
 use App\Http\Controllers\Admin\SeasonController;
 use App\Http\Controllers\Admin\RealTeamController;
+use App\Http\Controllers\Admin\GameweekController;
 
 Route::middleware(['web', 'auth', 'verified', 'role:admin'])
     ->prefix('{locale}/admin')
@@ -109,3 +110,24 @@ Route::middleware(['web', 'auth', 'verified', 'role:admin'])
         // Restore soft deleted team
         Route::patch('/real-teams/{id}/restore', [RealTeamController::class, 'restore'])->name('real-teams.restore');
     });
+
+/* 
+* Admin Routes - Gameweeks (CRUD)
+*/
+Route::middleware(['web', 'auth', 'verified', 'role:admin'])
+    ->prefix('{locale}/admin')
+    ->where(['locale' => 'es|en|fr'])
+    ->as('admin.')
+    ->group(function () {
+        // Gameweeks (CRUD)
+        Route::get('/gameweeks', [GameweekController::class, 'index'])->name('gameweeks.index');
+        Route::get('/gameweeks/create', [GameweekController::class, 'create'])->name('gameweeks.create');
+        Route::post('/gameweeks', [GameweekController::class, 'store'])->name('gameweeks.store');
+        Route::get('/gameweeks/{gameweek}/edit', [GameweekController::class, 'edit'])->name('gameweeks.edit');
+        Route::put('/gameweeks/{gameweek}', [GameweekController::class, 'update'])->name('gameweeks.update');
+        Route::delete('/gameweeks/{gameweek}', [GameweekController::class, 'destroy'])->name('gameweeks.destroy');
+        
+        // Toggle closed status
+        Route::patch('/gameweeks/{gameweek}/toggle', [GameweekController::class, 'toggle'])->name('gameweeks.toggle');
+    });
+

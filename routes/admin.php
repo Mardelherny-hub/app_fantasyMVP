@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\LeagueController;
 use App\Http\Controllers\Admin\SeasonController;
+use App\Http\Controllers\Admin\RealTeamController;
 
 Route::middleware(['web', 'auth', 'verified', 'role:admin'])
     ->prefix('{locale}/admin')
@@ -86,4 +87,25 @@ Route::middleware(['web', 'auth', 'verified', 'role:admin'])
         
         // Toggle active status
         Route::patch('/seasons/{season}/toggle', [SeasonController::class, 'toggle'])->name('seasons.toggle');
+    });
+
+
+/* 
+* Admin Routes - Real Teams (CRUD)
+*/
+Route::middleware(['web', 'auth', 'verified', 'role:admin'])
+    ->prefix('{locale}/admin')
+    ->where(['locale' => 'es|en|fr'])
+    ->as('admin.')
+    ->group(function () {
+        // Real Teams (CRUD)
+        Route::get('/real-teams', [RealTeamController::class, 'index'])->name('real-teams.index');
+        Route::get('/real-teams/create', [RealTeamController::class, 'create'])->name('real-teams.create');
+        Route::post('/real-teams', [RealTeamController::class, 'store'])->name('real-teams.store');
+        Route::get('/real-teams/{realTeam}/edit', [RealTeamController::class, 'edit'])->name('real-teams.edit');
+        Route::put('/real-teams/{realTeam}', [RealTeamController::class, 'update'])->name('real-teams.update');
+        Route::delete('/real-teams/{realTeam}', [RealTeamController::class, 'destroy'])->name('real-teams.destroy');
+        
+        // Restore soft deleted team
+        Route::patch('/real-teams/{id}/restore', [RealTeamController::class, 'restore'])->name('real-teams.restore');
     });

@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\RoleController;
-
+use App\Http\Controllers\Admin\LeagueController;
 
 Route::middleware(['web', 'auth', 'verified', 'role:admin'])
     ->prefix('{locale}/admin')
@@ -51,4 +51,18 @@ Route::middleware(['web', 'auth', 'verified', 'role:admin'])
         Route::get('/roles/{role}/edit', [RoleController::class, 'edit'])->name('roles.edit');
         Route::put('/roles/{role}', [RoleController::class, 'update'])->name('roles.update');
         Route::delete('/roles/{role}', [RoleController::class, 'destroy'])->name('roles.destroy');
+    });
+
+Route::middleware(['web','auth','verified','role:admin'])
+    ->prefix('{locale}/admin')
+    ->where(['locale' => 'es|en|fr'])
+    ->as('admin.')
+    ->group(function () {
+        // Ligas (CRUD)
+        Route::get('/leagues', [LeagueController::class, 'index'])->name('leagues.index');
+        Route::get('/leagues/create', [LeagueController::class, 'create'])->name('leagues.create');
+        Route::post('/leagues', [LeagueController::class, 'store'])->name('leagues.store');
+        Route::get('/leagues/{league}/edit', [LeagueController::class, 'edit'])->name('leagues.edit');
+        Route::put('/leagues/{league}', [LeagueController::class, 'update'])->name('leagues.update');
+        Route::delete('/leagues/{league}', [LeagueController::class, 'destroy'])->name('leagues.destroy');
     });

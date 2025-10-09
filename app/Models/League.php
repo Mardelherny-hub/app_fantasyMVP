@@ -109,6 +109,20 @@ class League extends Model
         return $this->belongsTo(Season::class);
     }
 
+    // Fallback: si no viene season_id, asigna (o crea) la temporada del año actual
+    protected static function booted(): void
+    {
+        static::creating(function (League $league) {
+            if (empty($league->season_id)) {
+                $season = \App\Models\Season::firstOrCreate(
+                    ['name' => (string) now()->year],
+                    [] // completa si tu Season requiere otros campos con default
+                );
+                $league->season_id = $season->id;
+            }
+        });
+    }
+
     /**
      * Get the members of the league.
      */

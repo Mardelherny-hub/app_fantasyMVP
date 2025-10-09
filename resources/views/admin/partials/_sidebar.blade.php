@@ -124,7 +124,7 @@
 
     {{-- Players --}}
     <li>
-        <a href="{{-- route('admin.players.index', ['locale' => app()->getLocale()]) --}}" 
+        <a href="{{ route('admin.players.index', ['locale' => app()->getLocale()]) }}" 
            class="flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors
                   {{ request()->routeIs('admin.players.*') 
                      ? 'bg-gray-800 text-white' 

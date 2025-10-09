@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\SeasonController;
 use App\Http\Controllers\Admin\RealTeamController;
 use App\Http\Controllers\Admin\GameweekController;
 use App\Http\Controllers\Admin\FootballMatchController;
+use App\Http\Controllers\Admin\PlayerController;
 
 Route::middleware(['web', 'auth', 'verified', 'role:admin'])
     ->prefix('{locale}/admin')
@@ -151,4 +152,19 @@ Route::middleware(['web', 'auth', 'verified', 'role:admin'])
         
         // Quick status update
         Route::patch('/football-matches/{footballMatch}/update-status', [FootballMatchController::class, 'updateStatus'])->name('football-matches.update-status');
+    });
+
+/* Admin Routes - Players (CRUD)  */
+Route::middleware(['web', 'auth', 'verified', 'role:admin'])
+    ->prefix('{locale}/admin')
+    ->where(['locale' => 'es|en|fr'])
+    ->as('admin.')
+    ->group(function () {
+        // Players (CRUD)
+        Route::get('/players', [PlayerController::class, 'index'])->name('players.index');
+        Route::get('/players/create', [PlayerController::class, 'create'])->name('players.create');
+        Route::post('/players', [PlayerController::class, 'store'])->name('players.store');
+        Route::get('/players/{player}/edit', [PlayerController::class, 'edit'])->name('players.edit');
+        Route::put('/players/{player}', [PlayerController::class, 'update'])->name('players.update');
+        Route::delete('/players/{player}', [PlayerController::class, 'destroy'])->name('players.destroy');
     });

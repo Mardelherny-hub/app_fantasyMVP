@@ -18,7 +18,7 @@ class FootballMatch extends Model
      *
      * @var string
      */
-    protected $table = 'matches';
+    protected $table = 'football_matches';
 
     // ========================================
     // CONSTANTES DE STATUS

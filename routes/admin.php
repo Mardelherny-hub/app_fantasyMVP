@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\RealTeamController;
 use App\Http\Controllers\Admin\GameweekController;
 use App\Http\Controllers\Admin\FootballMatchController;
 use App\Http\Controllers\Admin\PlayerController;
+use App\Http\Controllers\Admin\Imports\PlayersImportController;
 
 Route::middleware(['web', 'auth', 'verified', 'role:admin'])
     ->prefix('{locale}/admin')
@@ -154,17 +155,34 @@ Route::middleware(['web', 'auth', 'verified', 'role:admin'])
         Route::patch('/football-matches/{footballMatch}/update-status', [FootballMatchController::class, 'updateStatus'])->name('football-matches.update-status');
     });
 
-/* Admin Routes - Players (CRUD)  */
-Route::middleware(['web', 'auth', 'verified', 'role:admin'])
-    ->prefix('{locale}/admin')
-    ->where(['locale' => 'es|en|fr'])
-    ->as('admin.')
-    ->group(function () {
-        // Players (CRUD)
-        Route::get('/players', [PlayerController::class, 'index'])->name('players.index');
-        Route::get('/players/create', [PlayerController::class, 'create'])->name('players.create');
-        Route::post('/players', [PlayerController::class, 'store'])->name('players.store');
-        Route::get('/players/{player}/edit', [PlayerController::class, 'edit'])->name('players.edit');
-        Route::put('/players/{player}', [PlayerController::class, 'update'])->name('players.update');
-        Route::delete('/players/{player}', [PlayerController::class, 'destroy'])->name('players.destroy');
+    /* Admin Routes - Players (CRUD + Import) */
+    Route::middleware(['web', 'auth', 'verified', 'role:admin'])
+        ->prefix('{locale}/admin')
+        ->where(['locale' => 'es|en|fr'])
+        ->as('admin.')
+        ->group(function () {
+
+            // Prefix /players para evitar conflictos
+            Route::prefix('players')->as('players.')->group(function () {
+
+                // CRUD
+                Route::get('/', [\App\Http\Controllers\Admin\PlayerController::class, 'index'])->name('index');
+                Route::get('/create', [\App\Http\Controllers\Admin\PlayerController::class, 'create'])->name('create');
+                Route::post('/', [\App\Http\Controllers\Admin\PlayerController::class, 'store'])->name('store');
+                Route::get('/{player}/edit', [\App\Http\Controllers\Admin\PlayerController::class, 'edit'])->name('edit');
+                Route::put('/{player}', [\App\Http\Controllers\Admin\PlayerController::class, 'update'])->name('update');
+                Route::delete('/{player}', [\App\Http\Controllers\Admin\PlayerController::class, 'destroy'])->name('destroy');
+
+                // Toggle activo
+                Route::patch('/{player}/toggle', [\App\Http\Controllers\Admin\PlayerController::class, 'toggle'])->name('toggle');
+
+                // Import (form + submit)
+                Route::get('/import', [\App\Http\Controllers\Admin\Imports\PlayersImportController::class, 'index'])->name('import');
+                Route::post('/import', [\App\Http\Controllers\Admin\Imports\PlayersImportController::class, 'store'])->name('import.store');
+
+                // Plantillas (opcional)
+                Route::get('/import/template', [\App\Http\Controllers\Admin\Imports\PlayersImportController::class, 'template'])->name('import.template');
+                Route::get('/import/template-csv', [\App\Http\Controllers\Admin\Imports\PlayersImportController::class, 'templateCsv'])->name('import.template_csv');
+            });
     });
+

@@ -47,17 +47,7 @@
         <x-error :messages="$errors->get('season_id')" class="mt-2" />
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-            <x-label for="owner_user_id" :value="__('Propietario (manager)')" />
-            <select id="owner_user_id" name="owner_user_id" class="mt-1 block w-full rounded-lg border-gray-300" required>
-                <option value="">{{ __('Selecciona un usuario') }}</option>
-                @foreach($owners as $u)
-                    <option value="{{ $u->id }}" @selected(old('owner_user_id', $lg->owner_user_id ?? '') == $u->id)>{{ $u->name }} ({{ $u->email }})</option>
-                @endforeach
-            </select>
-            <x-error :messages="$errors->get('owner_user_id')" class="mt-2" />
-        </div>
+    <div class="grid grid-cols-1 md:grid-cols-1 gap-4">        
         <div>
             <x-label for="type" :value="__('Tipo')" />
             <select id="type" name="type" class="mt-1 block w-full rounded-lg border-gray-300">

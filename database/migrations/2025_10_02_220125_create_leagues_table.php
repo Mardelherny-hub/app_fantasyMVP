@@ -14,9 +14,10 @@ return new class extends Migration
         Schema::create('leagues', function (Blueprint $table) {
             $table->id();
             $table->foreignId('owner_user_id')
+                  ->nullable() // AHORA ES OPCIONAL
                   ->constrained('users')
                   ->onUpdate('cascade')
-                  ->onDelete('restrict'); // No borrar user si tiene ligas
+                  ->onDelete('set null'); // Si se borra el owner, queda NULL
             $table->foreignId('season_id')
                   ->constrained('seasons')
                   ->onUpdate('cascade')

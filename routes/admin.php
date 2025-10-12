@@ -57,8 +57,11 @@ Route::middleware(['web', 'auth', 'verified', 'role:admin'])
         Route::get('/roles/{role}/edit', [RoleController::class, 'edit'])->name('roles.edit');
         Route::put('/roles/{role}', [RoleController::class, 'update'])->name('roles.update');
         Route::delete('/roles/{role}', [RoleController::class, 'destroy'])->name('roles.destroy');
+        
     });
-
+/* 
+* Admin Routes - Ligas (CRUD)
+*/
 Route::middleware(['web','auth','verified','role:admin'])
     ->prefix('{locale}/admin')
     ->where(['locale' => 'es|en|fr'])
@@ -67,10 +70,19 @@ Route::middleware(['web','auth','verified','role:admin'])
         // Ligas (CRUD)
         Route::get('/leagues', [LeagueController::class, 'index'])->name('leagues.index');
         Route::get('/leagues/create', [LeagueController::class, 'create'])->name('leagues.create');
+                Route::get('/leagues/{league}', [LeagueController::class, 'show'])->name('leagues.show');
+
         Route::post('/leagues', [LeagueController::class, 'store'])->name('leagues.store');
         Route::get('/leagues/{league}/edit', [LeagueController::class, 'edit'])->name('leagues.edit');
         Route::put('/leagues/{league}', [LeagueController::class, 'update'])->name('leagues.update');
         Route::delete('/leagues/{league}', [LeagueController::class, 'destroy'])->name('leagues.destroy');
+        // Toggle lock status
+        Route::patch('/leagues/{league}/toggle-lock', [LeagueController::class, 'toggleLock'])->name('leagues.toggle-lock');
+        // Fill with bots
+        Route::post('/leagues/{league}/fill-bots', [LeagueController::class, 'fillWithBots'])->name('leagues.fill-bots');
+        // Team management (add/remove)
+        Route::post('/leagues/{league}/teams', [LeagueController::class, 'addTeam'])->name('leagues.add-team');
+        Route::delete('/leagues/{league}/teams/{team}', [LeagueController::class, 'removeTeam'])->name('leagues.remove-team');
     });
 
 /* 

@@ -21,6 +21,11 @@ class DatabaseSeeder extends Seeder
         $this->call(RolesAndPermissionsSeeder::class);
         $this->call(AdminSeeder::class);
         $this->command->newLine();
+        $this->command->info('⚽ GRUPO 1: Liga, Equipos y Miembros');
+        $this->call(LeagueMembersSeeder::class);
+        $this->call(RealTeamsSeeder::class);
+        $this->call(FantasyTeamsSeeder::class);
+        $this->command->newLine();  
 
         // ========================================
         // GRUPO 2: REFERENCIALES

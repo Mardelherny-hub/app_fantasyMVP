@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('real_teams', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('short_name', 10);
+            $table->string('short_name', 20);
             $table->string('country', 2); // ISO 3166-1 alpha-2 (AR, ES, FR, etc.)
             $table->smallInteger('founded_year')->nullable();
             $table->string('logo_url')->nullable();

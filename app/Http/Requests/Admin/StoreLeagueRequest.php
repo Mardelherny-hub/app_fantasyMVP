@@ -22,7 +22,7 @@ class StoreLeagueRequest extends FormRequest
             // code: se genera automáticamente si no viene; si viene, debe ser único (6 chars recomendado)
             'code'                        => ['nullable','string','max:16', 'unique:leagues,code'],
             'type'                        => ['required', Rule::in([1,2])], // 1 privada / 2 pública
-            'owner_user_id'                    => ['required','exists:users,id'],
+            'owner_user_id'               => ['nullable','exists:users,id'],
             'max_participants'            => ['required','integer','min:2','max:40'],
             'auto_fill_bots'              => ['required','boolean'],
             'is_locked'                   => ['nullable','boolean'], // no se edita en create; lo ignoramos si viene

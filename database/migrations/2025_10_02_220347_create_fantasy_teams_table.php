@@ -14,9 +14,10 @@ return new class extends Migration
         Schema::create('fantasy_teams', function (Blueprint $table) {
             $table->id();
             $table->foreignId('league_id')
+                  ->nullable() // Equipo puede existir sin liga
                   ->constrained('leagues')
                   ->onUpdate('cascade')
-                  ->onDelete('cascade');
+                  ->onDelete('set null'); // Si se borra liga, equipo queda librephp artisan make:seeder
             $table->foreignId('user_id')
                   ->nullable() // NULL para equipos bot
                   ->constrained('users')
@@ -25,6 +26,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('slug')->unique();
             $table->string('emblem_url')->nullable();
+            $table->json('colors')->nullable(); // Primary y secondary colors
             $table->integer('total_points')->default(0)->index();
             $table->decimal('budget', 12, 2)->default(100.00); // Presupuesto para mercado
             $table->boolean('is_bot')->default(false);

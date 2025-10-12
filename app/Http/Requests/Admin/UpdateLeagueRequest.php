@@ -36,7 +36,7 @@ class UpdateLeagueRequest extends FormRequest
             'name'                     => ['required','string','max:255'],
             'code'                     => ['nullable','string','max:16', Rule::unique('leagues','code')->ignore($leagueId)],
             'type'                     => ['required', Rule::in([1,2])],
-            'owner_user_id'            => ['required','exists:users,id'], // <-- aquí
+            'owner_user_id'            => ['nullable','exists:users,id'], // <-- aquí
             'season_id'                => ['nullable','exists:seasons,id'],
             'max_participants'         => ['required','integer','min:2','max:40'],
             'auto_fill_bots'           => ['required','boolean'],

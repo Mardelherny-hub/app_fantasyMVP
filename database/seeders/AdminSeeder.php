@@ -32,19 +32,21 @@ class AdminSeeder extends Seeder
         // ========================================
         // USUARIO MANAGER
         // ========================================
-        $manager = User::firstOrCreate(
-            ['email' => 'manager@fantasy.local'],
-            [
-                'name' => 'Manager Liga',
-                'username' => 'manager',
-                'password' => bcrypt('12345678'),
-                'locale' => 'es',
-                'is_active' => true,
-                'email_verified_at' => now(),
-            ]
-        );
-        $manager->assignRole('manager');
-        $this->command->info("✅ Manager creado: manager@fantasy.local / 12345678");
+        for ($i = 1; $i <= 50; $i++) {
+            $user = User::firstOrCreate(
+                ['email' => "user{$i}@fantasy.local"],
+                [
+                    'name' => "Usuario Manager {$i}",
+                    'username' => "user{$i}",
+                    'password' => bcrypt('12345678'),
+                    'locale' => 'es',
+                    'is_active' => true,
+                    'email_verified_at' => now(),
+                ]
+            );
+            $user->assignRole('manager');
+        }
+        $this->command->info("✅ 50 managers de prueba creados: user1@fantasy.local ... user5@fantasy.local / 12345678");
 
         // ========================================
         // USUARIO OPERATOR
@@ -66,7 +68,7 @@ class AdminSeeder extends Seeder
         // ========================================
         // USUARIOS DEMO (para pruebas)
         // ========================================
-        for ($i = 1; $i <= 5; $i++) {
+        
             $user = User::firstOrCreate(
                 ['email' => "user{$i}@fantasy.local"],
                 [
@@ -79,7 +81,7 @@ class AdminSeeder extends Seeder
                 ]
             );
             $user->assignRole('user');
-        }
-        $this->command->info("✅ 5 usuarios demo creados: user1@fantasy.local ... user5@fantasy.local / 12345678");
+
+        $this->command->info("✅ 1 usuario demo creado: user1@fantasy.local / 12345678");
     }
 }

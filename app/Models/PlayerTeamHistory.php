@@ -10,6 +10,8 @@ class PlayerTeamHistory extends Model
 {
     use HasFactory;
 
+    protected $table = 'player_team_history';
+
     /**
      * The attributes that are mass assignable.
      *

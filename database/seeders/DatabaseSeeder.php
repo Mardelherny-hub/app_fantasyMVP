@@ -34,6 +34,7 @@ class DatabaseSeeder extends Seeder
         $this->call(SeasonsSeeder::class);
         $this->call(GameweeksSeeder::class);
         $this->call(ScoringRulesSeeder::class);
+        $this->call(RealPlayersSeeder::class);
         $this->command->newLine();
 
         // ========================================

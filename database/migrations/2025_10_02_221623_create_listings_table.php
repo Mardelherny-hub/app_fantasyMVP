@@ -1,5 +1,14 @@
 <?php
 
+/* 
+* explicacion de la migracion
+* Tabla para gestionar los listings de jugadores en el mercado de transferencias de una liga de fantasy.
+* Cada listing representa un jugador puesto a la venta por un equipo de fantasía dentro de una liga específica.
+* Incluye detalles como el precio de venta, el estado del listing (activo, vendido, retirado, expirado) y la fecha de expiración del listing.
+* Se asegura que solo haya un listing activo por jugador en una liga en un momento dado.
+* Esta tabla es esencial para manejar las transferencias de jugadores entre equipos de fantasía dentro de la plataforma.
+*/
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;

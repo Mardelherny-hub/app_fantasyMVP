@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\LeagueController;
 use App\Http\Controllers\Admin\SeasonController;
 use App\Http\Controllers\Admin\RealTeamController;
+use App\Http\Controllers\Admin\RealTeamPlayerController;
 use App\Http\Controllers\Admin\GameweekController;
 use App\Http\Controllers\Admin\FootballMatchController;
 use App\Http\Controllers\Admin\PlayerController;
@@ -117,6 +118,14 @@ Route::middleware(['web', 'auth', 'verified', 'role:admin'])
         // Real Teams (CRUD)
         Route::get('/real-teams', [RealTeamController::class, 'index'])->name('real-teams.index');
         Route::get('/real-teams/create', [RealTeamController::class, 'create'])->name('real-teams.create');
+
+        // ⬇️ NUEVAS rutas para agregar jugadores al equipo (selector + attach)
+        Route::get('/real-teams/{realTeam}/players/available', [RealTeamPlayerController::class, 'index'])
+            ->name('real-teams.players.index');   // <— index
+        Route::post('/real-teams/{realTeam}/players/attach', [RealTeamPlayerController::class, 'store'])
+            ->name('real-teams.players.store');   // <— store
+
+        Route::get('/real-teams/{realTeam}', [RealTeamController::class, 'show'])->name('real-teams.show');
         Route::post('/real-teams', [RealTeamController::class, 'store'])->name('real-teams.store');
         Route::get('/real-teams/{realTeam}/edit', [RealTeamController::class, 'edit'])->name('real-teams.edit');
         Route::put('/real-teams/{realTeam}', [RealTeamController::class, 'update'])->name('real-teams.update');
@@ -125,6 +134,11 @@ Route::middleware(['web', 'auth', 'verified', 'role:admin'])
         // Restore soft deleted team
         Route::patch('/real-teams/{id}/restore', [RealTeamController::class, 'restore'])->name('real-teams.restore');
     });
+
+/* 
+* Admin Routes - Agregar jujador a real team
+*/
+    
 
 /* 
 * Admin Routes - Gameweeks (CRUD)

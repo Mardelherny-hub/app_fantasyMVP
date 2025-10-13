@@ -107,6 +107,8 @@
                                             <button type="submit" class="text-green-600 hover:text-green-900">{{ __('Restaurar') }}</button>
                                         </form>
                                     @else
+                                        <a href="{{ route('admin.real-teams.show', [app()->getLocale(), $team]) }}" 
+                                            class="text-green-600 hover:text-green-900">{{ __('Ver') }}</a>
                                         <a href="{{ route('admin.real-teams.edit', [app()->getLocale(), $team]) }}" 
                                            class="text-blue-600 hover:text-blue-900">{{ __('Editar') }}</a>
                                         

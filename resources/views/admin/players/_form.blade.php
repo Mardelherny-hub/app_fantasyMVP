@@ -83,6 +83,40 @@
         </label>
         @error('is_active') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
     </div>
+
+    {{-- === MERCADO === --}}
+    <div class="col-span-1 md:col-span-2 mt-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-3">{{ __('Mercado') }}</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+            {{-- TEMPORADA --}}
+            <div>
+                <label class="block text-sm font-medium text-gray-700">{{ __('Temporada') }} *</label>
+                <select name="season_id"
+                    class="mt-1 block w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
+                    @foreach($seasons as $s)
+                        <option value="{{ $s->id }}"
+                            @selected(old('season_id', $currentSeasonId ?? null) == $s->id)>
+                            {{ $s->name }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('season_id') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+            </div>
+
+            {{-- VALOR DE MERCADO (M) --}}
+            <div>
+                <label class="block text-sm font-medium text-gray-700">{{ __('Valor de mercado (M)') }}</label>
+                <input type="number" step="0.01" min="0.50" name="market_value"
+                    value="{{ old('market_value', $valuation->market_value ?? '') }}"
+                    class="mt-1 block w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
+                <p class="mt-1 text-xs text-gray-500">{{ __('En millones. Mínimo 0.50') }}</p>
+                @error('market_value') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+            </div>
+
+        </div>
+    </div>
+
 </div>
 
 <div class="mt-6 flex items-center justify-end gap-3">

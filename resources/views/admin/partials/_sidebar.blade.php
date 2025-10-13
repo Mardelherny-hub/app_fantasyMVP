@@ -14,117 +14,163 @@
         </a>
     </li>
 
-    {{-- Users & Roles --}}
-    <li x-data="{ open: {{ request()->routeIs('admin.users.*') || request()->routeIs('admin.roles.*') ? 'true' : 'false' }} }">
-        <button @click="open = !open" 
-                class="w-full flex items-center justify-between px-3 py-2.5 text-sm font-medium rounded-lg transition-colors group
-                       {{ request()->routeIs('admin.users.*') || request()->routeIs('admin.roles.*') 
-                          ? 'bg-gray-800 text-white' 
-                          : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
-            <div class="flex items-center">
-                <svg class="w-5 h-5 flex-shrink-0" :class="sidebarOpen ? 'mr-3' : 'mx-auto'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                </svg>
-                <span x-show="sidebarOpen">{{ __('Usuarios y Roles') }}</span>
-            </div>
-            <svg x-show="sidebarOpen" :class="open ? 'rotate-180' : ''" class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+    {{-- Usuarios y Roles --}}
+<li x-data="{ open: {{ request()->routeIs('admin.users.*') || request()->routeIs('admin.roles.*') ? 'true' : 'false' }} }">
+    <button @click="open = !open" 
+            class="w-full flex items-center justify-between px-3 py-2.5 text-sm font-medium rounded-lg transition-colors group
+                   {{ request()->routeIs('admin.users.*') || request()->routeIs('admin.roles.*') 
+                      ? 'bg-gray-800 text-white' 
+                      : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
+        <div class="flex items-center">
+            <svg class="w-5 h-5 flex-shrink-0" :class="sidebarOpen ? 'mr-3' : 'mx-auto'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
             </svg>
-        </button>
-        
-        <ul x-show="open && sidebarOpen" x-collapse class="mt-1 space-y-1 ml-4">
-            <li>
-                <a href="{{ route('admin.users.index', ['locale' => app()->getLocale()]) }}" 
-                   class="flex items-center px-3 py-2 text-sm rounded-lg transition-colors
-                          {{ request()->routeIs('admin.users.*') 
-                             ? 'bg-gray-800 text-white' 
-                             : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
-                    <span class="w-2 h-2 bg-current rounded-full mr-3"></span>
-                    {{ __('Usuarios') }}
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('admin.roles.index', ['locale' => app()->getLocale()]) }}" 
-                   class="flex items-center px-3 py-2 text-sm rounded-lg transition-colors
-                          {{ request()->routeIs('admin.roles.*') 
-                             ? 'bg-gray-800 text-white' 
-                             : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
-                    <span class="w-2 h-2 bg-current rounded-full mr-3"></span>
-                    {{ __('Roles') }}
-                </a>
-            </li>
-        </ul>
-    </li>
+            <span x-show="sidebarOpen">{{ __('Usuarios y Roles') }}</span>
+        </div>
+        <svg x-show="sidebarOpen" :class="open ? 'rotate-180' : ''" class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+    </button>
+    
+    <ul x-show="open && sidebarOpen" x-collapse class="mt-1 space-y-1 ml-4">
+        <li>
+            <a href="{{ route('admin.users.index', ['locale' => app()->getLocale()]) }}" 
+               class="flex items-center px-3 py-2 text-sm rounded-lg transition-colors
+                      {{ request()->routeIs('admin.users.*') 
+                         ? 'bg-gray-800 text-white' 
+                         : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
+                <span class="w-2 h-2 bg-current rounded-full mr-3"></span>
+                {{ __('Usuarios') }}
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('admin.roles.index', ['locale' => app()->getLocale()]) }}" 
+               class="flex items-center px-3 py-2 text-sm rounded-lg transition-colors
+                      {{ request()->routeIs('admin.roles.*') 
+                         ? 'bg-gray-800 text-white' 
+                         : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
+                <span class="w-2 h-2 bg-current rounded-full mr-3"></span>
+                {{ __('Roles') }}
+            </a>
+        </li>
+    </ul>
+</li>
 
-    {{-- Fantasy --}}
-    <li x-data="{ open: {{ request()->routeIs('admin.fantasy.*') ? 'true' : 'false' }} }">
-        <button @click="open = !open" 
-                class="w-full flex items-center justify-between px-3 py-2.5 text-sm font-medium rounded-lg transition-colors
-                       {{ request()->routeIs('admin.fantasy.*') 
-                          ? 'bg-gray-800 text-white' 
-                          : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
-            <div class="flex items-center">
-                <svg class="w-5 h-5 flex-shrink-0" :class="sidebarOpen ? 'mr-3' : 'mx-auto'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-                </svg>
-                <span x-show="sidebarOpen">{{ __('Fantasia') }}</span>
-            </div>
-            <svg x-show="sidebarOpen" :class="open ? 'rotate-180' : ''" class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+{{-- FANTASY --}}
+<li x-data="{ open: {{ request()->routeIs('admin.leagues.*') || request()->routeIs('admin.fantasy-teams.*') ? 'true' : 'false' }} }">
+    <button @click="open = !open" 
+            class="w-full flex items-center justify-between px-3 py-2.5 text-sm font-medium rounded-lg transition-colors
+                   {{ request()->routeIs('admin.leagues.*') || request()->routeIs('admin.fantasy-teams.*')
+                      ? 'bg-gray-800 text-white' 
+                      : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
+        <div class="flex items-center">
+            <svg class="w-5 h-5 flex-shrink-0" :class="sidebarOpen ? 'mr-3' : 'mx-auto'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
             </svg>
-        </button>
-        
-        <ul x-show="open && sidebarOpen" x-collapse class="mt-1 space-y-1 ml-4">
-            <li>
-                <a href="{{ route('admin.leagues.index', ['locale' => app()->getLocale()]) }}" 
-                   class="flex items-center px-3 py-2 text-sm rounded-lg transition-colors text-gray-400 hover:bg-gray-800 hover:text-white">
-                    <span class="w-2 h-2 bg-current rounded-full mr-3"></span>
-                    {{ __('Ligas') }}
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('admin.seasons.index', ['locale' => app()->getLocale()]) }}" 
-                   class="flex items-center px-3 py-2 text-sm rounded-lg transition-colors text-gray-400 hover:bg-gray-800 hover:text-white">
-                    <span class="w-2 h-2 bg-current rounded-full mr-3"></span>
-                    {{ __('Temporadas') }}
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('admin.gameweeks.index', ['locale' => app()->getLocale()]) }}" 
-                class="flex items-center px-3 py-2 text-sm rounded-lg transition-colors
-                        {{ request()->routeIs('admin.gameweeks.*') 
-                            ? 'bg-gray-800 text-white' 
-                            : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
-                    <span class="w-2 h-2 bg-current rounded-full mr-3"></span>
-                    {{ __('Jornadas') }}
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('admin.real-teams.index', ['locale' => app()->getLocale()]) }}" 
-                    class="flex items-center px-3 py-2 text-sm rounded-lg transition-colors
-                            {{ request()->routeIs('admin.real-teams.*') 
-                                ? 'bg-gray-800 text-white' 
-                                : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
-                        <span class="w-2 h-2 bg-current rounded-full mr-3"></span>
-                        {{ __('Equipos') }}
-                    </a>
-            </li>
-            <li>
-                <a href="{{ route('admin.football-matches.index', ['locale' => app()->getLocale()]) }}" 
-                class="flex items-center px-3 py-2 text-sm rounded-lg transition-colors
-                        {{ request()->routeIs('admin.football-matches.*') 
-                            ? 'bg-gray-800 text-white' 
-                            : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
-                    <span class="w-2 h-2 bg-current rounded-full mr-3"></span>
-                    {{ __('Partidos') }}
-                </a>
-            </li>
-        </ul>
-    </li>
+            <span x-show="sidebarOpen">⚽ {{ __('FANTASY') }}</span>
+        </div>
+        <svg x-show="sidebarOpen" :class="open ? 'rotate-180' : ''" class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+    </button>
+    
+    <ul x-show="open && sidebarOpen" x-collapse class="mt-1 space-y-1 ml-4">
+        <li>
+            <a href="{{ route('admin.leagues.index', ['locale' => app()->getLocale()]) }}" 
+               class="flex items-center px-3 py-2 text-sm rounded-lg transition-colors
+                      {{ request()->routeIs('admin.leagues.*')
+                         ? 'bg-gray-800 text-white' 
+                         : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
+                <span class="w-2 h-2 bg-current rounded-full mr-3"></span>
+                {{ __('Ligas') }}
+            </a>
+        </li>
+        {{-- Placeholder para futuro --}}
+        {{-- <li>
+            <a href="#" 
+               class="flex items-center px-3 py-2 text-sm rounded-lg transition-colors text-gray-500 cursor-not-allowed">
+                <span class="w-2 h-2 bg-current rounded-full mr-3"></span>
+                {{ __('Equipos Fantasy') }}
+            </a>
+        </li> --}}
+    </ul>
+</li>
+
+{{-- DATOS REALES --}}
+<li x-data="{ open: {{ request()->routeIs('admin.seasons.*') || request()->routeIs('admin.gameweeks.*') || request()->routeIs('admin.real-teams.*') || request()->routeIs('admin.players.*') || request()->routeIs('admin.football-matches.*') ? 'true' : 'false' }} }">
+    <button @click="open = !open" 
+            class="w-full flex items-center justify-between px-3 py-2.5 text-sm font-medium rounded-lg transition-colors
+                   {{ request()->routeIs('admin.seasons.*') || request()->routeIs('admin.gameweeks.*') || request()->routeIs('admin.real-teams.*') || request()->routeIs('admin.players.*') || request()->routeIs('admin.football-matches.*')
+                      ? 'bg-gray-800 text-white' 
+                      : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
+        <div class="flex items-center">
+            <svg class="w-5 h-5 flex-shrink-0" :class="sidebarOpen ? 'mr-3' : 'mx-auto'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+            <span x-show="sidebarOpen">📊 {{ __('DATOS REALES') }}</span>
+        </div>
+        <svg x-show="sidebarOpen" :class="open ? 'rotate-180' : ''" class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+    </button>
+    
+    <ul x-show="open && sidebarOpen" x-collapse class="mt-1 space-y-1 ml-4">
+        <li>
+            <a href="{{ route('admin.seasons.index', ['locale' => app()->getLocale()]) }}" 
+               class="flex items-center px-3 py-2 text-sm rounded-lg transition-colors
+                      {{ request()->routeIs('admin.seasons.*')
+                         ? 'bg-gray-800 text-white' 
+                         : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
+                <span class="w-2 h-2 bg-current rounded-full mr-3"></span>
+                {{ __('Temporadas') }}
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('admin.gameweeks.index', ['locale' => app()->getLocale()]) }}" 
+               class="flex items-center px-3 py-2 text-sm rounded-lg transition-colors
+                      {{ request()->routeIs('admin.gameweeks.*')
+                         ? 'bg-gray-800 text-white' 
+                         : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
+                <span class="w-2 h-2 bg-current rounded-full mr-3"></span>
+                {{ __('Jornadas') }}
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('admin.real-teams.index', ['locale' => app()->getLocale()]) }}" 
+               class="flex items-center px-3 py-2 text-sm rounded-lg transition-colors
+                      {{ request()->routeIs('admin.real-teams.*')
+                         ? 'bg-gray-800 text-white' 
+                         : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
+                <span class="w-2 h-2 bg-current rounded-full mr-3"></span>
+                {{ __('Equipos Reales') }}
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('admin.players.index', ['locale' => app()->getLocale()]) }}" 
+               class="flex items-center px-3 py-2 text-sm rounded-lg transition-colors
+                      {{ request()->routeIs('admin.players.*')
+                         ? 'bg-gray-800 text-white' 
+                         : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
+                <span class="w-2 h-2 bg-current rounded-full mr-3"></span>
+                {{ __('Jugadores') }}
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('admin.football-matches.index', ['locale' => app()->getLocale()]) }}" 
+               class="flex items-center px-3 py-2 text-sm rounded-lg transition-colors
+                      {{ request()->routeIs('admin.football-matches.*')
+                         ? 'bg-gray-800 text-white' 
+                         : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
+                <span class="w-2 h-2 bg-current rounded-full mr-3"></span>
+                {{ __('Partidos') }}
+            </a>
+        </li>
+    </ul>
+</li>
 
     {{-- Players --}}
     <li>
-        <a href="{{ route('admin.players.index', ['locale' => app()->getLocale()]) }}" 
+        <a href="{{-- route('admin.players.index', ['locale' => app()->getLocale()]) --}}" 
            class="flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors
                   {{ request()->routeIs('admin.players.*') 
                      ? 'bg-gray-800 text-white' 

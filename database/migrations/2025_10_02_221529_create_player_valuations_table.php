@@ -1,5 +1,13 @@
 <?php
 
+/* 
+* Tabla para gestionar las valoraciones de jugadores por temporada.
+* Cada registro representa la valoración de un jugador en una temporada específica.
+* Incluye detalles como el valor de mercado del jugador y la fecha de actualización de la valoración.
+* Se asegura que solo haya una valoración por jugador por temporada.
+* Esta tabla es esencial para manejar las transferencias de jugadores entre equipos de fantasía dentro de la plataforma.
+*/
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;

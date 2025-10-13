@@ -263,4 +263,24 @@ class Player extends Model
                     ->where('season_id', $seasonId)
                     ->value('market_value');
     }
+
+    /**
+     * Update or create player valuation for a specific season.
+     */
+    public function updateValuation(array $data, int $seasonId)
+    {
+        $valuation = $this->valuations()->firstOrNew(['season_id' => $seasonId]);
+
+        if (isset($data['market_value']) && $data['market_value'] !== '') {
+            $valuation->market_value = max(0.50, (float) str_replace(',', '.', (string) $data['market_value']));
+        }
+
+        $valuation->player_id = $this->id;
+        $valuation->season_id = $seasonId;
+        // updated_at lo maneja el modelo
+        $valuation->save();
+
+        return $valuation;
+    }
+
 }

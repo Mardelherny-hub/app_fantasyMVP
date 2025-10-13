@@ -7,6 +7,7 @@ use App\Http\Requests\Admin\StorePlayerRequest;
 use App\Http\Requests\Admin\UpdatePlayerRequest;
 use App\Models\Player;
 use Illuminate\Http\Request;
+use App\Models\Season;
 
 class PlayerController extends Controller
 {
@@ -71,7 +72,14 @@ class PlayerController extends Controller
     {
         app()->setLocale($locale);
 
-        return view('admin.players.create');
+        $seasons = Season::orderByDesc('is_active')->orderBy('starts_at')->get();
+        $currentSeasonId = (int) ($seasons->firstWhere('is_active', true)->id ?? $seasons->first()->id);
+
+        return view('admin.players.create', [
+            'seasons' => $seasons,
+            'currentSeasonId' => $currentSeasonId,
+            'valuation' => null,
+        ]);
     }
 
     /**
@@ -83,7 +91,13 @@ class PlayerController extends Controller
         
         $data = $request->validated();
 
-        Player::create($data);
+        $player = Player::create($data);
+
+        $seasonId = (int) $request->input('season_id');
+
+        $player->updateValuation([
+            'market_value' => $request->input('market_value'),
+        ], $seasonId);
 
         return redirect()->route('admin.players.index', $locale)
             ->with('success', __('Jugador creado correctamente.'));
@@ -91,12 +105,17 @@ class PlayerController extends Controller
 
     /**
      * Show the form for editing the specified player.
-     */
+     */    
     public function edit(Request $request, string $locale, Player $player)
     {
         app()->setLocale($locale);
 
-        return view('admin.players.edit', compact('player'));
+        $seasons = Season::orderByDesc('is_active')->orderBy('starts_at')->get();
+        $currentSeasonId = (int) ($seasons->firstWhere('is_active', true)->id ?? $seasons->first()->id);
+
+        $valuation = $player->valuations()->where('season_id', $currentSeasonId)->first();
+
+        return view('admin.players.edit', compact('player', 'seasons', 'currentSeasonId', 'valuation'));
     }
 
     /**
@@ -109,6 +128,11 @@ class PlayerController extends Controller
         $data = $request->validated();
 
         $player->update($data);
+
+        $seasonId = (int) $request->input('season_id');
+        $player->updateValuation([
+            'market_value' => $request->input('market_value'),
+        ], $seasonId);
 
         return redirect()->route('admin.players.index', $locale)
             ->with('success', __('Jugador actualizado correctamente.'));

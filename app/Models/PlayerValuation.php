@@ -15,6 +15,8 @@ class PlayerValuation extends Model
      */
     public $timestamps = false;
 
+    protected $table = 'player_valuations';
+
     /**
      * The attributes that are mass assignable.
      *

@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\PlayerController;
 use App\Http\Controllers\Admin\Imports\PlayersImportController;
 use App\Http\Controllers\Admin\RealCompetitionController;
 use App\Http\Controllers\Admin\RealFixtureController;
+use App\Http\Controllers\Admin\RealMatchController;
 
 
 Route::middleware(['web', 'auth', 'verified', 'role:admin'])
@@ -246,8 +247,8 @@ Route::middleware(['web', 'auth', 'verified', 'role:admin'])
                 ->group(function () {
                     // Real Fixtures (Listado y detalle)
                     Route::get('/real-fixtures', [RealFixtureController::class, 'index'])->name('real-fixtures.index');
-                    Route::get('/real-fixtures/{realFixture}', [RealFixtureController::class, 'show'])->name('real-fixtures.show');
                     Route::get('/real-fixtures/create', [RealFixtureController::class, 'create'])->name('real-fixtures.create');
+                    Route::get('/real-fixtures/{realFixture}', [RealFixtureController::class, 'show'])->name('real-fixtures.show');
                     Route::post('/real-fixtures', [RealFixtureController::class, 'store'])->name('real-fixtures.store');
                     Route::get('/real-fixtures/{realFixture}/edit', [RealFixtureController::class, 'edit'])->name('real-fixtures.edit');
                     Route::put('/real-fixtures/{realFixture}', [RealFixtureController::class, 'update'])->name('real-fixtures.update');
@@ -268,7 +269,12 @@ Route::middleware(['web', 'auth', 'verified', 'role:admin'])
                 ->group(function () {
                     // Real Matches (Listado y detalle con lineups/eventos)
                     Route::get('/real-matches', [RealMatchController::class, 'index'])->name('real-matches.index');
+                    Route::get('/real-matches/create', [RealMatchController::class, 'create'])->name('real-matches.create');
                     Route::get('/real-matches/{realMatch}', [RealMatchController::class, 'show'])->name('real-matches.show');
+                    Route::post('/real-matches', [RealMatchController::class, 'store'])->name('real-matches.store');
+                    Route::get('/real-matches/{realMatch}/edit', [RealMatchController::class, 'edit'])->name('real-matches.edit');
+                    Route::put('/real-matches/{realMatch}', [RealMatchController::class, 'update'])->name('real-matches.update');
+                    Route::delete('/real-matches/{realMatch}', [RealMatchController::class, 'destroy'])->name('real-matches.destroy');
                     
                     // Ver alineaciones y eventos
                     Route::get('/real-matches/{realMatch}/lineups', [RealMatchController::class, 'lineups'])->name('real-matches.lineups');

@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\FootballMatchController;
 use App\Http\Controllers\Admin\PlayerController;
 use App\Http\Controllers\Admin\Imports\PlayersImportController;
 use App\Http\Controllers\Admin\RealCompetitionController;
+use App\Http\Controllers\Admin\RealFixtureController;
 
 
 Route::middleware(['web', 'auth', 'verified', 'role:admin'])
@@ -246,6 +247,11 @@ Route::middleware(['web', 'auth', 'verified', 'role:admin'])
                     // Real Fixtures (Listado y detalle)
                     Route::get('/real-fixtures', [RealFixtureController::class, 'index'])->name('real-fixtures.index');
                     Route::get('/real-fixtures/{realFixture}', [RealFixtureController::class, 'show'])->name('real-fixtures.show');
+                    Route::get('/real-fixtures/create', [RealFixtureController::class, 'create'])->name('real-fixtures.create');
+                    Route::post('/real-fixtures', [RealFixtureController::class, 'store'])->name('real-fixtures.store');
+                    Route::get('/real-fixtures/{realFixture}/edit', [RealFixtureController::class, 'edit'])->name('real-fixtures.edit');
+                    Route::put('/real-fixtures/{realFixture}', [RealFixtureController::class, 'update'])->name('real-fixtures.update');
+                    Route::delete('/real-fixtures/{realFixture}', [RealFixtureController::class, 'destroy'])->name('real-fixtures.destroy');    
                     
                     // Importar fixtures desde API
                     Route::get('/real-fixtures/import', [RealFixtureController::class, 'importForm'])->name('real-fixtures.import-form');

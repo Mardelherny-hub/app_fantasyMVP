@@ -13,8 +13,7 @@ use App\Http\Controllers\Admin\FootballMatchController;
 use App\Http\Controllers\Admin\PlayerController;
 use App\Http\Controllers\Admin\Imports\PlayersImportController;
 use App\Http\Controllers\Admin\RealCompetitionController;
-use App\Http\Controllers\Admin\RealFixtureController;
-use App\Http\Controllers\Admin\RealMatchController;
+
 
 Route::middleware(['web', 'auth', 'verified', 'role:admin'])
     ->prefix('{locale}/admin')
@@ -213,8 +212,9 @@ Route::middleware(['web', 'auth', 'verified', 'role:admin'])
                 Route::get('/import/template', [\App\Http\Controllers\Admin\Imports\PlayersImportController::class, 'template'])->name('import.template');
                 Route::get('/import/template-csv', [\App\Http\Controllers\Admin\Imports\PlayersImportController::class, 'templateCsv'])->name('import.template_csv');
             });
+    });
 
-            /* 
+     /* 
             * ⭐ NUEVAS RUTAS - Real Competitions (Competiciones Reales Canadá)
             */
             Route::middleware(['web', 'auth', 'verified', 'role:admin'])
@@ -271,5 +271,4 @@ Route::middleware(['web', 'auth', 'verified', 'role:admin'])
                     // Importar datos del partido desde API
                     Route::post('/real-matches/{realMatch}/import-data', [RealMatchController::class, 'importData'])->name('real-matches.import-data');
                 });
-    });
 

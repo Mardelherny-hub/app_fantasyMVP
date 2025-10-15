@@ -36,9 +36,14 @@ return [
     ],
 
     'google' => [
-    'client_id' => env('GOOGLE_CLIENT_ID'),
-    'client_secret' => env('GOOGLE_CLIENT_SECRET'),
-    'redirect' => env('APP_URL').'/auth/google/callback',
-],
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'redirect' => env('APP_URL').'/auth/google/callback',
+        ],
+
+    'livescore' => [
+        'key' => env('LIVESCORE_API_KEY', 'FPPjkKhSsMiqLQ9W'),
+        'secret' => env('LIVESCORE_API_SECRET', 'R8LsjGHfqpknfRZUGPd1zuU1hcs23BZU'),
+    ],
 
 ];

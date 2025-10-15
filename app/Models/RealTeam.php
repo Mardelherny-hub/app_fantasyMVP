@@ -21,11 +21,14 @@ class RealTeam extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'external_id',  // ⬅️ AGREGADO
         'name',
         'short_name',
         'country',
         'founded_year',
         'logo_url',
+        'stadium',      // ⬅️ AGREGADO
+        'meta',         // ⬅️ AGREGADO
     ];
 
     /**
@@ -34,7 +37,8 @@ class RealTeam extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'founded_year' => 'integer',
+        'external_id' => 'integer',   // ⬅️ AGREGADO
+        'meta' => 'array',            // ⬅️ AGREGADO
     ];
 
     // ========================================

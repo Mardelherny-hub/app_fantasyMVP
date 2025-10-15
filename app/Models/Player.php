@@ -6,6 +6,7 @@ use App\Traits\Auditable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Player extends Model
@@ -43,6 +44,7 @@ class Player extends Model
         'height_cm',
         'weight_kg',
         'photo_url',
+        'real_player_id',
         'is_active',
     ];
 
@@ -57,6 +59,7 @@ class Player extends Model
         'height_cm' => 'integer',
         'weight_kg' => 'integer',
         'is_active' => 'boolean',
+        'real_player_id' => 'integer',
     ];
 
     // ========================================
@@ -119,6 +122,14 @@ class Player extends Model
         return $this->hasMany(Loan::class);
     }
 
+    /**
+     * Get the real player associated with this fantasy player.
+     */
+    public function realPlayer(): BelongsTo
+    {
+        return $this->belongsTo(RealPlayer::class, 'real_player_id');
+    }
+
     // ========================================
     // SCOPES
     // ========================================
@@ -177,6 +188,22 @@ class Player extends Model
     public function scopeForwards($query)
     {
         return $query->where('position', self::POSITION_FW);
+    }
+
+    /**
+     * Scope players with real player data.
+     */
+    public function scopeWithRealPlayer($query)
+    {
+        return $query->whereNotNull('real_player_id');
+    }
+
+    /**
+     * Scope players without real player data.
+     */
+    public function scopeWithoutRealPlayer($query)
+    {
+        return $query->whereNull('real_player_id');
     }
 
     // ========================================
@@ -281,6 +308,41 @@ class Player extends Model
         $valuation->save();
 
         return $valuation;
+    }
+
+    /**
+     * Check if player has real player data.
+     */
+    public function hasRealPlayer(): bool
+    {
+        return $this->real_player_id !== null;
+    }
+
+    /**
+     * Sync data from real player (for anonimization).
+     */
+    public function syncFromRealPlayer(): void
+    {
+        if (!$this->realPlayer) {
+            return;
+        }
+
+        $real = $this->realPlayer;
+        
+        // Mapeo de posiciones: GK/DF/MF/FW (string) → 1/2/3/4 (int)
+        $positionMap = [
+            'GK' => self::POSITION_GK,
+            'DF' => self::POSITION_DF,
+            'MF' => self::POSITION_MF,
+            'FW' => self::POSITION_FW,
+        ];
+
+        $this->update([
+            'position' => $positionMap[strtoupper($real->position)] ?? $this->position,
+            'nationality' => $real->nationality ?? $this->nationality,
+            'birthdate' => $real->birthdate ?? $this->birthdate,
+            // NO copiamos full_name ni photo_url para mantener anonimización
+        ]);
     }
 
 }

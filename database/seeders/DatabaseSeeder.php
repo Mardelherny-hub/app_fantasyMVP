@@ -21,11 +21,11 @@ class DatabaseSeeder extends Seeder
         $this->call(RolesAndPermissionsSeeder::class);
         $this->call(AdminSeeder::class);
         $this->command->newLine();
+
         $this->command->info('⚽ GRUPO 1: Liga, Equipos y Miembros');
         $this->call(LeagueMembersSeeder::class);
-        $this->call(RealTeamsSeeder::class);
         $this->call(FantasyTeamsSeeder::class);
-        $this->command->newLine();  
+        $this->command->newLine();
 
         // ========================================
         // GRUPO 2: REFERENCIALES
@@ -34,7 +34,6 @@ class DatabaseSeeder extends Seeder
         $this->call(SeasonsSeeder::class);
         $this->call(GameweeksSeeder::class);
         $this->call(ScoringRulesSeeder::class);
-        $this->call(RealPlayersSeeder::class);
         $this->command->newLine();
 
         // ========================================
@@ -49,22 +48,35 @@ class DatabaseSeeder extends Seeder
         // ========================================
         $this->command->info('📚 GRUPO 4: Sistema Educativo');
         $this->call(QuizCategoriesSeeder::class);
-        $this->call(DemoQuestionsSeeder::class); // NUEVO
+        $this->call(DemoQuestionsSeeder::class);
         $this->command->newLine();
 
         // ========================================
         // OPCIONAL: DATOS DEMO CON FACTORIES
         // ========================================
         if ($this->command->confirm('¿Generar datos de prueba (jugadores, equipos, partidos)?', false)) {
-            $this->command->info('🎲 GRUPO 4: Generando datos de prueba...');
+            $this->command->info('🎲 GRUPO 5: Generando datos de prueba...');
             // Aquí irán las llamadas a factories cuando las creemos
             $this->command->warn('⚠️  Factories pendientes de implementar');
         }
 
         $this->command->newLine();
-        $this->command->info('✅ Seeders completados exitosamente');
+        $this->command->info('✅ Seeders básicos completados exitosamente');
         $this->command->newLine();
-        
+
+        // ========================================
+        // NOTA: SEEDERS DE API (Ejecutar manualmente)
+        // ========================================
+        $this->command->info('📢 IMPORTANTE: Para cargar datos reales de la API de LiveScore:');
+        $this->command->warn('   Ejecuta estos comandos MANUALMENTE después del migrate:fresh --seed:');
+        $this->command->newLine();
+        $this->command->line('   php artisan db:seed --class=CanadianCompetitionsSeeder');
+        $this->command->line('   php artisan db:seed --class=CanadianTeamsSeeder');
+        $this->command->line('   php artisan db:seed --class=CanadianPlayersSeeder');
+        $this->command->line('   php artisan db:seed --class=CanadianFixturesSeeder');
+        $this->command->line('   php artisan db:seed --class=CanadianStandingsSeeder');
+        $this->command->newLine();
+
         // Resumen
         $this->command->table(
             ['Recurso', 'Estado'],
@@ -77,6 +89,7 @@ class DatabaseSeeder extends Seeder
                 ['Quiz Categories', '✅ 15 categorías (3 idiomas)'],
                 ['Recompensas (Rewards)', '✅ 16 tipos'],
                 ['Preguntas Demo', '✅ 10 preguntas (3 idiomas)'],
+                ['⚠️  Datos de API', '⏸️  Ejecutar manualmente'],
             ]
         );
     }

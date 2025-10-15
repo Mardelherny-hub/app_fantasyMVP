@@ -21,6 +21,7 @@ return new class extends Migration
             $table->smallInteger('height_cm')->nullable();
             $table->smallInteger('weight_kg')->nullable();
             $table->string('photo_url')->nullable();
+            $table->unsignedBigInteger('real_player_id')->nullable()->index();
             $table->boolean('is_active')->default(true)->index();
             $table->timestamps();
             $table->softDeletes();

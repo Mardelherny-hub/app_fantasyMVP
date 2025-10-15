@@ -14,24 +14,24 @@ class SeasonsSeeder extends Seeder
     {
         $seasons = [
             [
-                'name' => '2024/25',
-                'code' => '2024-25',
-                'starts_at' => '2024-08-01',
-                'ends_at' => '2025-05-31',
+                'name' => '2024',
+                'code' => '2024',
+                'starts_at' => '2024-03-01',
+                'ends_at' => '2024-12-31',
                 'is_active' => false,
             ],
             [
-                'name' => '2025/26',
-                'code' => '2025-26',
-                'starts_at' => '2025-08-01',
-                'ends_at' => '2026-05-31',
+                'name' => '2025',
+                'code' => '2025',
+                'starts_at' => '2025-03-01',
+                'ends_at' => '2026-12-31',
                 'is_active' => true, // ⭐ Temporada activa
             ],
             [
-                'name' => '2026/27',
-                'code' => '2026-27',
-                'starts_at' => '2026-08-01',
-                'ends_at' => '2027-05-31',
+                'name' => '2026',
+                'code' => '2026',
+                'starts_at' => '2026-03-01',
+                'ends_at' => '2026-12-31',
                 'is_active' => false,
             ],
         ];

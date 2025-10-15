@@ -184,7 +184,7 @@
                 <thead>
                     <tr>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('Name') }}</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('Owner')}} </th>
+                        {{-- <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('Owner')}} </th> --}}
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('Participants') }}</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('Status') }}</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('Created') }}</th>
@@ -197,9 +197,9 @@
                                 <div class="text-sm font-medium text-gray-900">{{ $league->name }}</div>
                                 <div class="text-xs text-gray-500">{{ $league->code }}</div>
                             </td>
-                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                            {{-- <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
                                 {{ $league->owner->name }}
-                            </td>
+                            </td> --}}
                             <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
                                 {{ $league->fantasy_teams_count ?? 0 }} / {{ $league->max_participants }}
                             </td>

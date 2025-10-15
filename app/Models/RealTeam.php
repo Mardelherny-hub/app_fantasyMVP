@@ -54,6 +54,14 @@ class RealTeam extends Model
     }
 
     /**
+     * Get the team memberships (Real Players).
+     */
+    public function memberships(): HasMany
+    {
+        return $this->hasMany(RealTeamMembership::class, 'real_team_id');
+    }
+
+    /**
      * Get home matches.
      */
     public function homeMatches(): HasMany

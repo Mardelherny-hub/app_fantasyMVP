@@ -58,32 +58,24 @@ class RealTeamController extends Controller
         return view('admin.real-teams.create');
     }
 
-    /**
-     * Display the specified team with its current players.
-     */
     public function show(Request $request, string $locale, RealTeam $realTeam)
-    {
-        app()->setLocale($locale);
+{
+    app()->setLocale($locale);
 
-        // Cargar jugadores actuales del equipo (to_date = null)
-        $realTeam->load([
-            'playerHistory' => function($query) {
-                $query->current()
-                    ->with(['player.valuations' => function($q) {
-                        $q->latest('updated_at')->limit(1);
-                    }])
-                    ->orderBy('shirt_number');
-            }
-        ]);
+    $realTeam->load([
+        'memberships' => function($query) {
+            $query->whereNull('to_date')
+                ->with(['player', 'season'])
+                ->orderBy('shirt_number');
+        }
+    ]);
 
-        // Organizar jugadores por posición
-        $playersByPosition = $realTeam->playerHistory->groupBy(function($history) {
-            return $history->player->position;
-        });
+    $playersByPosition = $realTeam->memberships->groupBy(function($membership) {
+        return $membership->player->position ?? 'Unknown';
+    });
 
-        return view('admin.real-teams.show', compact('realTeam', 'playersByPosition'));
-    }
-
+    return view('admin.real-teams.show', compact('realTeam', 'playersByPosition'));
+}
     /**
      * Store a newly created team.
      */

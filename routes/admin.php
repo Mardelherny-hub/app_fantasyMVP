@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\LeagueController;
 use App\Http\Controllers\Admin\SeasonController;
 use App\Http\Controllers\Admin\RealTeamController;
 use App\Http\Controllers\Admin\RealTeamPlayerController;
+use App\Http\Controllers\Admin\RealPlayerController;
 use App\Http\Controllers\Admin\GameweekController;
 use App\Http\Controllers\Admin\FootballMatchController;
 use App\Http\Controllers\Admin\PlayerController;
@@ -16,7 +17,9 @@ use App\Http\Controllers\Admin\RealCompetitionController;
 use App\Http\Controllers\Admin\RealFixtureController;
 use App\Http\Controllers\Admin\RealMatchController;
 
-
+/* 
+* Admin Routes - Dashboard
+*/
 Route::middleware(['web', 'auth', 'verified', 'role:admin'])
     ->prefix('{locale}/admin')
     ->where(['locale' => 'es|en|fr'])
@@ -33,8 +36,6 @@ Route::middleware(['web', 'auth', 'verified', 'role:admin'])
     ->where(['locale' => 'es|en|fr'])
     ->as('admin.')
     ->group(function () {
-        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
-
         // Usuarios (CRUD)
         Route::get('/users', [UserController::class, 'index'])->name('users.index');
         Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
@@ -62,8 +63,8 @@ Route::middleware(['web', 'auth', 'verified', 'role:admin'])
         Route::get('/roles/{role}/edit', [RoleController::class, 'edit'])->name('roles.edit');
         Route::put('/roles/{role}', [RoleController::class, 'update'])->name('roles.update');
         Route::delete('/roles/{role}', [RoleController::class, 'destroy'])->name('roles.destroy');
-        
     });
+
 /* 
 * Admin Routes - Ligas (CRUD)
 */
@@ -75,8 +76,7 @@ Route::middleware(['web','auth','verified','role:admin'])
         // Ligas (CRUD)
         Route::get('/leagues', [LeagueController::class, 'index'])->name('leagues.index');
         Route::get('/leagues/create', [LeagueController::class, 'create'])->name('leagues.create');
-                Route::get('/leagues/{league}', [LeagueController::class, 'show'])->name('leagues.show');
-
+        Route::get('/leagues/{league}', [LeagueController::class, 'show'])->name('leagues.show');
         Route::post('/leagues', [LeagueController::class, 'store'])->name('leagues.store');
         Route::get('/leagues/{league}/edit', [LeagueController::class, 'edit'])->name('leagues.edit');
         Route::put('/leagues/{league}', [LeagueController::class, 'update'])->name('leagues.update');
@@ -110,40 +110,6 @@ Route::middleware(['web', 'auth', 'verified', 'role:admin'])
         Route::patch('/seasons/{season}/toggle', [SeasonController::class, 'toggle'])->name('seasons.toggle');
     });
 
-
-/* 
-* Admin Routes - Real Teams (CRUD)
-*/
-Route::middleware(['web', 'auth', 'verified', 'role:admin'])
-    ->prefix('{locale}/admin')
-    ->where(['locale' => 'es|en|fr'])
-    ->as('admin.')
-    ->group(function () {
-        // Real Teams (CRUD)
-        Route::get('/real-teams', [RealTeamController::class, 'index'])->name('real-teams.index');
-        Route::get('/real-teams/create', [RealTeamController::class, 'create'])->name('real-teams.create');
-
-        // ⬇️ NUEVAS rutas para agregar jugadores al equipo (selector + attach)
-        Route::get('/real-teams/{realTeam}/players/available', [RealTeamPlayerController::class, 'index'])
-            ->name('real-teams.players.index');   // <— index
-        Route::post('/real-teams/{realTeam}/players/attach', [RealTeamPlayerController::class, 'store'])
-            ->name('real-teams.players.store');   // <— store
-
-        Route::get('/real-teams/{realTeam}', [RealTeamController::class, 'show'])->name('real-teams.show');
-        Route::post('/real-teams', [RealTeamController::class, 'store'])->name('real-teams.store');
-        Route::get('/real-teams/{realTeam}/edit', [RealTeamController::class, 'edit'])->name('real-teams.edit');
-        Route::put('/real-teams/{realTeam}', [RealTeamController::class, 'update'])->name('real-teams.update');
-        Route::delete('/real-teams/{realTeam}', [RealTeamController::class, 'destroy'])->name('real-teams.destroy');
-        
-        // Restore soft deleted team
-        Route::patch('/real-teams/{id}/restore', [RealTeamController::class, 'restore'])->name('real-teams.restore');
-    });
-
-/* 
-* Admin Routes - Agregar jujador a real team
-*/
-    
-
 /* 
 * Admin Routes - Gameweeks (CRUD)
 */
@@ -163,7 +129,6 @@ Route::middleware(['web', 'auth', 'verified', 'role:admin'])
         // Toggle closed status
         Route::patch('/gameweeks/{gameweek}/toggle', [GameweekController::class, 'toggle'])->name('gameweeks.toggle');
     });
-
 
 /* 
 * Admin Routes - Football Matches (CRUD)
@@ -185,102 +150,148 @@ Route::middleware(['web', 'auth', 'verified', 'role:admin'])
         Route::patch('/football-matches/{footballMatch}/update-status', [FootballMatchController::class, 'updateStatus'])->name('football-matches.update-status');
     });
 
-    /* Admin Routes - Players (CRUD + Import) */
-    Route::middleware(['web', 'auth', 'verified', 'role:admin'])
-        ->prefix('{locale}/admin')
-        ->where(['locale' => 'es|en|fr'])
-        ->as('admin.')
-        ->group(function () {
+/* 
+* Admin Routes - Players (CRUD + Import)
+*/
+Route::middleware(['web', 'auth', 'verified', 'role:admin'])
+    ->prefix('{locale}/admin')
+    ->where(['locale' => 'es|en|fr'])
+    ->as('admin.')
+    ->group(function () {
+        // Prefix /players para evitar conflictos
+        Route::prefix('players')->as('players.')->group(function () {
+            // CRUD
+            Route::get('/', [PlayerController::class, 'index'])->name('index');
+            Route::get('/create', [PlayerController::class, 'create'])->name('create');
+            Route::post('/', [PlayerController::class, 'store'])->name('store');
+            Route::get('/{player}/edit', [PlayerController::class, 'edit'])->name('edit');
+            Route::put('/{player}', [PlayerController::class, 'update'])->name('update');
+            Route::delete('/{player}', [PlayerController::class, 'destroy'])->name('destroy');
 
-            // Prefix /players para evitar conflictos
-            Route::prefix('players')->as('players.')->group(function () {
+            // Toggle activo
+            Route::patch('/{player}/toggle', [PlayerController::class, 'toggle'])->name('toggle');
 
-                // CRUD
-                Route::get('/', [\App\Http\Controllers\Admin\PlayerController::class, 'index'])->name('index');
-                Route::get('/create', [\App\Http\Controllers\Admin\PlayerController::class, 'create'])->name('create');
-                Route::post('/', [\App\Http\Controllers\Admin\PlayerController::class, 'store'])->name('store');
-                Route::get('/{player}/edit', [\App\Http\Controllers\Admin\PlayerController::class, 'edit'])->name('edit');
-                Route::put('/{player}', [\App\Http\Controllers\Admin\PlayerController::class, 'update'])->name('update');
-                Route::delete('/{player}', [\App\Http\Controllers\Admin\PlayerController::class, 'destroy'])->name('destroy');
+            // Import (form + submit)
+            Route::get('/import', [PlayersImportController::class, 'index'])->name('import');
+            Route::post('/import', [PlayersImportController::class, 'store'])->name('import.store');
 
-                // Toggle activo
-                Route::patch('/{player}/toggle', [\App\Http\Controllers\Admin\PlayerController::class, 'toggle'])->name('toggle');
-
-                // Import (form + submit)
-                Route::get('/import', [\App\Http\Controllers\Admin\Imports\PlayersImportController::class, 'index'])->name('import');
-                Route::post('/import', [\App\Http\Controllers\Admin\Imports\PlayersImportController::class, 'store'])->name('import.store');
-
-                // Plantillas (opcional)
-                Route::get('/import/template', [\App\Http\Controllers\Admin\Imports\PlayersImportController::class, 'template'])->name('import.template');
-                Route::get('/import/template-csv', [\App\Http\Controllers\Admin\Imports\PlayersImportController::class, 'templateCsv'])->name('import.template_csv');
-            });
+            // Plantillas (opcional)
+            Route::get('/import/template', [PlayersImportController::class, 'template'])->name('import.template');
+            Route::get('/import/template-csv', [PlayersImportController::class, 'templateCsv'])->name('import.template_csv');
+        });
     });
 
-     /* 
-            * ⭐ NUEVAS RUTAS - Real Competitions (Competiciones Reales Canadá)
-            */
-            Route::middleware(['web', 'auth', 'verified', 'role:admin'])
-                ->prefix('{locale}/admin')
-                ->where(['locale' => 'es|en|fr'])
-                ->as('admin.')
-                ->group(function () {
-                    // Real Competitions (CRUD)
-                    Route::get('/real-competitions', [RealCompetitionController::class, 'index'])->name('real-competitions.index');
-                    Route::get('/real-competitions/create', [RealCompetitionController::class, 'create'])->name('real-competitions.create');
-                    Route::post('/real-competitions', [RealCompetitionController::class, 'store'])->name('real-competitions.store');
-                    Route::get('/real-competitions/{realCompetition}', [RealCompetitionController::class, 'show'])->name('real-competitions.show');
-                    Route::get('/real-competitions/{realCompetition}/edit', [RealCompetitionController::class, 'edit'])->name('real-competitions.edit');
-                    Route::put('/real-competitions/{realCompetition}', [RealCompetitionController::class, 'update'])->name('real-competitions.update');
-                    Route::delete('/real-competitions/{realCompetition}', [RealCompetitionController::class, 'destroy'])->name('real-competitions.destroy');
-                    
-                    // Toggle active status
-                    Route::patch('/real-competitions/{realCompetition}/toggle', [RealCompetitionController::class, 'toggle'])->name('real-competitions.toggle');
-                });
+/* ========================================
+ * REAL GAME - Datos Reales
+ * ======================================== */
 
-            /* 
-            * ⭐ NUEVAS RUTAS - Real Fixtures (Fixtures de Ligas Reales)
-            */
-            Route::middleware(['web', 'auth', 'verified', 'role:admin'])
-                ->prefix('{locale}/admin')
-                ->where(['locale' => 'es|en|fr'])
-                ->as('admin.')
-                ->group(function () {
-                    // Real Fixtures (Listado y detalle)
-                    Route::get('/real-fixtures', [RealFixtureController::class, 'index'])->name('real-fixtures.index');
-                    Route::get('/real-fixtures/create', [RealFixtureController::class, 'create'])->name('real-fixtures.create');
-                    Route::get('/real-fixtures/{realFixture}', [RealFixtureController::class, 'show'])->name('real-fixtures.show');
-                    Route::post('/real-fixtures', [RealFixtureController::class, 'store'])->name('real-fixtures.store');
-                    Route::get('/real-fixtures/{realFixture}/edit', [RealFixtureController::class, 'edit'])->name('real-fixtures.edit');
-                    Route::put('/real-fixtures/{realFixture}', [RealFixtureController::class, 'update'])->name('real-fixtures.update');
-                    Route::delete('/real-fixtures/{realFixture}', [RealFixtureController::class, 'destroy'])->name('real-fixtures.destroy');    
-                    
-                    // Importar fixtures desde API
-                    Route::get('/real-fixtures/import', [RealFixtureController::class, 'importForm'])->name('real-fixtures.import-form');
-                    Route::post('/real-fixtures/import', [RealFixtureController::class, 'import'])->name('real-fixtures.import');
-                });
+/* 
+* Real Competitions (Competiciones Reales Canadá)
+*/
+Route::middleware(['web', 'auth', 'verified', 'role:admin'])
+    ->prefix('{locale}/admin')
+    ->where(['locale' => 'es|en|fr'])
+    ->as('admin.')
+    ->group(function () {
+        // Real Competitions (CRUD)
+        Route::get('/real-competitions', [RealCompetitionController::class, 'index'])->name('real-competitions.index');
+        Route::get('/real-competitions/create', [RealCompetitionController::class, 'create'])->name('real-competitions.create');
+        Route::post('/real-competitions', [RealCompetitionController::class, 'store'])->name('real-competitions.store');
+        Route::get('/real-competitions/{realCompetition}', [RealCompetitionController::class, 'show'])->name('real-competitions.show');
+        Route::get('/real-competitions/{realCompetition}/edit', [RealCompetitionController::class, 'edit'])->name('real-competitions.edit');
+        Route::put('/real-competitions/{realCompetition}', [RealCompetitionController::class, 'update'])->name('real-competitions.update');
+        Route::delete('/real-competitions/{realCompetition}', [RealCompetitionController::class, 'destroy'])->name('real-competitions.destroy');
+        
+        // Toggle active status
+        Route::patch('/real-competitions/{realCompetition}/toggle', [RealCompetitionController::class, 'toggle'])->name('real-competitions.toggle');
+    });
 
-            /* 
-            * ⭐ NUEVAS RUTAS - Real Matches (Partidos Jugados de Ligas Reales)
-            */
-            Route::middleware(['web', 'auth', 'verified', 'role:admin'])
-                ->prefix('{locale}/admin')
-                ->where(['locale' => 'es|en|fr'])
-                ->as('admin.')
-                ->group(function () {
-                    // Real Matches (Listado y detalle con lineups/eventos)
-                    Route::get('/real-matches', [RealMatchController::class, 'index'])->name('real-matches.index');
-                    Route::get('/real-matches/create', [RealMatchController::class, 'create'])->name('real-matches.create');
-                    Route::get('/real-matches/{realMatch}', [RealMatchController::class, 'show'])->name('real-matches.show');
-                    Route::post('/real-matches', [RealMatchController::class, 'store'])->name('real-matches.store');
-                    Route::get('/real-matches/{realMatch}/edit', [RealMatchController::class, 'edit'])->name('real-matches.edit');
-                    Route::put('/real-matches/{realMatch}', [RealMatchController::class, 'update'])->name('real-matches.update');
-                    Route::delete('/real-matches/{realMatch}', [RealMatchController::class, 'destroy'])->name('real-matches.destroy');
-                    
-                    // Ver alineaciones y eventos
-                    Route::get('/real-matches/{realMatch}/lineups', [RealMatchController::class, 'lineups'])->name('real-matches.lineups');
-                    Route::get('/real-matches/{realMatch}/events', [RealMatchController::class, 'events'])->name('real-matches.events');
-                    
-                    // Importar datos del partido desde API
-                    Route::post('/real-matches/{realMatch}/import-data', [RealMatchController::class, 'importData'])->name('real-matches.import-data');
-                });
+/* 
+* Admin Routes - Real Teams (CRUD)
+*/
+Route::middleware(['web', 'auth', 'verified', 'role:admin'])
+    ->prefix('{locale}/admin')
+    ->where(['locale' => 'es|en|fr'])
+    ->as('admin.')
+    ->group(function () {
+        // Real Teams (CRUD)
+        Route::get('/real-teams', [RealTeamController::class, 'index'])->name('real-teams.index');
+        Route::get('/real-teams/create', [RealTeamController::class, 'create'])->name('real-teams.create');
+        Route::post('/real-teams', [RealTeamController::class, 'store'])->name('real-teams.store');
+        Route::get('/real-teams/{realTeam}', [RealTeamController::class, 'show'])->name('real-teams.show');
+        Route::get('/real-teams/{realTeam}/edit', [RealTeamController::class, 'edit'])->name('real-teams.edit');
+        Route::put('/real-teams/{realTeam}', [RealTeamController::class, 'update'])->name('real-teams.update');
+        Route::delete('/real-teams/{realTeam}', [RealTeamController::class, 'destroy'])->name('real-teams.destroy');
+        
+        // Restore soft deleted team
+        Route::patch('/real-teams/{id}/restore', [RealTeamController::class, 'restore'])->name('real-teams.restore');
 
+        // Rutas para agregar jugadores al equipo (selector + attach)
+        Route::get('/real-teams/{realTeam}/players/available', [RealTeamPlayerController::class, 'index'])->name('real-teams.players.index');
+        Route::post('/real-teams/{realTeam}/players/attach', [RealTeamPlayerController::class, 'store'])->name('real-teams.players.store');
+    });
+
+/* 
+* Admin Routes - Real Players (CRUD)
+*/
+Route::middleware(['web', 'auth', 'verified', 'role:admin'])
+    ->prefix('{locale}/admin')
+    ->where(['locale' => 'es|en|fr'])
+    ->as('admin.')
+    ->group(function () {
+        // Real Players (CRUD)
+        Route::get('/real-players', [RealPlayerController::class, 'index'])->name('real-players.index');
+        Route::get('/real-players/create', [RealPlayerController::class, 'create'])->name('real-players.create');
+        Route::post('/real-players', [RealPlayerController::class, 'store'])->name('real-players.store');
+        Route::get('/real-players/{realPlayer}', [RealPlayerController::class, 'show'])->name('real-players.show');
+        Route::get('/real-players/{realPlayer}/edit', [RealPlayerController::class, 'edit'])->name('real-players.edit');
+        Route::put('/real-players/{realPlayer}', [RealPlayerController::class, 'update'])->name('real-players.update');
+        Route::delete('/real-players/{realPlayer}', [RealPlayerController::class, 'destroy'])->name('real-players.destroy');
+    });
+
+/* 
+* Real Fixtures (Fixtures de Ligas Reales)
+*/
+Route::middleware(['web', 'auth', 'verified', 'role:admin'])
+    ->prefix('{locale}/admin')
+    ->where(['locale' => 'es|en|fr'])
+    ->as('admin.')
+    ->group(function () {
+        // Real Fixtures (Listado y detalle)
+        Route::get('/real-fixtures', [RealFixtureController::class, 'index'])->name('real-fixtures.index');
+        Route::get('/real-fixtures/create', [RealFixtureController::class, 'create'])->name('real-fixtures.create');
+        Route::post('/real-fixtures', [RealFixtureController::class, 'store'])->name('real-fixtures.store');
+        Route::get('/real-fixtures/{realFixture}', [RealFixtureController::class, 'show'])->name('real-fixtures.show');
+        Route::get('/real-fixtures/{realFixture}/edit', [RealFixtureController::class, 'edit'])->name('real-fixtures.edit');
+        Route::put('/real-fixtures/{realFixture}', [RealFixtureController::class, 'update'])->name('real-fixtures.update');
+        Route::delete('/real-fixtures/{realFixture}', [RealFixtureController::class, 'destroy'])->name('real-fixtures.destroy');    
+        
+        // Importar fixtures desde API
+        Route::get('/real-fixtures/import', [RealFixtureController::class, 'importForm'])->name('real-fixtures.import-form');
+        Route::post('/real-fixtures/import', [RealFixtureController::class, 'import'])->name('real-fixtures.import');
+    });
+
+/* 
+* Real Matches (Partidos Jugados de Ligas Reales)
+*/
+Route::middleware(['web', 'auth', 'verified', 'role:admin'])
+    ->prefix('{locale}/admin')
+    ->where(['locale' => 'es|en|fr'])
+    ->as('admin.')
+    ->group(function () {
+        // Real Matches (Listado y detalle con lineups/eventos)
+        Route::get('/real-matches', [RealMatchController::class, 'index'])->name('real-matches.index');
+        Route::get('/real-matches/create', [RealMatchController::class, 'create'])->name('real-matches.create');
+        Route::post('/real-matches', [RealMatchController::class, 'store'])->name('real-matches.store');
+        Route::get('/real-matches/{realMatch}', [RealMatchController::class, 'show'])->name('real-matches.show');
+        Route::get('/real-matches/{realMatch}/edit', [RealMatchController::class, 'edit'])->name('real-matches.edit');
+        Route::put('/real-matches/{realMatch}', [RealMatchController::class, 'update'])->name('real-matches.update');
+        Route::delete('/real-matches/{realMatch}', [RealMatchController::class, 'destroy'])->name('real-matches.destroy');
+        
+        // Ver alineaciones y eventos
+        Route::get('/real-matches/{realMatch}/lineups', [RealMatchController::class, 'lineups'])->name('real-matches.lineups');
+        Route::get('/real-matches/{realMatch}/events', [RealMatchController::class, 'events'])->name('real-matches.events');
+        
+        // Importar datos del partido desde API
+        Route::post('/real-matches/{realMatch}/import-data', [RealMatchController::class, 'importData'])->name('real-matches.import-data');
+    });

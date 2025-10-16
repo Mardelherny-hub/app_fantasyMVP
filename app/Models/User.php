@@ -13,6 +13,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -169,5 +170,42 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->avatar_url 
             ?? $this->socialAccounts()->first()?->avatar_url 
             ?? $this->profile_photo_url;
+    }
+
+    /**
+     * Get the league memberships for this user.
+     */
+    public function leagueMembers(): HasMany
+    {
+        return $this->hasMany(LeagueMember::class);
+    }
+
+    /**
+     * Get the leagues this user belongs to (through league_members).
+     */
+    public function leagues(): BelongsToMany
+    {
+        return $this->belongsToMany(League::class, 'league_members')
+            ->withPivot('role', 'joined_at', 'is_active')
+            ->withTimestamps()
+            ->wherePivot('is_active', true);
+    }
+
+    /**
+     * Get all leagues (including inactive memberships).
+     */
+    public function allLeagues(): BelongsToMany
+    {
+        return $this->belongsToMany(League::class, 'league_members')
+            ->withPivot('role', 'joined_at', 'is_active')
+            ->withTimestamps();
+    }
+
+    /**
+     * Get the fantasy teams owned by this user.
+     */
+    public function fantasyTeams(): HasMany
+    {
+        return $this->hasMany(FantasyTeam::class);
     }
 }

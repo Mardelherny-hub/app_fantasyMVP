@@ -521,4 +521,14 @@ class League extends Model
             && !$this->is_locked 
             && !$this->isFull();
     }
+
+    /**
+     * Check if league is open for new members.
+     */
+    public function isOpen(): bool
+    {
+        return !$this->is_locked 
+            && $this->status === self::STATUS_APPROVED 
+            && !$this->isFull();
+    }
 }

@@ -58,6 +58,48 @@
         </div>
     </div>
 
+    {{-- Fechas de Inscripción --}}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+            <x-label for="registration_opens_at" :value="__('Fecha apertura inscripción')" />
+            <x-input 
+                id="registration_opens_at" 
+                name="registration_opens_at" 
+                type="datetime-local" 
+                class="mt-1 block w-full"
+                value="{{ old('registration_opens_at', ($lg && $lg->registration_opens_at) ? $lg->registration_opens_at->format('Y-m-d\TH:i') : '') }}" 
+            />
+            <p class="text-xs text-gray-500 mt-1">{{ __('Desde cuándo se pueden registrar equipos') }}</p>
+            <x-error :messages="$errors->get('registration_opens_at')" class="mt-2" />
+        </div>
+        
+        <div>
+            <x-label for="registration_closes_at" :value="__('Fecha cierre inscripción')" />
+            <x-input 
+                id="registration_closes_at" 
+                name="registration_closes_at" 
+                type="datetime-local" 
+                class="mt-1 block w-full"
+                value="{{ old('registration_closes_at', ($lg && $lg->registration_closes_at) ? $lg->registration_closes_at->format('Y-m-d\TH:i') : '') }}" 
+            />
+            <p class="text-xs text-gray-500 mt-1">{{ __('Hasta cuándo se pueden registrar equipos') }}</p>
+            <x-error :messages="$errors->get('registration_closes_at')" class="mt-2" />
+        </div>
+    </div>
+
+    {{-- Status (solo visible en edición o para admin) --}}
+    <div>
+        <x-label for="status" :value="__('Estado de aprobación')" />
+        <select id="status" name="status" class="mt-1 block w-full rounded-lg border-gray-300">
+            <option value="0" @selected(old('status', $lg->status ?? 1)==0)>{{ __('Pendiente de aprobación') }}</option>
+            <option value="1" @selected(old('status', $lg->status ?? 1)==1)>{{ __('Aprobada') }}</option>
+            <option value="2" @selected(old('status', $lg->status ?? 1)==2)>{{ __('Rechazada') }}</option>
+            <option value="3" @selected(old('status', $lg->status ?? 1)==3)>{{ __('Archivada') }}</option>
+        </select>
+        <p class="text-xs text-gray-500 mt-1">{{ __('Por defecto las ligas creadas por admin se aprueban automáticamente') }}</p>
+        <x-error :messages="$errors->get('status')" class="mt-2" />
+    </div>
+
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
             <x-label for="max_participants" :value="__('Cupo máximo')" />

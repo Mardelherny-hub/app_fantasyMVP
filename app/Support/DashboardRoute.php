@@ -15,9 +15,9 @@ class DashboardRoute
         }
 
         if ($user->hasRole('manager')) {
-            return route('manager.dashboard', ['locale' => $locale]);
+            return route('manager.onboarding.welcome', ['locale' => $locale]);
         }
 
-        return route('dashboard', ['locale' => $locale]);
+        return route('manager.onboarding.welcome', ['locale' => $locale]);
     }
 }

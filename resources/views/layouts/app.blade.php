@@ -25,7 +25,7 @@
                 <div class="flex justify-between h-16">
                     <!-- Logo & Brand -->
                     <div class="flex items-center">
-                        <a href="{{ route('manager.dashboard', ['locale' => app()->getLocale()]) }}" class="flex items-center space-x-3 group">
+                        <a href="{{ route('manager.onboarding.welcome', ['locale' => app()->getLocale()]) }}" class="flex items-center space-x-3 group">
                             <div class="relative">
                                 <div class="w-10 h-10 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-lg transform group-hover:rotate-6 transition-transform duration-300"></div>
                                 <div class="absolute inset-0 flex items-center justify-center">
@@ -43,7 +43,7 @@
 
                     <!-- Navigation Links (Desktop) -->
                     <div class="hidden md:flex items-center space-x-6">
-                        <a href="{{ route('manager.dashboard', ['locale' => app()->getLocale()]) }}" 
+                        <a href="{{ route('manager.onboarding.welcome', ['locale' => app()->getLocale()]) }}" 
                            class="text-sm font-medium hover:text-emerald-400 transition {{ request()->routeIs('manager.dashboard') ? 'text-emerald-400' : 'text-gray-300' }}">
                             {{ __('Dashboard') }}
                         </a>

@@ -67,9 +67,19 @@ class PublicLeaguesList extends Component
             'is_active' => true,
         ]);
 
+        // NUEVO: Crear FantasyTeam automáticamente
+        \App\Models\FantasyTeam::create([
+            'league_id' => $league->id,
+            'user_id' => $user->id,
+            'name' => $user->name . ' Team', // Nombre por defecto
+            'budget' => 100.00, // Presupuesto inicial (ajusta según tu lógica)
+            'total_points' => 0,
+            'is_bot' => false,
+        ]);
+
         session()->flash('success', __('¡Te has unido a la liga exitosamente!'));
-        
-        return redirect()->route('manager.dashboard', ['locale' => app()->getLocale()]);
+
+        return redirect()->route('manager.onboarding.public-leagues', ['locale' => app()->getLocale()]);
     }
 
     public function render()

@@ -96,18 +96,27 @@
                     </div>
 
                     {{-- Botón --}}
+                    @php
+                        $isMember = auth()->user()->leagues()->where('leagues.id', $league->id)->exists();
+                        $isFull = $league->isFull();
+                    @endphp
+
                     <button 
                         wire:click="joinLeague({{ $league->id }})"
-                        @if($league->isFull()) disabled @endif
+                        @if($isMember || $isFull) disabled @endif
                         class="w-full py-2.5 rounded-lg font-semibold transition-all duration-300 
-                            @if($league->isFull())
+                            @if($isMember)
+                                bg-blue-600 text-white cursor-default
+                            @elseif($isFull)
                                 bg-gray-700 text-gray-500 cursor-not-allowed
                             @else
                                 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-900 hover:shadow-lg hover:shadow-emerald-500/30 hover:scale-105
                             @endif
                         "
                     >
-                        @if($league->isFull())
+                        @if($isMember)
+                            {{ __('✓ Ya eres miembro') }}
+                        @elseif($isFull)
                             {{ __('Liga Llena') }}
                         @else
                             {{ __('Unirse a Liga') }}

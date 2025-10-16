@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-admin-layout>
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ __('Editar liga') }}</h2>
@@ -10,10 +10,11 @@
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white p-6 rounded-xl shadow">
                 <form method="POST" action="{{ route('admin.leagues.update', [app()->getLocale(), $league]) }}">
-                    @csrf @method('PUT')
-                    @include('admin.leagues.partials.form', ['mode' => 'edit'])
+                    @csrf 
+                    @method('PUT')
+                    @include('admin.leagues.partials.form', ['mode' => 'edit', 'lg' => $league])
                 </form>
             </div>
         </div>
     </div>
-</x-app-layout>
+</x-admin-layout>

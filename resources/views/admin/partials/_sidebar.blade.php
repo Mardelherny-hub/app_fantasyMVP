@@ -81,6 +81,46 @@
         </ul>
     </li>
 
+    {{-- Fantasy --}}
+<div x-data="{ open: {{ request()->is('*/admin/fantasy/*') ? 'true' : 'false' }} }">
+    <button @click="open = !open" 
+            class="flex items-center justify-between w-full px-4 py-2.5 text-sm font-medium rounded-lg transition-colors
+                {{ request()->is('*/admin/fantasy/*') ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-700' }}">
+        <div class="flex items-center">
+            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"></path>
+            </svg>
+            <span>{{ __('Fantasy') }}</span>
+        </div>
+        <svg class="w-4 h-4 transition-transform" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+        </svg>
+    </button>
+    
+    <div x-show="open" x-collapse class="ml-8 mt-2 space-y-1">
+        <a href="{{ route('admin.fantasy.leagues.index', ['locale' => app()->getLocale()]) }}" 
+           class="block px-4 py-2 text-sm rounded-lg transition-colors
+               {{ request()->routeIs('admin.fantasy.leagues.*') ? 'bg-gray-700 text-white' : 'text-gray-400 hover:bg-gray-700 hover:text-white' }}">
+            {{ __('Ligas') }}
+        </a>
+        <a href="{{ route('admin.fantasy.seasons.index', ['locale' => app()->getLocale()]) }}" 
+           class="block px-4 py-2 text-sm rounded-lg transition-colors
+               {{ request()->routeIs('admin.fantasy.seasons.*') ? 'bg-gray-700 text-white' : 'text-gray-400 hover:bg-gray-700 hover:text-white' }}">
+            {{ __('Temporadas') }}
+        </a>
+        <a href="{{ route('admin.fantasy.gameweeks.index', ['locale' => app()->getLocale()]) }}" 
+           class="block px-4 py-2 text-sm rounded-lg transition-colors
+               {{ request()->routeIs('admin.fantasy.gameweeks.*') ? 'bg-gray-700 text-white' : 'text-gray-400 hover:bg-gray-700 hover:text-white' }}">
+            {{ __('Jornadas') }}
+        </a>
+        <a href="{{ route('admin.fantasy.teams.index', ['locale' => app()->getLocale()]) }}" 
+           class="block px-4 py-2 text-sm rounded-lg transition-colors
+               {{ request()->routeIs('admin.fantasy.teams.*') ? 'bg-gray-700 text-white' : 'text-gray-400 hover:bg-gray-700 hover:text-white' }}">
+            {{ __('Equipos Fantasy') }}
+        </a>
+    </div>
+</div>
+
     {{-- Usuarios y Roles --}}
     <li x-data="{ open: {{ request()->routeIs('admin.users.*') || request()->routeIs('admin.roles.*') ? 'true' : 'false' }} }">
         <button @click="open = !open" 

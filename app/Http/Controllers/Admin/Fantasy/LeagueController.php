@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Admin\Fantasy;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreLeagueRequest;
@@ -92,47 +92,47 @@ class LeagueController extends Controller
         return view('admin.leagues.create', compact('seasons','defaultSeasonId'));
     }
 
-    // STORE: si no viene season_id, tomar la activa
     public function store(\App\Http\Requests\Admin\StoreLeagueRequest $request, string $locale)
     {
         app()->setLocale($locale);
+        
         $data = $request->validated();
-
+        
+        // Generar código si no viene
         if (empty($data['code'])) {
-            do { $code = Str::upper(Str::random(6)); }
-            while (\App\Models\League::where('code', $code)->exists());
+            do {
+                $code = \Illuminate\Support\Str::upper(\Illuminate\Support\Str::random(6));
+            } while (League::where('code', $code)->exists());
             $data['code'] = $code;
         }
-
-        unset($data['is_locked']);
-
+        
+        // Asignar owner_user_id si no viene (admin actual)
+        if (empty($data['owner_user_id'])) {
+            $data['owner_user_id'] = auth()->id();
+        }
+        
+        // Establecer status APPROVED por defecto cuando admin crea liga
+        if (!isset($data['status'])) {
+            $data['status'] = League::STATUS_APPROVED; // 1
+        }
+        
+        // Si no viene season_id, usar la activa
         if (empty($data['season_id'])) {
             $data['season_id'] = Season::where('is_active', 1)->value('id')
                 ?? Season::orderByDesc('starts_at')->value('id');
         }
-
-        // Crear liga vacía
-        $league = \App\Models\League::create($data);
-
-        return redirect()->route('admin.leagues.show', [$locale, $league])
-            ->with('success', __('Liga creada correctamente. Ahora puedes agregar equipos.'));
+        
+        // Crear la liga
+        $league = League::create($data);
+        
+        return redirect()->route('admin.fantasy.leagues.index', $locale)
+            ->with('success', __('Liga creada correctamente.'));
     }
 
     // EDIT: pasar también $seasons y $defaultSeasonId
     public function edit(Request $request, string $locale, League $league)
     {
-        // Validar locale permitido (según tus idiomas activos)
-        if (!in_array($locale, ['es','en','fr'])) {
-            abort(404, 'Idioma no válido');
-        }
-
-        // Forzar idioma de la app
         app()->setLocale($locale);
-
-        // 🔒 Validación de acceso: solo admin
-        if (!$request->user()->hasRole('admin')) {
-            abort(403, __('No tienes permiso para editar ligas.'));
-        }
 
         // Cargar owners (managers o todos si no hay managers)
         $owners = User::role('manager')->orderBy('name')->get(['id','name','email']);
@@ -143,19 +143,13 @@ class LeagueController extends Controller
         // Cargar seasons y definir por defecto la activa
         $seasons = Season::orderByDesc('starts_at')->get(['id','name','code','is_active']);
         $defaultSeasonId = Season::where('is_active', 1)->value('id')
-            ?? Season::orderByDesc('starts_at')->value('id');
+                ?? Season::orderByDesc('starts_at')->value('id');
 
-        // Validar que la liga exista y tenga una season asociada válida
-        if (!$league) {
-            abort(404, __('Liga no encontrada.'));
-        }
-        if (!$league->season && !$defaultSeasonId) {
-            return back()->with('error', __('No hay ninguna temporada válida para asociar.'));
-        }
+        // Pasar como 'lg' para que el formulario lo reconozca
+        $lg = $league;
 
-        return view('admin.leagues.edit', compact('league', 'owners', 'seasons', 'defaultSeasonId'));
+        return view('admin.leagues.edit', compact('lg', 'league', 'owners', 'seasons', 'defaultSeasonId'));
     }
-
     // UPDATE: mantener existente o aplicar fallback si viene vacío
     public function update(\App\Http\Requests\Admin\UpdateLeagueRequest $request, string $locale, \App\Models\League $league)
     {

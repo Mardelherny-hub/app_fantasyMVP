@@ -68,6 +68,8 @@ class League extends Model
         'reviewed_at',
         'reviewed_by',
         'locale',
+        'registration_opens_at',      // ← NUEVO
+        'registration_closes_at',     // ← NUEVO
         'playoff_teams',
         'playoff_format',
         'regular_season_gameweeks',
@@ -87,6 +89,8 @@ class League extends Model
         'is_locked' => 'boolean',
         'status' => 'integer',
         'reviewed_at' => 'datetime',
+        'registration_opens_at' => 'datetime',   // ← NUEVO
+        'registration_closes_at' => 'datetime',  // ← NUEVO
         'playoff_teams' => 'integer',
         'playoff_format' => 'integer',
         'regular_season_gameweeks' => 'integer',

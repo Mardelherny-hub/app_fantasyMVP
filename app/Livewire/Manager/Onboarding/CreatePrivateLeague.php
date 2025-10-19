@@ -4,6 +4,7 @@ namespace App\Livewire\Manager\Onboarding;
 
 use App\Models\League;
 use App\Models\LeagueMember;
+use App\Models\FantasyTeam;
 use App\Models\Season;
 use App\Models\Setting;
 use Livewire\Component;
@@ -89,19 +90,31 @@ class CreatePrivateLeague extends Component
             'total_gameweeks' => 30,
         ]);
 
-        // Crear membresía del owner como MANAGER
-        LeagueMember::create([
+        // Crear membresía del owner como MANAGER con deadline de 72 horas
+        $member = LeagueMember::create([
             'league_id' => $league->id,
             'user_id' => $user->id,
             'role' => LeagueMember::ROLE_MANAGER,
             'is_active' => true,
+            'squad_deadline_at' => now()->addHours(72), // NUEVO: Deadline de 72 horas
+        ]);
+
+        // Crear FantasyTeam automáticamente
+        FantasyTeam::create([
+            'league_id' => $league->id,
+            'user_id' => $user->id,
+            'name' => $user->name . ' Team', // Nombre por defecto
+            'budget' => 100.00,
+            'total_points' => 0,
+            'is_bot' => false,
         ]);
 
         // Redirect según el status
         if ($requireApproval) {
+            session()->flash('info', __('Tu liga ha sido creada y está pendiente de aprobación. Tienes 72 horas para armar tu plantilla una vez sea aprobada.'));
             return redirect()->route('manager.onboarding.pending-approval', ['locale' => app()->getLocale()]);
         } else {
-            session()->flash('success', __('¡Liga creada exitosamente!'));
+            session()->flash('success', __('¡Liga creada exitosamente! Tienes 72 horas para armar tu plantilla.'));
             return redirect()->route('manager.dashboard', ['locale' => app()->getLocale()]);
         }
     }

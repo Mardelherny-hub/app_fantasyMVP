@@ -4,6 +4,7 @@ namespace App\Livewire\Manager\Onboarding;
 
 use App\Models\League;
 use App\Models\LeagueMember;
+use App\Models\FantasyTeam;
 use App\Models\Setting;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -59,25 +60,26 @@ class PublicLeaguesList extends Component
             return;
         }
 
-        // Crear membresía
-        LeagueMember::create([
+        // Crear membresía con deadline de 72 horas
+        $member = LeagueMember::create([
             'league_id' => $league->id,
             'user_id' => $user->id,
             'role' => LeagueMember::ROLE_PARTICIPANT,
             'is_active' => true,
+            'squad_deadline_at' => now()->addHours(72), // NUEVO: Deadline de 72 horas
         ]);
 
-        // NUEVO: Crear FantasyTeam automáticamente
-        \App\Models\FantasyTeam::create([
+        // Crear FantasyTeam automáticamente
+        FantasyTeam::create([
             'league_id' => $league->id,
             'user_id' => $user->id,
             'name' => $user->name . ' Team', // Nombre por defecto
-            'budget' => 100.00, // Presupuesto inicial (ajusta según tu lógica)
+            'budget' => 100.00,
             'total_points' => 0,
             'is_bot' => false,
         ]);
 
-        session()->flash('success', __('¡Te has unido a la liga exitosamente!'));
+        session()->flash('success', __('¡Te has unido a la liga exitosamente! Tienes 72 horas para armar tu plantilla.'));
 
         return redirect()->route('manager.onboarding.public-leagues', ['locale' => app()->getLocale()]);
     }

@@ -42,3 +42,22 @@ Route::middleware(['web', 'auth', 'verified', 'role:manager', 'require_league'])
     ->group(function () {
         Route::get('/dashboard', [ManagerDashboardController::class, 'index'])->name('dashboard');
     });
+
+
+// ========================================
+// SQUAD BUILDER ROUTES (Armado de Plantilla Inicial)
+// ========================================
+Route::middleware(['web', 'auth', 'verified', 'role:manager'])
+    ->prefix('{locale}/manager/squad-builder')
+    ->where(['locale' => 'es|en|fr'])
+    ->as('manager.squad-builder.')
+    ->group(function () {
+        
+        // Vista principal del wizard (Livewire)
+        Route::get('/', function() {
+            return view('manager.squad-builder.index');
+        })->name('index');
+        
+        // Endpoints AJAX para el wizard (manejados por Livewire actions)
+        // Nota: Los componentes Livewire manejan las acciones automáticamente
+    });

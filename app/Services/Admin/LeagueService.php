@@ -4,10 +4,25 @@ namespace App\Services\Admin;
 
 use App\Models\League;
 use App\Models\FantasyTeam;
+use App\Services\Manager\AutoAssignmentService;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 
 class LeagueService
 {
+    /**
+     * @var AutoAssignmentService
+     */
+    protected $autoAssignmentService;
+
+    /**
+     * Constructor
+     */
+    public function __construct(AutoAssignmentService $autoAssignmentService)
+    {
+        $this->autoAssignmentService = $autoAssignmentService;
+    }
+
     /**
      * Fill league with bot teams up to max_participants.
      */
@@ -25,7 +40,8 @@ class LeagueService
         for ($i = 1; $i <= $spotsAvailable; $i++) {
             $botName = $this->generateUniqueBotName($league);
             
-            FantasyTeam::create([
+            // Crear el equipo bot
+            $botTeam = FantasyTeam::create([
                 'league_id' => $league->id,
                 'user_id' => null,
                 'name' => $botName,
@@ -34,6 +50,26 @@ class LeagueService
                 'budget' => 100.00, // Presupuesto default
                 'total_points' => 0,
             ]);
+
+            // NUEVO: Auto-asignar plantilla al bot inmediatamente
+            try {
+                $this->autoAssignmentService->assignBotSquad($botTeam);
+                
+                Log::info('Bot squad auto-assigned successfully', [
+                    'bot_team_id' => $botTeam->id,
+                    'bot_name' => $botTeam->name,
+                    'league_id' => $league->id,
+                ]);
+            } catch (\Exception $e) {
+                Log::error('Failed to auto-assign bot squad', [
+                    'bot_team_id' => $botTeam->id,
+                    'bot_name' => $botTeam->name,
+                    'error' => $e->getMessage(),
+                ]);
+                
+                // No detener el proceso, solo loguear el error
+                // El bot se creó, pero tendrá que asignársele la plantilla manualmente
+            }
 
             $botsCreated++;
         }

@@ -49,7 +49,7 @@
             nav_educational: 'Hub Educativo',
             sign_in: 'Iniciar Sesión',
             get_started: 'Comenzar Gratis',
-            hero_badge: 'TEMPORADA 2024/25 EN VIVO',
+            hero_badge: 'TEMPORADA 2025 EN VIVO',
             hero_title: 'Crea tu equipo, juega en ligas,',
             hero_subtitle: 'disfruta trivias y aprende con amigos.',
             hero_description: 'Únete a la experiencia de fantasy soccer educativa de Canadá. Basada en la Canadian Premier League.',
@@ -111,7 +111,7 @@
             footer_privacy: 'Privacidad',
             footer_cookies: 'Cookies',
             footer_contact: 'Contacto',
-            footer_copyright: '© 2024 EduCan Soccer Fantasy. Todos los derechos reservados.',
+            footer_copyright: '© 2025 EduCan Soccer Fantasy. Todos los derechos reservados.',
             // NUEVO DISCLAIMER
             disclaimer_title: 'Descargo de Responsabilidad',
             disclaimer_text: 'EduCan Soccer Fantasy no está afiliado, asociado, autorizado, respaldado por, ni de ninguna manera conectado oficialmente con la Canadian Premier League (CPL) o cualquiera de sus subsidiarias o afiliadas. Los nombres, marcas y activos de la CPL y sus equipos son propiedad de sus respectivos dueños.'
@@ -124,7 +124,7 @@
             nav_educational: 'Educational Hub',
             sign_in: 'Sign In',
             get_started: 'Start Free',
-            hero_badge: 'SEASON 2024/25 IS LIVE',
+            hero_badge: 'SEASON 2025 IS LIVE',
             hero_title: 'Create your team, play leagues,',
             hero_subtitle: 'enjoy trivia and learn with friends.',
             hero_description: 'Join Canada\'s educational fantasy soccer experience. Based on the Canadian Premier League.',
@@ -186,7 +186,7 @@
             footer_privacy: 'Privacy',
             footer_cookies: 'Cookies',
             footer_contact: 'Contact',
-            footer_copyright: '© 2024 EduCan Soccer Fantasy. All rights reserved.',
+            footer_copyright: '© 2025 EduCan Soccer Fantasy. All rights reserved.',
             // NUEVO DISCLAIMER
             disclaimer_title: 'Disclaimer',
             disclaimer_text: 'EduCan Soccer Fantasy is not affiliated, associated, authorized, endorsed by, or in any way officially connected with the Canadian Premier League (CPL) or any of its subsidiaries or affiliates. The names, marks, and assets of the CPL and its teams are the property of their respective owners.'
@@ -199,7 +199,7 @@
             nav_educational: 'Hub Éducatif',
             sign_in: 'Se Connecter',
             get_started: 'Commencer Gratuitement',
-            hero_badge: 'SAISON 2024/25 EN DIRECT',
+            hero_badge: 'SAISON 2025 EN DIRECT',
             hero_title: 'Créez votre équipe, jouez en ligues,',
             hero_subtitle: 'profitez de quiz et apprenez avec des amis.',
             hero_description: 'Rejoignez l\'expérience de fantasy soccer éducative du Canada. Basé sur la Canadian Premier League.',
@@ -261,7 +261,7 @@
             footer_privacy: 'Confidentialité',
             footer_cookies: 'Cookies',
             footer_contact: 'Contact',
-            footer_copyright: '© 2024 EduCan Soccer Fantasy. Tous les droits réservés.',
+            footer_copyright: '© 2025 EduCan Soccer Fantasy. Tous les droits réservés.',
             // NUEVO DISCLAIMER
             disclaimer_title: 'Avis de non-responsabilité',
             disclaimer_text: 'EduCan Soccer Fantasy n\'est pas affilié, associé, autorisé, approuvé par, ou officiellement connecté de quelque manière que ce soit à la Canadian Premier League (CPL) ou à l\'une de ses filiales ou sociétés affiliées. Les noms, marques et actifs de la CPL et de ses équipes sont la propriété de leurs propriétaires respectifs.'
@@ -775,7 +775,7 @@
             </div>
 
             <div class="max-w-6xl mx-auto mt-12 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
-                <p class="text-sm text-gray-400" x-text="translations[currentLang].footer_copyright">© 2024 EduCan Soccer Fantasy. Todos los derechos reservados.</p>
+                <p class="text-sm text-gray-400" x-text="translations[currentLang].footer_copyright">© 2025 EduCan Soccer Fantasy. Todos los derechos reservados.</p>
                 <div class="flex items-center space-x-4">
                     <a href="#" class="w-9 h-9 glass-card rounded-full flex items-center justify-center hover:bg-white/10 transition">
                         <i class="fab fa-twitter text-gray-400 hover:text-emerald-400 transition"></i>

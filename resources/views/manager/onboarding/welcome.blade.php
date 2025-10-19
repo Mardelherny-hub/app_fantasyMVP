@@ -18,7 +18,7 @@
                 </div>
                 
                 <h1 class="text-4xl md:text-5xl font-black mb-4 leading-tight">
-                    {{ __('¡Bienvenido a') }} <span class="bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">Fantasy Football!</span>
+                    {{ __('¡Bienvenido a') }} <span class="bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">EduCan Soccer!</span>
                 </h1>
                 <p class="text-lg text-gray-400 max-w-2xl mx-auto">
                     {{ __('Para comenzar a competir, necesitas unirte o crear una liga') }}

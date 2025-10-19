@@ -36,7 +36,7 @@
                             </div>
                             <div>
                                 <div class="text-lg font-bold tracking-tight">{{ __('Manager Panel') }}</div>
-                                <div class="text-[9px] text-emerald-400 -mt-0.5 tracking-wider">FANTASY FOOTBALL</div>
+                                <div class="text-[9px] text-emerald-400 -mt-0.5 tracking-wider">EDU CAN SOCCER</div>
                             </div>
                         </a>
                     </div>

@@ -53,7 +53,7 @@ class SettingsSeeder extends Seeder
         return [
             [
                 'key' => 'app_name',
-                'value' => 'EduCan Soccer Fantasy',
+                'value' => 'EduCan Soccer',
                 'group' => Setting::GROUP_GENERAL,
                 'type' => Setting::TYPE_STRING,
                 'label' => 'Application Name',

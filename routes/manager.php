@@ -61,3 +61,16 @@ Route::middleware(['web', 'auth', 'verified', 'role:manager'])
         // Endpoints AJAX para el wizard (manejados por Livewire actions)
         // Nota: Los componentes Livewire manejan las acciones automáticamente
     });
+
+    // ========================================
+    // LINEUP MANAGEMENT ROUTES
+    // ========================================
+    Route::middleware(['web', 'auth', 'verified', 'role:manager'])
+        ->prefix('{locale}/manager/lineup')
+        ->where(['locale' => 'es|en|fr'])
+        ->as('manager.lineup.')
+        ->group(function () {
+            Route::get('/', function() {
+                return view('manager.lineup.index');
+            })->name('index');
+        });

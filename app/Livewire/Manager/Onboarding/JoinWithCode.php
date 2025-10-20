@@ -90,7 +90,7 @@ class JoinWithCode extends Component
 
         session()->flash('success', __('¡Te has unido a la liga :name exitosamente! Tienes 72 horas para armar tu plantilla.', ['name' => $league->name]));
         
-        return redirect()->route('manager.dashboard', ['locale' => app()->getLocale()]);
+        return $this->redirect(route('manager.dashboard', ['locale' => app()->getLocale()]));
     }
 
     public function render()

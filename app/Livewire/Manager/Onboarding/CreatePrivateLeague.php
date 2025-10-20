@@ -96,7 +96,6 @@ class CreatePrivateLeague extends Component
             'user_id' => $user->id,
             'role' => LeagueMember::ROLE_MANAGER,
             'is_active' => true,
-            'squad_deadline_at' => now()->addHours(72), // NUEVO: Deadline de 72 horas
         ]);
 
         // Crear FantasyTeam automáticamente

@@ -35,7 +35,7 @@ Route::middleware(['web', 'auth', 'verified', 'role:manager'])
 // ========================================
 // MANAGER DASHBOARD (requiere league)
 // ========================================
-Route::middleware(['web', 'auth', 'verified', 'role:manager', 'require_league'])
+Route::middleware(['web', 'auth', 'verified', 'role:manager'])
     ->prefix('{locale}/manager')
     ->where(['locale' => 'es|en|fr'])
     ->as('manager.')

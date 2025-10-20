@@ -180,6 +180,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(LeagueMember::class);
     }
 
+    public function fantasyTeam(): BelongsTo
+    {
+        return $this->belongsTo(FantasyTeam::class);
+    }
+
     /**
      * Get the leagues this user belongs to (through league_members).
      */

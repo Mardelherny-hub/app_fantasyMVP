@@ -474,12 +474,19 @@ class League extends Model
      */
     public function approve(int $adminUserId, ?string $notes = null): bool
     {
-        return $this->update([
+        $result = $this->update([
             'status' => self::STATUS_APPROVED,
             'reviewed_by' => $adminUserId,
             'reviewed_at' => now(),
             'admin_notes' => $notes,
         ]);
+
+        if ($result) {
+            // Disparar evento para establecer deadlines
+            event(new \App\Events\LeagueApproved($this));
+        }
+
+        return $result;
     }
 
     /**

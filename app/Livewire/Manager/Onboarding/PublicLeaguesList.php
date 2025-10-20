@@ -81,7 +81,7 @@ class PublicLeaguesList extends Component
 
         session()->flash('success', __('¡Te has unido a la liga exitosamente! Tienes 72 horas para armar tu plantilla.'));
 
-        return redirect()->route('manager.onboarding.public-leagues', ['locale' => app()->getLocale()]);
+        return $this->redirect(route('manager.dashboard', ['locale' => app()->getLocale()]));
     }
 
     public function render()

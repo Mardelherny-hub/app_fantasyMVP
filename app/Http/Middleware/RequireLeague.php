@@ -17,24 +17,18 @@ class RequireLeague
     {
         $user = $request->user();
 
-        // Solo aplica a usuarios autenticados con rol manager
         if (!$user || !$user->hasRole('manager')) {
             return $next($request);
         }
 
-        // Si el usuario no tiene ligas activas, redirigir a onboarding
-        if ($user->leagues()->count() === 0) {
-            // Excepciones: rutas del onboarding mismo
-            $allowedRoutes = [
-                'manager.onboarding.*',
-            ];
+        $hasActiveLeagues = $user->leagueMembers()
+            ->where('is_active', true)
+            ->exists();
 
-            foreach ($allowedRoutes as $pattern) {
-                if ($request->routeIs($pattern)) {
-                    return $next($request);
-                }
+        if (!$hasActiveLeagues) {
+            if ($request->routeIs('manager.onboarding.*')) {
+                return $next($request);
             }
-
             return redirect()->route('manager.onboarding.welcome', ['locale' => app()->getLocale()]);
         }
 

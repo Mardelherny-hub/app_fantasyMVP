@@ -74,3 +74,16 @@ Route::middleware(['web', 'auth', 'verified', 'role:manager'])
                 return view('manager.lineup.index');
             })->name('index');
         });
+
+    // ========================================
+// MARKET ROUTES (Transfer Market)
+// ========================================
+Route::middleware(['web', 'auth', 'verified', 'role:manager'])
+    ->prefix('{locale}/manager/market')
+    ->where(['locale' => 'es|en|fr'])
+    ->as('manager.market.')
+    ->group(function () {
+        Route::get('/', function() {
+            return view('manager.market.index');
+        })->name('index');
+    });

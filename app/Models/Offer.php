@@ -170,11 +170,24 @@ class Offer extends Model
     }
 
     /**
-     * Check if offer is expired.
+     * Check if offer is expired by status or time (48h).
      */
     public function isExpired(): bool
     {
-        return $this->status === self::STATUS_EXPIRED;
+        if ($this->status === self::STATUS_EXPIRED) {
+            return true;
+        }
+        
+        // Check if 48 hours have passed since creation
+        return $this->isPending() && $this->created_at->addHours(48)->isPast();
+    }
+
+    /**
+     * Get total cost including commission (5%).
+     */
+    public function getTotalCost(): float
+    {
+        return $this->offered_price * 1.05;
     }
 
     /**

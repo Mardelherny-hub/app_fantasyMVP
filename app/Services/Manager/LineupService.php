@@ -241,19 +241,10 @@ class LineupService
                 ->first();
 
             if ($currentBench) {
-                // Encontrar primer slot disponible (en titulares o banco según origen)
-                if ($roster->is_starter) {
-                    // Buscar slot en titulares
-                    $newSlot = $this->findAvailableStarterSlot($team, $gameweekId);
-                    $currentBench->update([
-                        'slot' => $newSlot,
-                        'is_starter' => true,
-                    ]);
-                } else {
-                    // Buscar slot en banco
-                    $newSlot = $this->findAvailableBenchSlot($team, $gameweekId);
-                    $currentBench->update(['slot' => $newSlot]);
-                }
+                // Solo mover al jugador actual del banco a otro slot del banco
+                // NO intercambiar automáticamente a titulares
+                $newSlot = $this->findAvailableBenchSlot($team, $gameweekId);
+                $currentBench->update(['slot' => $newSlot]);
             }
 
             // Mover al banco (quitar capitanía si la tenía)

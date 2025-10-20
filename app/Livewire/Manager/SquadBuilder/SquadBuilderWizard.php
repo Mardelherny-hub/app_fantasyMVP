@@ -61,7 +61,7 @@ class SquadBuilderWizard extends Component
         // Si ya completó el armado, redirigir
         if ($this->team->is_squad_complete) {
             session()->flash('info', __('Ya completaste tu plantilla.'));
-            return redirect()->route('manager.dashboard', ['locale' => app()->getLocale()]);
+            return redirect()->route('manager.lineup.index', ['locale' => app()->getLocale()]);
         }
         
         // Verificar si la liga está bloqueada

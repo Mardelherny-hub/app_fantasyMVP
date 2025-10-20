@@ -82,23 +82,85 @@
         </div>
 
         {{-- Mensajes --}}
-        @if($successMessage)
-            <div class="mb-4 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-lg flex items-center space-x-3">
-                <svg class="w-5 h-5 text-emerald-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                </svg>
-                <span class="text-emerald-400 text-sm font-medium">{{ $successMessage }}</span>
+        {{-- Toast de notificaciones (Alpine.js) --}}
+        <div x-data="{ 
+            showSuccess: @entangle('successMessage').live,
+            showError: @entangle('errorMessage').live,
+            autoHide(property) {
+                setTimeout(() => {
+                    this[property] = null;
+                    @this.set(property.replace('show', '').toLowerCase() + 'Message', null);
+                }, 4000);
+            }
+        }" 
+        x-init="
+            $watch('showSuccess', value => { if(value) autoHide('showSuccess') });
+            $watch('showError', value => { if(value) autoHide('showError') });
+        ">
+            {{-- Toast de éxito --}}
+            <div x-show="showSuccess" 
+                x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="opacity-0 transform translate-y-2"
+                x-transition:enter-end="opacity-100 transform translate-y-0"
+                x-transition:leave="transition ease-in duration-200"
+                x-transition:leave-start="opacity-100"
+                x-transition:leave-end="opacity-0"
+                class="fixed top-24 right-4 z-50 max-w-md"
+                style="display: none;">
+                <div class="bg-gradient-to-r from-emerald-600 to-emerald-500 text-white px-6 py-4 rounded-xl shadow-2xl border-2 border-emerald-400 flex items-start space-x-3">
+                    <svg class="w-6 h-6 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                    </svg>
+                    <div class="flex-1">
+                        <h4 class="font-black text-lg">{{ __('¡Guardado!') }}</h4>
+                        <p class="text-sm text-emerald-50" x-text="showSuccess"></p>
+                    </div>
+                    <button @click="showSuccess = null" class="text-emerald-100 hover:text-white transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
             </div>
-        @endif
 
-        @if($errorMessage)
-            <div class="mb-4 p-4 bg-red-500/10 border border-red-500/30 rounded-lg flex items-center space-x-3">
-                <svg class="w-5 h-5 text-red-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                </svg>
-                <span class="text-red-400 text-sm font-medium">{{ $errorMessage }}</span>
+            {{-- Toast de error --}}
+            <div x-show="showError" 
+                x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="opacity-0 transform translate-y-2 scale-95"
+                x-transition:enter-end="opacity-100 transform translate-y-0 scale-100"
+                x-transition:leave="transition ease-in duration-200"
+                x-transition:leave-start="opacity-100"
+                x-transition:leave-end="opacity-0"
+                @click="$el.classList.add('animate-shake')"
+                class="fixed top-24 right-4 z-50 max-w-md"
+                style="display: none;">
+                <div class="bg-gradient-to-r from-red-600 to-red-500 text-white px-6 py-4 rounded-xl shadow-2xl border-2 border-red-400 flex items-start space-x-3">
+                    <svg class="w-6 h-6 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                    </svg>
+                    <div class="flex-1">
+                        <h4 class="font-black text-lg">{{ __('Error') }}</h4>
+                        <p class="text-sm text-red-50" x-text="showError"></p>
+                    </div>
+                    <button @click="showError = null" class="text-red-100 hover:text-white transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
             </div>
-        @endif
+        </div>
+
+        <style>
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+                20%, 40%, 60%, 80% { transform: translateX(5px); }
+            }
+            .animate-shake {
+                animation: shake 0.5s;
+            }
+        </style>
 
         {{-- Info de estado --}}
         <div class="mb-6 flex items-center justify-between p-4 bg-slate-800/50 border border-slate-700 rounded-lg">

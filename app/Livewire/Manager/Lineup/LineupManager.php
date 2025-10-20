@@ -58,6 +58,9 @@ class LineupManager extends Component
             ->whereNotNull('league_id')
             ->with('league.season')
             ->firstOrFail();
+        
+        // 🆕 REFRESCAR para obtener valor actual de is_squad_complete
+        $this->team->refresh();
 
         // Verificar que completó su plantilla
         if (!$this->team->is_squad_complete) {
@@ -99,15 +102,27 @@ class LineupManager extends Component
             return;
         }
 
-        $lineupService = app(LineupService::class);
-        $lineup = $lineupService->getLineup($this->team, $this->selectedGameweek->id);
+        // 1. RESETEAR propiedades primero (evita referencias residuales)
+        $this->starters = collect();
+        $this->bench = collect();
+        $this->captain = null;
+        $this->viceCaptain = null;
 
-        $this->starters = $lineup['starters'];
-        $this->bench = $lineup['bench'];
-        $this->captain = $lineup['captain'];
-        $this->viceCaptain = $lineup['vice_captain'];
+        // 2. Consulta FRESCA desde BD
+        $roster = FantasyRoster::where('fantasy_team_id', $this->team->id)
+            ->where('gameweek_id', $this->selectedGameweek->id)
+            ->with('player')
+            ->orderBy('slot')
+            ->get();
+
+        // 3. Asignar colecciones nuevas
+        $this->starters = $roster->where('is_starter', true)->values();
+        $this->bench = $roster->where('is_starter', false)->values();
+        $this->captain = $roster->firstWhere('captaincy', FantasyRoster::CAPTAINCY_CAPTAIN);
+        $this->viceCaptain = $roster->firstWhere('captaincy', FantasyRoster::CAPTAINCY_VICE);
 
         // Verificar si se puede editar
+        $lineupService = app(LineupService::class);
         $this->canEdit = $lineupService->canEditLineup($this->selectedGameweek);
 
         // Detectar formación
@@ -408,9 +423,12 @@ class LineupManager extends Component
     {
         $this->selectedPlayerId = $playerId;
         
-        // Buscar el roster correspondiente
-        $allRosters = $this->starters->merge($this->bench);
-        $this->selectedPlayerRoster = $allRosters->firstWhere('player_id', $playerId);
+        // Consultar directamente desde BD en lugar de usar las colecciones
+        $this->selectedPlayerRoster = FantasyRoster::where('fantasy_team_id', $this->team->id)
+            ->where('gameweek_id', $this->selectedGameweek->id)
+            ->where('player_id', $playerId)
+            ->with('player')
+            ->first();
         
         $this->showPlayerModal = true;
     }

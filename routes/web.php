@@ -40,17 +40,54 @@ Route::group([
 // RUTAS DE UTILIDAD Y DESARROLLO
 // ========================================
 
-// Limpiar caché (producción: restringir a admin)
+// Limpiar caché y optimizar (producción: restringir a admin)
 Route::get('/clear', function() {
-    \Artisan::call('config:clear');
-    \Artisan::call('config:cache');
-    \Artisan::call('cache:clear');
-    \Artisan::call('route:clear');
-    \Artisan::call('view:clear');
-    \Artisan::call('event:clear');
-    \Artisan::call('clear-compiled');
-    \Artisan::call('optimize:clear');
-    return "Cache is cleared";
+    $commands = [
+        'config:clear' => 'Config cache cleared',
+        'cache:clear' => 'Application cache cleared',
+        'route:clear' => 'Route cache cleared',
+        'view:clear' => 'Compiled views cleared',
+        'event:clear' => 'Cached events cleared',
+        'clear-compiled' => 'Compiled services cleared',
+        'optimize:clear' => 'All optimization caches cleared',
+        'config:cache' => 'Config cached',
+        'route:cache' => 'Routes cached',
+        'view:cache' => 'Views cached',
+    ];
+
+    $output = '<h2 style="color: #10b981;">✅ Comandos Artisan Ejecutados:</h2><ul style="line-height: 2;">';
+    
+    foreach ($commands as $command => $message) {
+        try {
+            \Artisan::call($command);
+            $output .= '<li>✓ ' . $message . '</li>';
+        } catch (\Exception $e) {
+            $output .= '<li style="color: #ef4444;">✗ Error en ' . $command . ': ' . $e->getMessage() . '</li>';
+        }
+    }
+    
+    $output .= '</ul><h3 style="color: #10b981; margin-top: 20px;">🔧 Limpieza de OPcache:</h3>';
+    
+    // 🆕 LIMPIAR OPCACHE
+    if (function_exists('opcache_reset')) {
+        if (opcache_reset()) {
+            $output .= '<p>✅ OPcache limpiado correctamente</p>';
+        } else {
+            $output .= '<p style="color: #ef4444;">❌ Error al limpiar OPcache</p>';
+        }
+    } else {
+        $output .= '<p style="color: #f59e0b;">⚠️ OPcache no disponible o no puede ser limpiado via web</p>';
+    }
+    
+    // Verificar estado de OPcache después
+    if (function_exists('opcache_get_status')) {
+        $status = opcache_get_status();
+        $output .= '<p>📊 Scripts en caché: ' . ($status['opcache_statistics']['num_cached_scripts'] ?? 0) . '</p>';
+    }
+    
+    $output .= '<p style="margin-top: 20px; color: #6b7280;">Tiempo: ' . date('Y-m-d H:i:s') . '</p>';
+    
+    return $output;
 });
 
 // Crear symlink de storage
@@ -59,4 +96,14 @@ Route::get('/symlink', function () {
     return 'The storage link has been created!';
 });
 
+// Fix temporal - eliminar después de ejecutar
+Route::get('/fix-deadlines', function() {
+    $fixed = \App\Models\LeagueMember::whereNotNull('squad_deadline_at')
+        ->whereHas('user.fantasyTeams', function($q) {
+            $q->where('is_squad_complete', true);
+        })
+        ->update(['squad_deadline_at' => null]);
+    
+    return "✅ {$fixed} deadlines limpiados. Puedes eliminar esta ruta.";
+});
 

@@ -305,4 +305,22 @@ class Listing extends Model
             ->where('expires_at', '<=', now())
             ->update(['status' => self::STATUS_EXPIRED]);
     }
+
+    /**
+     * Check if listing can be withdrawn.
+     */
+    public function canBeWithdrawn(): bool
+    {
+        return !$this->offers()
+                    ->where('status', Offer::STATUS_ACCEPTED)
+                    ->exists();
+    }
+
+    /**
+     * Get price with commission (5%).
+     */
+    public function getPriceWithCommission(): float
+    {
+        return $this->price * 1.05;
+    }
 }

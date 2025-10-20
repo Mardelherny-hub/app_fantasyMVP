@@ -150,22 +150,22 @@
                         </a>
                         @else
                         <a href="{{ route('manager.lineup.index', ['locale' => app()->getLocale()]) }}" 
-   class="flex items-center justify-between p-4 bg-gradient-to-r from-emerald-500/10 to-cyan-500/10 border border-emerald-500/30 rounded-xl hover:border-emerald-400 transition group">
-    <div class="flex items-center space-x-3">
-        <div class="w-12 h-12 bg-emerald-500/20 rounded-lg flex items-center justify-center group-hover:bg-emerald-500/30 transition">
-            <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-            </svg>
-        </div>
-        <div>
-            <h3 class="font-bold text-white">{{ __('Mi Alineación') }}</h3>
-            <p class="text-xs text-gray-400">{{ __('Gestionar titulares y suplentes') }}</p>
-        </div>
-    </div>
-    <svg class="w-5 h-5 text-emerald-400 group-hover:translate-x-1 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-    </svg>
-</a>
+                        class="flex items-center justify-between p-4 bg-gradient-to-r from-emerald-500/10 to-cyan-500/10 border border-emerald-500/30 rounded-xl hover:border-emerald-400 transition group">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-emerald-500/20 rounded-lg flex items-center justify-center group-hover:bg-emerald-500/30 transition">
+                                    <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-white">{{ __('Mi Alineación') }}</h3>
+                                    <p class="text-xs text-gray-400">{{ __('Gestionar titulares y suplentes') }}</p>
+                                </div>
+                            </div>
+                            <svg class="w-5 h-5 text-emerald-400 group-hover:translate-x-1 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </a>
 
                         <button class="flex-1 px-4 py-3 bg-white/5 border border-white/20 text-white font-semibold rounded-lg hover:bg-white/10 transition">
                             {{ __('Transferencias') }}

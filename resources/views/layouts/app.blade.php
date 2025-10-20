@@ -37,58 +37,122 @@
             </div>
 
             {{-- Navigation --}}
-            <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-                {{-- Dashboard --}}
-                <a href="{{ route('manager.dashboard', ['locale' => app()->getLocale()]) }}" 
-                   class="flex items-center px-3 py-2.5 rounded-lg transition group {{ request()->routeIs('manager.dashboard') ? 'bg-emerald-500/20 text-emerald-400' : 'text-gray-300 hover:bg-white/5 hover:text-white' }}">
-                    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-                    </svg>
-                    <span x-show="sidebarOpen" x-transition class="ml-3 font-medium">{{ __('Panel') }}</span>
-                </a>
+<nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+    
+    {{-- SECCIÓN: PRINCIPAL --}}
+    <a href="{{ route('manager.dashboard', ['locale' => app()->getLocale()]) }}" 
+       class="flex items-center px-3 py-2.5 rounded-lg transition group {{ request()->routeIs('manager.dashboard') ? 
+           'bg-emerald-500/20 text-emerald-400' : 'text-gray-300 hover:bg-white/5 hover:text-white' }}">
+        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+        </svg>
+        <span x-show="sidebarOpen" x-transition class="ml-3 font-medium">{{ __('Mi Liga') }}</span>
+    </a>
 
-                {{-- Mi Liga --}}
-                <a href="{{ route('manager.dashboard', ['locale' => app()->getLocale()]) }}" 
-                   class="flex items-center px-3 py-2.5 rounded-lg transition group text-gray-300 hover:bg-white/5 hover:text-white">
-                    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                    </svg>
-                    <span x-show="sidebarOpen" x-transition class="ml-3 font-medium">{{ __('Mi Liga') }}</span>
-                </a>
+  {{-- Divider --}}
+<div x-show="sidebarOpen" x-transition class="pt-4 pb-2">
+    <div class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ __('Mi Equipo') }}</div>
+</div>
 
-                {{-- Equipo --}}
-                <a href="{{ route('manager.squad-builder.index', ['locale' => app()->getLocale()]) }}" 
-                   class="flex items-center px-3 py-2.5 rounded-lg transition group {{ request()->routeIs('manager.squad-builder.*') ? 'bg-emerald-500/20 text-emerald-400' : 'text-gray-300 hover:bg-white/5 hover:text-white' }}">
-                    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
-                    </svg>
-                    <span x-show="sidebarOpen" x-transition class="ml-3 font-medium">{{ __('Equipo') }}</span>
-                </a>
+{{-- Plantilla (Squad Builder) - Solo si NO completó --}}
+@if(!auth()->user()->fantasyTeams()->first()?->is_squad_complete)
+    <a href="{{ route('manager.squad-builder.index', ['locale' => app()->getLocale()]) }}" 
+       class="flex items-center px-3 py-2.5 rounded-lg transition group {{ request()->routeIs('manager.squad-builder.*') ? 
+           'bg-emerald-500/20 text-emerald-400' : 'text-gray-300 hover:bg-white/5 hover:text-white' }}">
+        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+        </svg>
+        <span x-show="sidebarOpen" x-transition class="ml-3 font-medium">{{ __('Armar Plantilla') }}</span>
+        <span x-show="sidebarOpen" x-transition class="ml-auto">
+            <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+            </svg>
+        </span>
+    </a>
+@else
+    {{-- Alineación (Lineup Manager) - Solo si completó plantilla --}}
+    <a href="{{ route('manager.lineup.index', ['locale' => app()->getLocale()]) }}" 
+       class="flex items-center px-3 py-2.5 rounded-lg transition group {{ request()->routeIs('manager.lineup.*') ? 
+           'bg-emerald-500/20 text-emerald-400' : 'text-gray-300 hover:bg-white/5 hover:text-white' }}">
+        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+        </svg>
+        <span x-show="sidebarOpen" x-transition class="ml-3 font-medium">{{ __('Gestionar Alineación') }}</span>
+    </a>
+@endif
 
-                {{-- Mercado --}}
-                <a href="#" 
-                   class="flex items-center px-3 py-2.5 rounded-lg transition group text-gray-300 hover:bg-white/5 hover:text-white opacity-50 cursor-not-allowed">
-                    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
-                    </svg>
-                    <span x-show="sidebarOpen" x-transition class="ml-3 font-medium">{{ __('Mercado') }}</span>
-                    <span x-show="sidebarOpen" x-transition class="ml-auto text-xs text-gray-500">{{ __('Próximamente') }}</span>
-                </a>
+    {{-- Mercado de Fichajes --}}
+    <a href="#" 
+       class="flex items-center px-3 py-2.5 rounded-lg transition group text-gray-300 hover:bg-white/5 hover:text-white opacity-50 cursor-not-allowed">
+        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+        </svg>
+        <span x-show="sidebarOpen" x-transition class="ml-3 font-medium">{{ __('Mercado') }}</span>
+        <span x-show="sidebarOpen" x-transition class="ml-auto text-xs text-gray-500 bg-gray-800 px-2 py-0.5 rounded">{{ __('Próximo') }}</span>
+    </a>
 
-                {{-- Divider --}}
-                <div x-show="sidebarOpen" x-transition class="pt-4 pb-2">
-                    <div class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ __('Gestión') }}</div>
-                </div>
+    {{-- Divider --}}
+    <div x-show="sidebarOpen" x-transition class="pt-4 pb-2">
+        <div class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ __('Competición') }}</div>
+    </div>
 
-                {{-- Unirse a Liga --}}
-                <a href="{{ route('manager.onboarding.welcome', ['locale' => app()->getLocale()]) }}" 
-                   class="flex items-center px-3 py-2.5 rounded-lg transition group text-gray-300 hover:bg-white/5 hover:text-white">
-                    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                    </svg>
-                    <span x-show="sidebarOpen" x-transition class="ml-3 font-medium">{{ __('Unirse a Liga') }}</span>
-                </a>
-            </nav>
+    {{-- Clasificación --}}
+    <a href="#" 
+       class="flex items-center px-3 py-2.5 rounded-lg transition group text-gray-300 hover:bg-white/5 hover:text-white opacity-50 cursor-not-allowed">
+        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+        </svg>
+        <span x-show="sidebarOpen" x-transition class="ml-3 font-medium">{{ __('Clasificación') }}</span>
+        <span x-show="sidebarOpen" x-transition class="ml-auto text-xs text-gray-500 bg-gray-800 px-2 py-0.5 rounded">{{ __('Próximo') }}</span>
+    </a>
+
+    {{-- Fixtures --}}
+    <a href="#" 
+       class="flex items-center px-3 py-2.5 rounded-lg transition group text-gray-300 hover:bg-white/5 hover:text-white opacity-50 cursor-not-allowed">
+        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+        </svg>
+        <span x-show="sidebarOpen" x-transition class="ml-3 font-medium">{{ __('Calendario') }}</span>
+        <span x-show="sidebarOpen" x-transition class="ml-auto text-xs text-gray-500 bg-gray-800 px-2 py-0.5 rounded">{{ __('Próximo') }}</span>
+    </a>
+
+    {{-- Estadísticas --}}
+    <a href="#" 
+       class="flex items-center px-3 py-2.5 rounded-lg transition group text-gray-300 hover:bg-white/5 hover:text-white opacity-50 cursor-not-allowed">
+        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+        </svg>
+        <span x-show="sidebarOpen" x-transition class="ml-3 font-medium">{{ __('Estadísticas') }}</span>
+        <span x-show="sidebarOpen" x-transition class="ml-auto text-xs text-gray-500 bg-gray-800 px-2 py-0.5 rounded">{{ __('Próximo') }}</span>
+    </a>
+
+    {{-- Divider --}}
+    <div x-show="sidebarOpen" x-transition class="pt-4 pb-2">
+        <div class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ __('Gestión') }}</div>
+    </div>
+
+    {{-- Unirse a Liga --}}
+    <a href="{{ route('manager.onboarding.welcome', ['locale' => app()->getLocale()]) }}" 
+       class="flex items-center px-3 py-2.5 rounded-lg transition group {{ request()->routeIs('manager.onboarding.*') ? 
+           'bg-emerald-500/20 text-emerald-400' : 'text-gray-300 hover:bg-white/5 hover:text-white' }}">
+        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+        </svg>
+        <span x-show="sidebarOpen" x-transition class="ml-3 font-medium">{{ __('Unirse a Liga') }}</span>
+    </a>
+
+    {{-- Configuración --}}
+    <a href="#" 
+       class="flex items-center px-3 py-2.5 rounded-lg transition group text-gray-300 hover:bg-white/5 hover:text-white opacity-50 cursor-not-allowed">
+        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.573-1.066z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+        <span x-show="sidebarOpen" x-transition class="ml-3 font-medium">{{ __('Configuración') }}</span>
+        <span x-show="sidebarOpen" x-transition class="ml-auto text-xs text-gray-500 bg-gray-800 px-2 py-0.5 rounded">{{ __('Próximo') }}</span>
+    </a>
+
+</nav>
 
             {{-- Sidebar Toggle --}}
             <div class="p-3 border-t border-white/10">

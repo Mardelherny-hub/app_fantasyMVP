@@ -181,42 +181,46 @@ class SquadBuilderWizard extends Component
     }
 
     /**
-     * Completar armado
-     */
-    public function completeSquad()
-    {
+ * Completar armado
+ */
+public function completeSquad()
+{
+    try {
+        // Validar capitanes (esto SÍ va aquí en Livewire)
         $this->validate([
             'captainId' => 'required|exists:players,id',
             'viceCaptainId' => 'required|exists:players,id|different:captainId',
+        ], [
+            'captainId.required' => __('Debes seleccionar un capitán'),
+            'viceCaptainId.required' => __('Debes seleccionar un vicecapitán'),
+            'viceCaptainId.different' => __('El capitán y vicecapitán deben ser diferentes'),
         ]);
         
-        try {
-            $this->loading = true;
-            
-            $captainData = [
-                'captain_id' => $this->captainId,
-                'vice_captain_id' => $this->viceCaptainId,
-            ];
-            
-            $squadBuilderService = app(SquadBuilderService::class);
-            $result = $squadBuilderService->completeSquad($this->team, $captainData);
-            
-            session()->flash('success', __('¡Plantilla completada! Tu equipo está listo para la GW1.'));
-            
-            return redirect()->route('manager.dashboard', ['locale' => app()->getLocale()]);
-            
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            $errors = $e->errors();
-            $firstError = reset($errors);
-            session()->flash('error', is_array($firstError) ? $firstError[0] : $firstError);
-            
-        } catch (\Exception $e) {
-            Log::error('Error completing squad: ' . $e->getMessage());
-            session()->flash('error', __('Error al completar plantilla.'));
-        } finally {
-            $this->loading = false;
-        }
+        $this->loading = true;
+        
+        $captainData = [
+            'captain_id' => $this->captainId,
+            'vice_captain_id' => $this->viceCaptainId,
+        ];
+        
+        $squadBuilderService = app(SquadBuilderService::class);
+        $result = $squadBuilderService->completeSquad($this->team, $captainData);
+        
+        session()->flash('success', __('¡Plantilla completada! Tu equipo está listo.'));
+        
+        // Usar redirect de Livewire
+        $this->redirect(route('manager.dashboard', ['locale' => app()->getLocale()]), navigate: true);
+        
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        $this->loading = false;
+        throw $e; // Livewire lo maneja automáticamente
+        
+    } catch (\Exception $e) {
+        $this->loading = false;
+        Log::error('Error completing squad: ' . $e->getMessage());
+        session()->flash('error', __('Error: ') . $e->getMessage());
     }
+}
 
     /**
      * Obtener posición según el paso actual
@@ -251,7 +255,7 @@ class SquadBuilderWizard extends Component
                        ->with(['valuations' => function($q) use ($seasonId) {
                            $q->where('season_id', $seasonId);
                        }])
-                       ->whereNotIn('id', $selectedIds);
+                       ->whereNotIn('players.id', $selectedIds);
         
         // Búsqueda
         if ($this->search) {

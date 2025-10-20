@@ -163,6 +163,9 @@
                                                 <option value="{{ $player->id }}">{{ $player->known_as ?? $player->full_name }}</option>
                                             @endforeach
                                         </select>
+                                        @error('captainId')
+                                            <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
+                                        @enderror
                                     </div>
                                     
                                     <div>
@@ -173,6 +176,9 @@
                                                 <option value="{{ $player->id }}">{{ $player->known_as ?? $player->full_name }}</option>
                                             @endforeach
                                         </select>
+                                        @error('viceCaptainId')
+                                            <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
+                                        @enderror
                                     </div>
                                 </div>
                                 

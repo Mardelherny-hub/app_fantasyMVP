@@ -16,7 +16,7 @@ class SquadBuilderService
      */
     const SQUAD_SIZE = 23;
     const STARTERS_SIZE = 11;
-    const INITIAL_BUDGET = 100.00;
+    const INITIAL_BUDGET = 200.00;
     
     const POSITION_LIMITS = [
         1 => ['min' => 1, 'max' => 3],  // GK
@@ -122,47 +122,67 @@ class SquadBuilderService
     }
     
     /**
-     * Completar armado de plantilla
-     */
-    public function completeSquad(FantasyTeam $team, array $captainData): array
-    {
-        return DB::transaction(function () use ($team, $captainData) {
-            $draft = $this->getDraft($team);
-            
-            if (!$draft) {
-                throw ValidationException::withMessages([
-                    'draft' => __('No se encontró borrador activo.'),
-                ]);
-            }
-            
-            // Validar que está completo
-            $validationService = app(SquadValidationService::class);
-            $validationService->validateCompleteSquad($draft);
-            
-            // Validar capitanes
-            $this->validateCaptains($draft, $captainData);
-            
-            // Marcar borrador como completo
-            $draft->update([
-                'is_completed' => true,
-                'completed_at' => now(),
+ * Completar armado de plantilla
+ */
+public function completeSquad(FantasyTeam $team, array $captainData): array
+{
+    return DB::transaction(function () use ($team, $captainData) {
+        $draft = $this->getDraft($team);
+        
+        if (!$draft) {
+            throw ValidationException::withMessages([
+                'draft' => __('No se encontró borrador activo.'),
+            ]);
+        }
+        
+        // Validar que está completo
+        $validationService = app(SquadValidationService::class);
+        $validationService->validateCompleteSquad($draft);
+        
+        // Validar capitanes
+        $this->validateCaptains($draft, $captainData);
+        
+        // Guardar capitanes en el draft
+        $draft->update([
+            'is_completed' => true,
+            'completed_at' => now(),
+        ]);
+        
+        // Marcar equipo como completo
+        $team->update(['is_squad_complete' => true]);
+        
+        // Limpiar deadline del LeagueMember
+        $leagueMember = \App\Models\LeagueMember::where('league_id', $team->league_id)
+            ->where('user_id', $team->user_id)
+            ->first();
+        
+        if ($leagueMember) {
+            \Log::info('Limpiando deadline', [
+                'league_member_id' => $leagueMember->id,
+                'old_deadline' => $leagueMember->squad_deadline_at,
             ]);
             
-            // Marcar equipo como completo
-            $team->update(['is_squad_complete' => true]);
+            $leagueMember->update(['squad_deadline_at' => null]);
             
-            // Generar FantasyRoster para GW1
-            $rosterService = app(RosterGeneratorService::class);
-            $rosters = $rosterService->generateFromDraft($team, $draft, $captainData);
-            
-            return [
-                'success' => true,
-                'team' => $team->fresh(),
-                'rosters' => $rosters,
-                'message' => __('¡Plantilla completada! Tu equipo está listo para la GW1.'),
-            ];
-        });
-    }
+            \Log::info('Deadline limpiado', [
+                'league_member_id' => $leagueMember->id,
+                'new_deadline' => $leagueMember->fresh()->squad_deadline_at,
+            ]);
+        } else {
+            \Log::warning('LeagueMember no encontrado', [
+                'team_id' => $team->id,
+                'league_id' => $team->league_id,
+                'user_id' => $team->user_id,
+            ]);
+        }
+        
+        return [
+            'success' => true,
+            'team' => $team->fresh(),
+            'message' => __('¡Plantilla completada!'),
+        ];
+    });
+}
     
     /**
      * Actualizar paso actual del wizard
@@ -261,7 +281,7 @@ class SquadBuilderService
         // Excluir jugadores ya seleccionados
         if ($draft && $draft->selected_players) {
             $selectedIds = $draft->getSelectedPlayerIds();
-            $query->whereNotIn('id', $selectedIds);
+            $query->whereNotIn('players.id', $selectedIds);
         }
         
         return $query->get();

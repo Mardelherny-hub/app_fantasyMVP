@@ -15,6 +15,15 @@ class DashboardRoute
         }
 
         if ($user->hasRole('manager')) {
+            // Verificar si tiene ligas activas
+            $hasActiveLeagues = $user->leagueMembers()
+                ->where('is_active', true)
+                ->exists();
+            
+            if ($hasActiveLeagues) {
+                return route('manager.dashboard', ['locale' => $locale]);
+            }
+            
             return route('manager.onboarding.welcome', ['locale' => $locale]);
         }
 

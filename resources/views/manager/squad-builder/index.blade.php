@@ -16,7 +16,7 @@
 
                     {{-- Deadline Countdown --}}
                     @php
-                        $member = auth()->user()->leagueMemberships()
+                        $member = auth()->user()->leagueMembers()
                             ->whereNotNull('squad_deadline_at')
                             ->where('squad_deadline_at', '>', now())
                             ->first();

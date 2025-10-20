@@ -34,6 +34,7 @@ class LeagueMember extends Model
         'role',
         'joined_at',
         'is_active',
+        'squad_deadline_at',
     ];
 
     /**
@@ -45,6 +46,7 @@ class LeagueMember extends Model
         'role' => 'integer',
         'joined_at' => 'datetime',
         'is_active' => 'boolean',
+        'squad_deadline_at' => 'datetime',
     ];
 
     /**

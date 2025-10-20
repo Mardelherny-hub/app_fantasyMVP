@@ -30,6 +30,7 @@ class FantasyTeam extends Model
         'total_points',
         'budget',
         'is_bot',
+        'is_squad_complete', 
     ];
 
     /**
@@ -41,6 +42,7 @@ class FantasyTeam extends Model
         'total_points' => 'integer',
         'budget' => 'decimal:2',
         'is_bot' => 'boolean',
+        'is_squad_complete' => 'boolean',
     ];
 
     /**

@@ -50,6 +50,7 @@ class ManagerDashboard extends Component
 
         if ($this->selectedMember) {
             // Cargar el equipo fantasy del usuario en esta liga
+            // SIEMPRE obtener datos frescos de la BD
             $this->selectedTeam = FantasyTeam::where('league_id', $this->selectedLeagueId)
                 ->where('user_id', auth()->id())
                 ->first();
@@ -64,6 +65,17 @@ class ManagerDashboard extends Component
 
     public function render()
     {
+        // 🆕 REFRESCAR EQUIPO ANTES DE RENDERIZAR
+        // Esto asegura que siempre tengamos datos actualizados
+        if ($this->selectedTeam) {
+            $this->selectedTeam = $this->selectedTeam->fresh();
+        }
+
+        // 🆕 REFRESCAR MEMBER PARA VERIFICAR DEADLINE
+        if ($this->selectedMember) {
+            $this->selectedMember = $this->selectedMember->fresh();
+        }
+
         return view('livewire.manager.manager-dashboard', [
             'hasIncompleteSquad' => $this->selectedTeam && !$this->selectedTeam->is_squad_complete,
             'hasDeadline' => $this->selectedMember && $this->selectedMember->squad_deadline_at,

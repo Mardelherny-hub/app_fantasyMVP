@@ -74,7 +74,7 @@
 
                 {{-- Botones --}}
                 <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                    <a href="{{ route('manager.onboarding.welcome', ['locale' => app()->getLocale()]) }}" 
+                    <a href="{{ route('manager.dashboard', ['locale' => app()->getLocale()]) }}" 
                        class="px-6 py-3 bg-white/5 border border-white/20 text-white font-semibold rounded-lg hover:bg-white/10 transition inline-flex items-center justify-center">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>

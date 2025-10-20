@@ -9,7 +9,7 @@
             
             {{-- Quick Actions --}}
             <div class="flex gap-3">
-                <a href="{{ route('manager.onboarding.welcome', ['locale' => app()->getLocale()]) }}" 
+                <a href="{{ route('manager.dashboard', ['locale' => app()->getLocale()]) }}" 
                    class="px-4 py-2 bg-white/5 border border-white/20 text-white rounded-lg hover:bg-white/10 transition text-sm">
                     {{ __('Unirse a otra liga') }}
                 </a>
@@ -237,7 +237,7 @@
             </svg>
             <h3 class="text-xl font-bold text-white mb-2">{{ __('No tienes ligas activas') }}</h3>
             <p class="text-gray-400 mb-6">{{ __('Únete o crea una liga para comenzar a competir') }}</p>
-            <a href="{{ route('manager.onboarding.welcome', ['locale' => app()->getLocale()]) }}" 
+            <a href="{{ route('manager.dashboard', ['locale' => app()->getLocale()]) }}" 
                class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-bold rounded-lg hover:shadow-lg hover:shadow-cyan-500/30 transition">
                 {{ __('Explorar ligas') }}
             </a>

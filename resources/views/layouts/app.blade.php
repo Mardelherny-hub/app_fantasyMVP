@@ -4,136 +4,255 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-
     <title>{{ config('app.name', 'Laravel') }} - Manager</title>
-
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-
-    <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-
-    <!-- Styles -->
     @livewireStyles
 </head>
-<body class="font-sans antialiased bg-slate-900 text-white">
-    <div class="min-h-screen">
-        <!-- Navigation -->
-        <nav class="bg-slate-900/90 backdrop-blur-xl border-b border-white/10 sticky top-0 z-50">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between h-16">
-                    <!-- Logo & Brand -->
-                    <div class="flex items-center">
-                        <a href="{{ route('manager.onboarding.welcome', ['locale' => app()->getLocale()]) }}" class="flex items-center space-x-3 group">
-                            <div class="relative">
-                                <div class="w-10 h-10 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-lg transform group-hover:rotate-6 transition-transform duration-300"></div>
-                                <div class="absolute inset-0 flex items-center justify-center">
-                                    <svg class="w-5 h-5 text-slate-900" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M10 2a8 8 0 100 16 8 8 0 000-16zM8 10a1 1 0 112 0v3a1 1 0 11-2 0v-3zm2-3a1 1 0 11-2 0 1 1 0 012 0z"/>
-                                    </svg>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="text-lg font-bold tracking-tight">{{ __('Manager Panel') }}</div>
-                                <div class="text-[9px] text-emerald-400 -mt-0.5 tracking-wider">EDU CAN SOCCER</div>
-                            </div>
-                        </a>
-                    </div>
-
-                    <!-- Navigation Links (Desktop) -->
-                    <div class="hidden md:flex items-center space-x-6">
-                        <a href="{{ route('manager.onboarding.welcome', ['locale' => app()->getLocale()]) }}" 
-                           class="text-sm font-medium hover:text-emerald-400 transition {{ request()->routeIs('manager.dashboard') ? 'text-emerald-400' : 'text-gray-300' }}">
-                            {{ __('Dashboard') }}
-                        </a>
-                        <a href="#" 
-                           class="text-sm font-medium text-gray-300 hover:text-emerald-400 transition">
-                            {{ __('Mi Liga') }}
-                        </a>
-                        <a href="#" 
-                           class="text-sm font-medium text-gray-300 hover:text-emerald-400 transition">
-                            {{ __('Equipo') }}
-                        </a>
-                        <a href="#" 
-                           class="text-sm font-medium text-gray-300 hover:text-emerald-400 transition">
-                            {{ __('Mercado') }}
-                        </a>
-                    </div>
-
-                    <!-- User Dropdown -->
-                    <div class="flex items-center space-x-4">
-                        <!-- Language Switcher -->
-                        <div class="hidden md:flex items-center space-x-1 bg-white/5 rounded-full px-1 py-1 border border-white/10">
-                            <a href="{{ route(Route::currentRouteName(), ['locale' => 'es'] + request()->route()->parameters()) }}" 
-                               class="px-2.5 py-1 rounded-full text-xs font-bold transition {{ app()->getLocale() === 'es' ? 'bg-emerald-500 text-slate-900' : 'text-gray-400 hover:text-white' }}">
-                                ES
-                            </a>
-                            <a href="{{ route(Route::currentRouteName(), ['locale' => 'en'] + request()->route()->parameters()) }}" 
-                               class="px-2.5 py-1 rounded-full text-xs font-bold transition {{ app()->getLocale() === 'en' ? 'bg-emerald-500 text-slate-900' : 'text-gray-400 hover:text-white' }}">
-                                EN
-                            </a>
-                            <a href="{{ route(Route::currentRouteName(), ['locale' => 'fr'] + request()->route()->parameters()) }}" 
-                               class="px-2.5 py-1 rounded-full text-xs font-bold transition {{ app()->getLocale() === 'fr' ? 'bg-emerald-500 text-slate-900' : 'text-gray-400 hover:text-white' }}">
-                                FR
-                            </a>
+<body class="font-sans antialiased bg-slate-900" x-data="{ sidebarOpen: true, mobileSidebarOpen: false }">
+    <div class="min-h-screen flex">
+        
+        {{-- SIDEBAR --}}
+        <aside 
+            :class="sidebarOpen ? 'w-64' : 'w-20'" 
+            class="hidden lg:flex flex-col fixed inset-y-0 left-0 bg-slate-800/50 backdrop-blur-xl border-r border-white/10 transition-all duration-300 z-40"
+        >
+            {{-- Logo --}}
+            <div class="flex items-center h-16 px-4 border-b border-white/10">
+                <a href="{{ route('manager.dashboard', ['locale' => app()->getLocale()]) }}" class="flex items-center space-x-3 group">
+                    <div class="relative flex-shrink-0">
+                        <div class="w-10 h-10 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-lg transform group-hover:rotate-6 transition-transform duration-300"></div>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-slate-900" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 2a8 8 0 100 16 8 8 0 000-16zM8 10a1 1 0 112 0v3a1 1 0 11-2 0v-3zm2-3a1 1 0 11-2 0 1 1 0 012 0z"/>
+                            </svg>
                         </div>
+                    </div>
+                    <div x-show="sidebarOpen" x-transition class="overflow-hidden">
+                        <div class="text-base font-bold tracking-tight text-white whitespace-nowrap">{{ __('Manager Panel') }}</div>
+                        <div class="text-[9px] text-emerald-400 -mt-0.5 tracking-wider">EDU CAN SOCCER</div>
+                    </div>
+                </a>
+            </div>
 
-                        <!-- User Menu -->
-                        <div x-data="{ open: false }" class="relative">
-                            <button @click="open = !open" class="flex items-center space-x-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 hover:bg-white/10 transition">
-                                <img src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->name }}" class="w-6 h-6 rounded-full">
-                                <span class="text-sm font-medium hidden md:block">{{ Auth::user()->name }}</span>
-                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                </svg>
+            {{-- Navigation --}}
+            <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+                {{-- Dashboard --}}
+                <a href="{{ route('manager.dashboard', ['locale' => app()->getLocale()]) }}" 
+                   class="flex items-center px-3 py-2.5 rounded-lg transition group {{ request()->routeIs('manager.dashboard') ? 'bg-emerald-500/20 text-emerald-400' : 'text-gray-300 hover:bg-white/5 hover:text-white' }}">
+                    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                    </svg>
+                    <span x-show="sidebarOpen" x-transition class="ml-3 font-medium">{{ __('Panel') }}</span>
+                </a>
+
+                {{-- Mi Liga --}}
+                <a href="{{ route('manager.dashboard', ['locale' => app()->getLocale()]) }}" 
+                   class="flex items-center px-3 py-2.5 rounded-lg transition group text-gray-300 hover:bg-white/5 hover:text-white">
+                    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                    <span x-show="sidebarOpen" x-transition class="ml-3 font-medium">{{ __('Mi Liga') }}</span>
+                </a>
+
+                {{-- Equipo --}}
+                <a href="{{ route('manager.squad-builder.index', ['locale' => app()->getLocale()]) }}" 
+                   class="flex items-center px-3 py-2.5 rounded-lg transition group {{ request()->routeIs('manager.squad-builder.*') ? 'bg-emerald-500/20 text-emerald-400' : 'text-gray-300 hover:bg-white/5 hover:text-white' }}">
+                    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                    </svg>
+                    <span x-show="sidebarOpen" x-transition class="ml-3 font-medium">{{ __('Equipo') }}</span>
+                </a>
+
+                {{-- Mercado --}}
+                <a href="#" 
+                   class="flex items-center px-3 py-2.5 rounded-lg transition group text-gray-300 hover:bg-white/5 hover:text-white opacity-50 cursor-not-allowed">
+                    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                    <span x-show="sidebarOpen" x-transition class="ml-3 font-medium">{{ __('Mercado') }}</span>
+                    <span x-show="sidebarOpen" x-transition class="ml-auto text-xs text-gray-500">{{ __('Próximamente') }}</span>
+                </a>
+
+                {{-- Divider --}}
+                <div x-show="sidebarOpen" x-transition class="pt-4 pb-2">
+                    <div class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ __('Gestión') }}</div>
+                </div>
+
+                {{-- Unirse a Liga --}}
+                <a href="{{ route('manager.onboarding.welcome', ['locale' => app()->getLocale()]) }}" 
+                   class="flex items-center px-3 py-2.5 rounded-lg transition group text-gray-300 hover:bg-white/5 hover:text-white">
+                    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                    </svg>
+                    <span x-show="sidebarOpen" x-transition class="ml-3 font-medium">{{ __('Unirse a Liga') }}</span>
+                </a>
+            </nav>
+
+            {{-- Sidebar Toggle --}}
+            <div class="p-3 border-t border-white/10">
+                <button @click="sidebarOpen = !sidebarOpen" class="w-full flex items-center justify-center px-3 py-2 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition">
+                    <svg x-show="sidebarOpen" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"/>
+                    </svg>
+                    <svg x-show="!sidebarOpen" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"/>
+                    </svg>
+                </button>
+            </div>
+        </aside>
+
+        {{-- MOBILE SIDEBAR --}}
+        <div x-show="mobileSidebarOpen" @click="mobileSidebarOpen = false" 
+             x-transition:enter="transition-opacity ease-linear duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition-opacity ease-linear duration-300"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             class="fixed inset-0 bg-black/50 backdrop-blur-sm lg:hidden z-50">
+        </div>
+
+        <aside x-show="mobileSidebarOpen"
+               x-transition:enter="transition ease-in-out duration-300 transform"
+               x-transition:enter-start="-translate-x-full"
+               x-transition:enter-end="translate-x-0"
+               x-transition:leave="transition ease-in-out duration-300 transform"
+               x-transition:leave-start="translate-x-0"
+               x-transition:leave-end="-translate-x-full"
+               class="fixed inset-y-0 left-0 w-64 bg-slate-800/95 backdrop-blur-xl border-r border-white/10 lg:hidden z-50 flex flex-col">
+            
+            {{-- Same content as desktop sidebar --}}
+            <div class="flex items-center justify-between h-16 px-4 border-b border-white/10">
+                <a href="{{ route('manager.dashboard', ['locale' => app()->getLocale()]) }}" class="flex items-center space-x-3">
+                    <div class="relative flex-shrink-0">
+                        <div class="w-10 h-10 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-lg"></div>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-slate-900" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 2a8 8 0 100 16 8 8 0 000-16zM8 10a1 1 0 112 0v3a1 1 0 11-2 0v-3zm2-3a1 1 0 11-2 0 1 1 0 012 0z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="text-base font-bold text-white">{{ __('Manager Panel') }}</div>
+                        <div class="text-[9px] text-emerald-400 -mt-0.5">EDU CAN SOCCER</div>
+                    </div>
+                </a>
+                <button @click="mobileSidebarOpen = false" class="text-gray-400 hover:text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+
+            <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+                <a href="{{ route('manager.dashboard', ['locale' => app()->getLocale()]) }}" 
+                   class="flex items-center px-3 py-2.5 rounded-lg {{ request()->routeIs('manager.dashboard') ? 'bg-emerald-500/20 text-emerald-400' : 'text-gray-300 hover:bg-white/5' }}">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                    </svg>
+                    <span class="ml-3 font-medium">{{ __('Panel') }}</span>
+                </a>
+
+                <a href="{{ route('manager.dashboard', ['locale' => app()->getLocale()]) }}" 
+                   class="flex items-center px-3 py-2.5 rounded-lg text-gray-300 hover:bg-white/5">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                    <span class="ml-3 font-medium">{{ __('Mi Liga') }}</span>
+                </a>
+
+                <a href="{{ route('manager.squad-builder.index', ['locale' => app()->getLocale()]) }}" 
+                   class="flex items-center px-3 py-2.5 rounded-lg {{ request()->routeIs('manager.squad-builder.*') ? 'bg-emerald-500/20 text-emerald-400' : 'text-gray-300 hover:bg-white/5' }}">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                    </svg>
+                    <span class="ml-3 font-medium">{{ __('Equipo') }}</span>
+                </a>
+
+                <a href="#" class="flex items-center px-3 py-2.5 rounded-lg text-gray-300 hover:bg-white/5 opacity-50 cursor-not-allowed">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                    <span class="ml-3 font-medium">{{ __('Mercado') }}</span>
+                </a>
+
+                <div class="pt-4 pb-2">
+                    <div class="px-3 text-xs font-semibold text-gray-500 uppercase">{{ __('Gestión') }}</div>
+                </div>
+
+                <a href="{{ route('manager.onboarding.welcome', ['locale' => app()->getLocale()]) }}" 
+                   class="flex items-center px-3 py-2.5 rounded-lg text-gray-300 hover:bg-white/5">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                    </svg>
+                    <span class="ml-3 font-medium">{{ __('Unirse a Liga') }}</span>
+                </a>
+            </nav>
+        </aside>
+
+        {{-- MAIN CONTENT --}}
+        <div class="flex-1 flex flex-col" :class="sidebarOpen ? 'lg:ml-64' : 'lg:ml-20'">
+            
+            {{-- TOP BAR --}}
+            <header class="sticky top-0 z-30 bg-slate-800/50 backdrop-blur-xl border-b border-white/10">
+                <div class="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
+                    <div class="flex items-center space-x-4">
+                        {{-- Mobile Menu Button --}}
+                        <button @click="mobileSidebarOpen = true" class="lg:hidden text-gray-400 hover:text-white">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                            </svg>
+                        </button>
+
+                        {{-- Page Title --}}
+                        @if(isset($header))
+                            <h1 class="text-lg font-semibold text-white">{{ $header }}</h1>
+                        @endif
+                    </div>
+
+                    <div class="flex items-center space-x-4">
+                        {{-- Language Switcher --}}
+                        <x-lang-switcher />
+
+                        {{-- User Menu --}}
+                        <div class="relative" x-data="{ open: false }">
+                            <button @click="open = !open" class="flex items-center space-x-3 text-sm focus:outline-none">
+                                <span class="hidden md:block text-gray-300 font-medium">{{ auth()->user()->name }}</span>
+                                <div class="w-8 h-8 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center text-slate-900 font-bold text-xs">
+                                    {{ substr(auth()->user()->name, 0, 1) }}
+                                </div>
                             </button>
 
-                            <!-- Dropdown Menu -->
-                            <div x-show="open" 
-                                 @click.away="open = false"
+                            <div x-show="open" @click.away="open = false" 
                                  x-transition:enter="transition ease-out duration-200"
                                  x-transition:enter-start="opacity-0 scale-95"
                                  x-transition:enter-end="opacity-100 scale-100"
-                                 x-transition:leave="transition ease-in duration-150"
-                                 x-transition:leave-start="opacity-100 scale-100"
-                                 x-transition:leave-end="opacity-0 scale-95"
-                                 class="absolute right-0 mt-2 w-48 bg-slate-800 border border-white/10 rounded-lg shadow-xl py-1 z-50"
-                                 style="display: none;">
-                                
-                                <a href="{{ route('profile.show', ['locale' => app()->getLocale()]) }}" 
-                                   class="block px-4 py-2 text-sm text-gray-300 hover:bg-white/5 hover:text-emerald-400 transition">
+                                 class="absolute right-0 mt-2 w-48 bg-slate-800 border border-white/10 rounded-lg shadow-xl py-1 z-50">
+                                <a href="{{ route('profile.show', ['locale' => app()->getLocale()]) }}" class="block px-4 py-2 text-sm text-gray-300 hover:bg-white/5">
                                     {{ __('Perfil') }}
                                 </a>
-                                
-                                @if(auth()->user()->hasRole('admin'))
-                                    <a href="{{ route('admin.dashboard', ['locale' => app()->getLocale()]) }}" 
-                                       class="block px-4 py-2 text-sm text-gray-300 hover:bg-white/5 hover:text-purple-400 transition">
-                                        {{ __('Panel Admin') }}
-                                    </a>
-                                @endif
-
-                                <div class="border-t border-white/10 my-1"></div>
-                                
-                                <form method="POST" action="{{ route('logout') }}">
+                                <form method="POST" action="{{ route('logout', ['locale' => app()->getLocale()]) }}">
                                     @csrf
-                                    <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-white/5 transition">
-                                        {{ __('Cerrar Sesión') }}
+                                    <button type="submit" class="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-white/5">
+                                        {{ __('Cerrar sesión') }}
                                     </button>
                                 </form>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </nav>
+            </header>
 
-        <!-- Page Content -->
-        <main>
-            {{ $slot }}
-        </main>
+            {{-- PAGE CONTENT --}}
+            <main class="flex-1 overflow-y-auto">
+                {{ $slot }}
+            </main>
+        </div>
     </div>
 
     @livewireScripts
+    @stack('scripts')
 </body>
 </html>

@@ -20,139 +20,137 @@
                         </span>
                         <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider">Lineup Manager</span>
                     </div>
-                    <h1 class="text-3xl md:text-4xl font-black mb-1">
-                        {{ __('Mi Alineación') }}
+                    <h1 class="text-3xl md:text-4xl font-black text-white">
+                        {{ $team->name }}
                     </h1>
-                    <p class="text-gray-400 text-sm">{{ $team->name }}</p>
-                </div>
-
-                {{-- Selector de Gameweek con navegación --}}
-                <div class="flex items-center space-x-3">
-                    {{-- Botón anterior --}}
-                    <button 
-                        wire:click="previousGameweek"
-                        @if(!$hasPreviousGW) disabled @endif
-                        class="p-2 bg-slate-800 border border-slate-700 rounded-lg hover:bg-slate-700 hover:border-cyan-500/50 transition disabled:opacity-30 disabled:cursor-not-allowed"
-                        title="{{ __('Gameweek anterior') }}"
-                    >
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                        </svg>
-                    </button>
-
-                    {{-- Selector --}}
-                    <select 
-                        wire:model.live="selectedGameweek.id"
-                        wire:change="selectGameweek($event.target.value)"
-                        class="bg-slate-800 border-2 border-cyan-500/50 text-white px-4 py-2 rounded-lg font-bold hover:border-cyan-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20 transition"
-                    >
-                        @foreach($availableGameweeks as $gw)
-                            <option value="{{ $gw->id }}" @if($selectedGameweek && $selectedGameweek->id === $gw->id) selected @endif>
-                                GW{{ $gw->number }}
-                                @if($currentGameweek && $gw->id === $currentGameweek->id)
-                                    ({{ __('Actual') }})
-                                @endif
-                            </option>
-                        @endforeach
-                    </select>
-
-                    {{-- Botón siguiente --}}
-                    <button 
-                        wire:click="nextGameweek"
-                        @if(!$hasNextGW) disabled @endif
-                        class="p-2 bg-slate-800 border border-slate-700 rounded-lg hover:bg-slate-700 hover:border-cyan-500/50 transition disabled:opacity-30 disabled:cursor-not-allowed"
-                        title="{{ __('Gameweek siguiente') }}"
-                    >
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                        </svg>
-                    </button>
                 </div>
             </div>
 
-            {{-- Mensajes de estado --}}
-            @if($successMessage)
-                <div class="mb-4 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-lg flex items-center space-x-3">
-                    <svg class="w-5 h-5 text-emerald-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                    </svg>
-                    <span class="text-emerald-400 text-sm font-medium">{{ $successMessage }}</span>
+            {{-- Selector de Gameweek --}}
+            @if($selectedGameweek)
+                <div class="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            {{-- Botón anterior --}}
+                            <button 
+                                wire:click="previousGameweek"
+                                @if(!$hasPreviousGW) disabled @endif
+                                class="p-2 rounded-lg hover:bg-slate-700 transition disabled:opacity-30 disabled:cursor-not-allowed"
+                            >
+                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                                </svg>
+                            </button>
+
+                            {{-- Info gameweek --}}
+                            <div>
+                                <div class="text-sm text-gray-400">{{ __('Gameweek') }}</div>
+                                <div class="font-bold text-white text-lg">{{ $selectedGameweek->name }}</div>
+                            </div>
+
+                            {{-- Botón siguiente --}}
+                            <button 
+                                wire:click="nextGameweek"
+                                @if(!$hasNextGW) disabled @endif
+                                class="p-2 rounded-lg hover:bg-slate-700 transition disabled:opacity-30 disabled:cursor-not-allowed"
+                            >
+                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                </svg>
+                            </button>
+                        </div>
+
+                        {{-- Estado de edición --}}
+                        @if($canEdit)
+                            <div class="flex items-center space-x-2 text-emerald-400">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+                                </svg>
+                                <span>{{ __('Editable') }}</span>
+                            </div>
+                        @else
+                            <div class="flex items-center space-x-2 text-red-400">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+                                </svg>
+                                <span>{{ __('Bloqueada') }}</span>
+                            </div>
+                        @endif
+                    </div>
                 </div>
             @endif
+        </div>
 
-            @if($errorMessage)
-                <div class="mb-4 p-4 bg-red-500/10 border border-red-500/30 rounded-lg flex items-center space-x-3">
-                    <svg class="w-5 h-5 text-red-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                    </svg>
-                    <span class="text-red-400 text-sm font-medium">{{ $errorMessage }}</span>
-                </div>
-            @endif
+        {{-- Mensajes --}}
+        @if($successMessage)
+            <div class="mb-4 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-lg flex items-center space-x-3">
+                <svg class="w-5 h-5 text-emerald-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                </svg>
+                <span class="text-emerald-400 text-sm font-medium">{{ $successMessage }}</span>
+            </div>
+        @endif
 
-            {{-- Info de estado --}}
-            <div class="flex items-center justify-between p-4 bg-slate-800/50 border border-slate-700 rounded-lg">
-                <div class="flex items-center space-x-6">
-                    {{-- Formación --}}
-                    <div class="flex items-center space-x-2">
-                        <span class="text-gray-400 text-sm">{{ __('Formación:') }}</span>
-                        <span class="font-bold text-cyan-400 text-lg font-mono">{{ $currentFormation ?? '---' }}</span>
-                    </div>
+        @if($errorMessage)
+            <div class="mb-4 p-4 bg-red-500/10 border border-red-500/30 rounded-lg flex items-center space-x-3">
+                <svg class="w-5 h-5 text-red-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                </svg>
+                <span class="text-red-400 text-sm font-medium">{{ $errorMessage }}</span>
+            </div>
+        @endif
 
-                    {{-- Capitanes --}}
-                    <div class="flex items-center space-x-4">
-                        <div class="flex items-center space-x-1.5">
-                            <span class="w-5 h-5 bg-yellow-500 rounded flex items-center justify-center text-xs font-black text-slate-900">C</span>
-                            <span class="text-sm text-gray-400">{{ $captain ? $captain->player->display_name : '---' }}</span>
-                        </div>
-                        <div class="flex items-center space-x-1.5">
-                            <span class="w-5 h-5 bg-gray-400 rounded flex items-center justify-center text-xs font-black text-slate-900">V</span>
-                            <span class="text-sm text-gray-400">{{ $viceCaptain ? $viceCaptain->player->display_name : '---' }}</span>
-                        </div>
-                    </div>
-
-                    {{-- Estado válido --}}
-                    @if($isValidLineup)
-                        <div class="flex items-center space-x-1.5 px-3 py-1 bg-emerald-500/20 rounded-lg">
-                            <svg class="w-4 h-4 text-emerald-400" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                            </svg>
-                            <span class="text-emerald-400 text-xs font-bold uppercase">{{ __('Válida') }}</span>
-                        </div>
-                    @else
-                        <div class="flex items-center space-x-1.5 px-3 py-1 bg-red-500/20 rounded-lg">
-                            <svg class="w-4 h-4 text-red-400" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                            </svg>
-                            <span class="text-red-400 text-xs font-bold uppercase">{{ __('Inválida') }}</span>
-                        </div>
-                    @endif
+        {{-- Info de estado --}}
+        <div class="mb-6 flex items-center justify-between p-4 bg-slate-800/50 border border-slate-700 rounded-lg">
+            <div class="flex items-center space-x-6">
+                {{-- Formación --}}
+                <div class="flex items-center space-x-2">
+                    <span class="text-gray-400 text-sm">{{ __('Formación:') }}</span>
+                    <span class="font-bold text-cyan-400 text-lg font-mono">{{ $currentFormation ?? '---' }}</span>
                 </div>
 
-                {{-- Botón guardar --}}
-                @if($canEdit)
-                    <button 
-                        wire:click="saveLineup"
-                        wire:loading.attr="disabled"
-                        class="px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-cyan-500 text-slate-900 font-bold rounded-lg hover:shadow-lg hover:shadow-emerald-500/30 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
-                    >
-                        <span wire:loading.remove>{{ __('Guardar Cambios') }}</span>
-                        <span wire:loading class="flex items-center">
-                            <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-slate-900" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                            {{ __('Guardando...') }}
-                        </span>
-                    </button>
-                @else
-                    <div class="px-6 py-2.5 bg-slate-700 text-gray-400 font-bold rounded-lg flex items-center space-x-2">
-                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+                {{-- Capitanes --}}
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-1.5">
+                        <span class="w-5 h-5 bg-yellow-500 rounded flex items-center justify-center text-xs font-black text-slate-900">C</span>
+                        <span class="text-sm text-gray-400">{{ $captain ? $captain->player->display_name : '---' }}</span>
+                    </div>
+                    <div class="flex items-center space-x-1.5">
+                        <span class="w-5 h-5 bg-gray-400 rounded flex items-center justify-center text-xs font-black text-slate-900">V</span>
+                        <span class="text-sm text-gray-400">{{ $viceCaptain ? $viceCaptain->player->display_name : '---' }}</span>
+                    </div>
+                </div>
+
+                {{-- Estado válido --}}
+                @if($isValidLineup)
+                    <div class="flex items-center space-x-1.5 px-3 py-1 bg-emerald-500/20 rounded-lg">
+                        <svg class="w-4 h-4 text-emerald-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                         </svg>
-                        <span>{{ __('Bloqueada') }}</span>
+                        <span class="text-emerald-400 text-xs font-bold uppercase">{{ __('Válida') }}</span>
+                    </div>
+                @else
+                    <div class="flex items-center space-x-1.5 px-3 py-1 bg-red-500/20 rounded-lg">
+                        <svg class="w-4 h-4 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="text-red-400 text-xs font-bold uppercase">{{ __('Inválida') }}</span>
                     </div>
                 @endif
             </div>
+
+            {{-- Botón guardar --}}
+            @if($canEdit)
+                <button 
+                    wire:click="saveLineup"
+                    wire:loading.attr="disabled"
+                    @if(!$isValidLineup) disabled @endif
+                    class="px-6 py-2 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white font-bold rounded-lg hover:from-emerald-500 hover:to-emerald-400 transition shadow-lg hover:shadow-emerald-500/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                    <span wire:loading.remove>{{ __('Guardar Alineación') }}</span>
+                    <span wire:loading>{{ __('Guardando...') }}</span>
+                </button>
+            @endif
         </div>
 
         {{-- Grid principal: Cancha + Stats --}}
@@ -169,47 +167,91 @@
                     </div>
 
                     <div class="relative z-10">
-                        <h2 class="text-lg font-black text-emerald-400 mb-4 flex items-center space-x-2">
+                        <h2 class="text-lg font-black text-emerald-400 mb-6 flex items-center space-x-2">
                             <span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
-                            <span>{{ __('TITULARES') }} (11)</span>
+                            <span>{{ __('TITULARES') }} ({{ $starters->count() }}/11)</span>
                         </h2>
 
-                        {{-- Grid de titulares --}}
-                        <div class="grid grid-cols-11 gap-3 min-h-[400px]">
-                            @foreach($starters as $roster)
-                                {{-- Placeholder para player-card component --}}
-                                <div 
-                                    wire:key="starter-{{ $roster->player_id }}"
-                                    wire:click="openPlayerModal({{ $roster->player_id }})"
-                                    class="col-span-1 cursor-pointer"
-                                >
-                                    {{-- Este será reemplazado por el componente player-card --}}
-                                    <div class="bg-slate-800/80 border-2 border-cyan-500/50 rounded-lg p-3 hover:border-cyan-400 hover:shadow-lg hover:shadow-cyan-500/20 transition group">
-                                        {{-- Posición badge --}}
-                                        <div class="text-xs font-bold text-center mb-2 px-2 py-1 rounded 
-                                            @if($roster->player->position === 1) bg-yellow-500/20 text-yellow-400
-                                            @elseif($roster->player->position === 2) bg-blue-500/20 text-blue-400
-                                            @elseif($roster->player->position === 3) bg-emerald-500/20 text-emerald-400
-                                            @else bg-red-500/20 text-red-400
-                                            @endif">
-                                            {{ $roster->player->position_name }}
-                                        </div>
-                                        
-                                        {{-- Nombre --}}
-                                        <div class="text-xs text-center font-bold text-white truncate">
-                                            {{ $roster->player->known_as ?? $roster->player->full_name }}
-                                        </div>
+                        @php
+                            // Agrupar titulares por posición
+                            $gk = $starters->filter(fn($r) => $r->player->position === 1); // GK
+                            $df = $starters->filter(fn($r) => $r->player->position === 2); // DF
+                            $mf = $starters->filter(fn($r) => $r->player->position === 3); // MF
+                            $fw = $starters->filter(fn($r) => $r->player->position === 4); // FW
+                        @endphp
 
-                                        {{-- Capitanía --}}
-                                        @if($roster->captaincy === 1)
-                                            <div class="mt-1 w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center text-xs font-black text-slate-900 mx-auto">C</div>
-                                        @elseif($roster->captaincy === 2)
-                                            <div class="mt-1 w-5 h-5 bg-gray-400 rounded-full flex items-center justify-center text-xs font-black text-slate-900 mx-auto">V</div>
-                                        @endif
-                                    </div>
+                        <div class="space-y-8">
+                            {{-- FILA 4: Delanteros --}}
+                            @if($fw->count() > 0)
+                                <div class="flex justify-center items-center gap-4">
+                                    @foreach($fw as $roster)
+                                        <div class="w-24" wire:key="starter-fw-{{ $roster->player_id }}">
+                                            <x-manager.lineup.player-card 
+                                                :roster="$roster" 
+                                                variant="starter"
+                                                wire:click="openPlayerModal({{ $roster->player_id }})"
+                                            />
+                                        </div>
+                                    @endforeach
                                 </div>
-                            @endforeach
+                            @endif
+
+                            {{-- FILA 3: Mediocampistas --}}
+                            @if($mf->count() > 0)
+                                <div class="flex justify-center items-center gap-4">
+                                    @foreach($mf as $roster)
+                                        <div class="w-24" wire:key="starter-mf-{{ $roster->player_id }}">
+                                            <x-manager.lineup.player-card 
+                                                :roster="$roster" 
+                                                variant="starter"
+                                                wire:click="openPlayerModal({{ $roster->player_id }})"
+                                            />
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endif
+
+                            {{-- FILA 2: Defensores --}}
+                            @if($df->count() > 0)
+                                <div class="flex justify-center items-center gap-4">
+                                    @foreach($df as $roster)
+                                        <div class="w-24" wire:key="starter-df-{{ $roster->player_id }}">
+                                            <x-manager.lineup.player-card 
+                                                :roster="$roster" 
+                                                variant="starter"
+                                                wire:click="openPlayerModal({{ $roster->player_id }})"
+                                            />
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endif
+
+                            {{-- FILA 1: Arquero --}}
+                            @if($gk->count() > 0)
+                                <div class="flex justify-center items-center">
+                                    @foreach($gk as $roster)
+                                        <div class="w-24" wire:key="starter-gk-{{ $roster->player_id }}">
+                                            <x-manager.lineup.player-card 
+                                                :roster="$roster" 
+                                                variant="starter"
+                                                wire:click="openPlayerModal({{ $roster->player_id }})"
+                                            />
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endif
                         </div>
+
+                        {{-- Mensaje si no hay titulares --}}
+                        @if($starters->count() === 0)
+                            <div class="text-center py-12 text-gray-400">
+                                <svg class="w-16 h-16 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                </svg>
+                                <p class="text-lg">{{ __('No hay titulares configurados') }}</p>
+                                <p class="text-sm mt-2">{{ __('Agrega jugadores a tu alineación desde el banco') }}</p>
+                            </div>
+                        @endif
                     </div>
                 </div>
 
@@ -217,29 +259,28 @@
                 <div class="bg-slate-800/50 border-2 border-slate-700 rounded-2xl p-6">
                     <h2 class="text-lg font-black text-gray-400 mb-4 flex items-center space-x-2">
                         <span class="w-2 h-2 bg-gray-400 rounded-full"></span>
-                        <span>{{ __('BANCO') }} (12)</span>
+                        <span>{{ __('BANCO') }} ({{ $bench->count() }}/23)</span>
                     </h2>
 
                     {{-- Grid de suplentes --}}
                     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
                         @foreach($bench as $roster)
-                            <div 
-                                wire:key="bench-{{ $roster->player_id }}"
-                                wire:click="openPlayerModal({{ $roster->player_id }})"
-                                class="cursor-pointer"
-                            >
-                                {{-- Placeholder para player-card component (versión compacta) --}}
-                                <div class="bg-slate-700/50 border border-slate-600 rounded-lg p-2.5 hover:border-gray-400 hover:shadow-lg hover:shadow-gray-500/10 transition">
-                                    <div class="text-xs font-bold text-center mb-1.5 px-1.5 py-0.5 rounded bg-slate-600/50 text-gray-400">
-                                        {{ $roster->player->position_name }}
-                                    </div>
-                                    <div class="text-xs text-center font-medium text-gray-300 truncate">
-                                        {{ $roster->player->known_as ?? $roster->player->full_name }}
-                                    </div>
-                                </div>
+                            <div wire:key="bench-{{ $roster->player_id }}">
+                                <x-manager.lineup.player-card 
+                                    :roster="$roster" 
+                                    variant="bench"
+                                    wire:click="openPlayerModal({{ $roster->player_id }})"
+                                />
                             </div>
                         @endforeach
                     </div>
+
+                    {{-- Mensaje si no hay suplentes --}}
+                    @if($bench->count() === 0)
+                        <div class="text-center py-8 text-gray-500">
+                            <p>{{ __('No hay suplentes en el banco') }}</p>
+                        </div>
+                    @endif
                 </div>
             </div>
 
@@ -281,15 +322,9 @@
                             </div>
                         </div>
 
-                        {{-- Jugadores totales --}}
+                        {{-- Jugadores --}}
                         <div class="p-3 bg-slate-700/50 rounded-lg">
-                            <div class="text-xs text-gray-400 mb-1">{{ __('Jugadores') }}</div>
-                            <div class="text-2xl font-bold text-white">{{ $formationStats['total_players'] ?? 0 }}/23</div>
-                        </div>
-
-                        {{-- Titulares/Banco --}}
-                        <div class="p-3 bg-slate-700/50 rounded-lg">
-                            <div class="text-xs text-gray-400 mb-2">{{ __('Distribución') }}</div>
+                            <div class="text-xs text-gray-400 mb-2">{{ __('Jugadores') }}</div>
                             <div class="flex items-center justify-between text-sm">
                                 <span class="text-gray-300">{{ __('Titulares:') }}</span>
                                 <span class="font-bold text-emerald-400">{{ $formationStats['starters_count'] ?? 0 }}</span>
@@ -329,7 +364,7 @@
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                             </svg>
-                            <span>{{ __('Actualizar') }}</span>
+                            <span>{{ __('Refrescar') }}</span>
                         </button>
                     </div>
                 </div>
@@ -337,70 +372,78 @@
         </div>
     </div>
 
-    {{-- Modal de jugador (placeholder - se creará después) --}}
+    {{-- Modal de jugador --}}
     @if($showPlayerModal && $selectedPlayerRoster)
-        {{-- Aquí irá el componente player-modal --}}
-        <div class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div class="bg-slate-800 border-2 border-cyan-500/50 rounded-2xl max-w-md w-full p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-xl font-bold text-white">{{ $selectedPlayerRoster->player->display_name }}</h3>
-                    <button wire:click="closePlayerModal" class="text-gray-400 hover:text-white">
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm" wire:click.self="closePlayerModal">
+            <div class="bg-slate-800 border-2 border-slate-700 rounded-2xl max-w-md w-full shadow-2xl" @click.stop>
+                {{-- Header --}}
+                <div class="flex items-center justify-between p-6 border-b border-slate-700">
+                    <div>
+                        <h3 class="text-xl font-black text-white">{{ $selectedPlayerRoster->player->display_name }}</h3>
+                        <p class="text-sm text-gray-400">{{ $selectedPlayerRoster->player->team->short_name ?? '' }}</p>
+                    </div>
+                    <button wire:click="closePlayerModal" class="text-gray-400 hover:text-white transition">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                         </svg>
                     </button>
                 </div>
-                
-                <div class="text-sm text-gray-400 mb-4">
-                    {{ __('Posición:') }} <span class="text-white font-bold">{{ $selectedPlayerRoster->player->position_name }}</span>
-                </div>
 
-                @if($canEdit)
-                    <div class="space-y-2">
-                        @if($selectedPlayerRoster->is_starter)
-                            <button 
-                                wire:click="handlePlayerSelected({{ $selectedPlayerRoster->player_id }}, 'to_bench')"
-                                class="w-full py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-600 transition"
-                            >
-                                {{ __('Mover al banco') }}
-                            </button>
-                        @else
-                            <button 
-                                wire:click="handlePlayerSelected({{ $selectedPlayerRoster->player_id }}, 'to_starting')"
-                                class="w-full py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-500 transition"
-                            >
-                                {{ __('Mover a titulares') }}
-                            </button>
-                        @endif
-
-                        @if($selectedPlayerRoster->is_starter)
-                            <button 
-                                wire:click="handlePlayerSelected({{ $selectedPlayerRoster->player_id }}, 'set_captain')"
-                                class="w-full py-2 bg-yellow-600 text-slate-900 font-bold rounded-lg hover:bg-yellow-500 transition"
-                            >
-                                {{ __('Asignar Capitán') }}
-                            </button>
-                            <button 
-                                wire:click="handlePlayerSelected({{ $selectedPlayerRoster->player_id }}, 'set_vice')"
-                                class="w-full py-2 bg-gray-600 text-white font-bold rounded-lg hover:bg-gray-500 transition"
-                            >
-                                {{ __('Asignar Vicecapitán') }}
-                            </button>
-                        @endif
+                {{-- Body --}}
+                <div class="p-6 space-y-4">
+                    {{-- Info básica --}}
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-slate-700/50 rounded-lg p-3">
+                            <div class="text-xs text-gray-400 mb-1">{{ __('Posición') }}</div>
+                            <div class="text-white font-bold">{{ $selectedPlayerRoster->player->position_name }}</div>
+                        </div>
+                        <div class="bg-slate-700/50 rounded-lg p-3">
+                            <div class="text-xs text-gray-400 mb-1">{{ __('Estado') }}</div>
+                            <div class="text-white font-bold">
+                                {{ $selectedPlayerRoster->is_starter ? __('Titular') : __('Suplente') }}
+                            </div>
+                        </div>
                     </div>
-                @endif
+
+                    {{-- Acciones (solo si puede editar) --}}
+                    @if($canEdit)
+                        <div class="space-y-2 pt-4 border-t border-slate-700">
+                            @if($selectedPlayerRoster->is_starter)
+                                <button 
+                                    wire:click="removeFromStarting({{ $selectedPlayerRoster->player_id }})"
+                                    class="w-full py-3 bg-slate-700 text-white rounded-lg hover:bg-slate-600 transition font-medium"
+                                >
+                                    {{ __('Mover al banco') }}
+                                </button>
+                            @else
+                                <button 
+                                    wire:click="addToStarting({{ $selectedPlayerRoster->player_id }})"
+                                    class="w-full py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-500 transition font-medium"
+                                >
+                                    {{ __('Mover a titulares') }}
+                                </button>
+                            @endif
+
+                            @if($selectedPlayerRoster->is_starter)
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button 
+                                        wire:click="setCaptain({{ $selectedPlayerRoster->player_id }})"
+                                        class="py-3 bg-yellow-600 text-slate-900 rounded-lg hover:bg-yellow-500 transition font-bold"
+                                    >
+                                        {{ __('Capitán') }}
+                                    </button>
+                                    <button 
+                                        wire:click="setViceCaptain({{ $selectedPlayerRoster->player_id }})"
+                                        class="py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-500 transition font-bold"
+                                    >
+                                        {{ __('Vice') }}
+                                    </button>
+                                </div>
+                            @endif
+                        </div>
+                    @endif
+                </div>
             </div>
         </div>
     @endif
-
-    {{-- Loading overlay --}}
-    <div wire:loading.flex class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 items-center justify-center">
-        <div class="bg-slate-800 border-2 border-cyan-500/50 rounded-2xl p-8 flex flex-col items-center space-y-4">
-            <svg class="animate-spin h-12 w-12 text-cyan-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            <span class="text-cyan-400 font-bold text-lg">{{ __('Procesando...') }}</span>
-        </div>
-    </div>
 </div>

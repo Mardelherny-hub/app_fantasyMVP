@@ -87,9 +87,11 @@ class LineupService
                 'captaincy' => $tempCaptaincy,
             ]);
 
-            // Validar formación resultante
+            // Validar formación resultante solo si hay 11 titulares
             $allStarters = $this->getStarters($team, $gameweekId);
-            $this->validateFormation($allStarters);
+            if ($allStarters->count() === 11) {
+                $this->validateFormation($allStarters);
+            }
 
             return [
                 'success' => true,
@@ -119,6 +121,23 @@ class LineupService
                 ->with('player')
                 ->firstOrFail();
 
+            // Si no es titular, validar que haya espacio
+            if (!$roster->is_starter) {
+                $startersCount = FantasyRoster::where('fantasy_team_id', $team->id)
+                    ->where('gameweek_id', $gameweekId)
+                    ->where('is_starter', true)
+                    ->count();
+                
+                if ($startersCount >= 11) {
+                    throw ValidationException::withMessages([
+                        'starters' => __('Ya tienes 11 titulares. Debes mover uno al banco primero.'),
+                    ]);
+                }
+                
+                // Validar límites de posición
+                $this->validatePositionLimit($team, $gameweekId, $roster->player->position);
+            }
+
             // Si ya es titular, solo cambiar slot
             if ($roster->is_starter) {
                 $roster->update(['slot' => $targetSlot]);
@@ -131,7 +150,7 @@ class LineupService
                     ->first();
 
                 if ($currentStarter) {
-                    // Encontrar primer slot disponible en banco (12-23)
+                    // Encontrar primer slot disponible en banco (12-34)
                     $benchSlot = $this->findAvailableBenchSlot($team, $gameweekId);
                     
                     $currentStarter->update([
@@ -148,9 +167,11 @@ class LineupService
                 ]);
             }
 
-            // Validar formación
+            // Validar formación solo si hay 11 titulares
             $allStarters = $this->getStarters($team, $gameweekId);
-            $this->validateFormation($allStarters);
+            if ($allStarters->count() === 11) {
+                $this->validateFormation($allStarters);
+            }
 
             return [
                 'success' => true,
@@ -158,6 +179,39 @@ class LineupService
                 'message' => __('Jugador movido a titulares.'),
             ];
         });
+    }
+
+    /**
+     * Validar que no se exceda el máximo de jugadores por posición en titulares
+     */
+    protected function validatePositionLimit(FantasyTeam $team, int $gameweekId, int $position): void
+    {
+        $starters = $this->getStarters($team, $gameweekId);
+        
+        // Contar cuántos hay actualmente en esa posición
+        $currentCount = $starters->filter(function ($roster) use ($position) {
+            return $roster->player->position === $position;
+        })->count();
+
+        // Definir máximos por posición
+        $maxByPosition = [
+            Player::POSITION_GK => 1,  // Máximo 1 arquero
+            Player::POSITION_DF => 5,  // Máximo 5 defensores
+            Player::POSITION_MF => 5,  // Máximo 5 mediocampistas
+            Player::POSITION_FW => 3,  // Máximo 3 delanteros
+        ];
+
+        $max = $maxByPosition[$position] ?? 11;
+
+        if ($currentCount >= $max) {
+            $positionName = Player::POSITIONS[$position];
+            throw ValidationException::withMessages([
+                'position' => __('No puedes agregar más :position. Máximo permitido: :max.', [
+                    'position' => $positionName,
+                    'max' => $max,
+                ]),
+            ]);
+        }
     }
 
     /**
@@ -179,28 +233,35 @@ class LineupService
                 ->with('player')
                 ->firstOrFail();
 
-            // Si ya está en el banco, solo cambiar slot
-            if (!$roster->is_starter) {
-                $roster->update(['slot' => $targetSlot]);
-            } else {
-                // Remover capitanía si la tenía
-                $roster->update([
-                    'slot' => $targetSlot,
-                    'is_starter' => false,
-                    'captaincy' => FantasyRoster::CAPTAINCY_NONE,
-                ]);
+            // Mover al banco al jugador que ocupa el slot objetivo
+            $currentBench = FantasyRoster::where('fantasy_team_id', $team->id)
+                ->where('gameweek_id', $gameweekId)
+                ->where('slot', $targetSlot)
+                ->where('is_starter', false)
+                ->first();
 
-                // Validar que quedan 11 titulares con formación válida
-                $allStarters = $this->getStarters($team, $gameweekId);
-                
-                if ($allStarters->count() < 11) {
-                    throw ValidationException::withMessages([
-                        'lineup' => __('Debes mantener 11 titulares.'),
+            if ($currentBench) {
+                // Encontrar primer slot disponible (en titulares o banco según origen)
+                if ($roster->is_starter) {
+                    // Buscar slot en titulares
+                    $newSlot = $this->findAvailableStarterSlot($team, $gameweekId);
+                    $currentBench->update([
+                        'slot' => $newSlot,
+                        'is_starter' => true,
                     ]);
+                } else {
+                    // Buscar slot en banco
+                    $newSlot = $this->findAvailableBenchSlot($team, $gameweekId);
+                    $currentBench->update(['slot' => $newSlot]);
                 }
-
-                $this->validateFormation($allStarters);
             }
+
+            // Mover al banco (quitar capitanía si la tenía)
+            $roster->update([
+                'slot' => $targetSlot,
+                'is_starter' => false,
+                'captaincy' => FantasyRoster::CAPTAINCY_NONE,
+            ]);
 
             return [
                 'success' => true,
@@ -235,13 +296,13 @@ class LineupService
                 ]);
             }
 
-            // Remover capitanía anterior
+            // Quitar capitanía al actual capitán
             FantasyRoster::where('fantasy_team_id', $team->id)
                 ->where('gameweek_id', $gameweekId)
                 ->where('captaincy', FantasyRoster::CAPTAINCY_CAPTAIN)
                 ->update(['captaincy' => FantasyRoster::CAPTAINCY_NONE]);
 
-            // Asignar nueva capitanía
+            // Asignar nuevo capitán
             $roster->update(['captaincy' => FantasyRoster::CAPTAINCY_CAPTAIN]);
 
             return [
@@ -277,20 +338,13 @@ class LineupService
                 ]);
             }
 
-            // No puede ser el capitán
-            if ($roster->captaincy === FantasyRoster::CAPTAINCY_CAPTAIN) {
-                throw ValidationException::withMessages([
-                    'vice_captain' => __('El capitán no puede ser vicecapitán.'),
-                ]);
-            }
-
-            // Remover vice-capitanía anterior
+            // Quitar vicecapitanía al actual vicecapitán
             FantasyRoster::where('fantasy_team_id', $team->id)
                 ->where('gameweek_id', $gameweekId)
                 ->where('captaincy', FantasyRoster::CAPTAINCY_VICE)
                 ->update(['captaincy' => FantasyRoster::CAPTAINCY_NONE]);
 
-            // Asignar nueva vice-capitanía
+            // Asignar nuevo vicecapitán
             $roster->update(['captaincy' => FantasyRoster::CAPTAINCY_VICE]);
 
             return [
@@ -299,100 +353,6 @@ class LineupService
                 'message' => __('Vicecapitán asignado correctamente.'),
             ];
         });
-    }
-
-    /**
-     * Validar formación (11 titulares con mínimos correctos)
-     */
-    public function validateFormation(Collection $starters): void
-    {
-        // Validar que hay 11 titulares
-        if ($starters->count() !== 11) {
-            throw ValidationException::withMessages([
-                'formation' => __('Debes tener exactamente 11 titulares.'),
-            ]);
-        }
-
-        // Contar por posición
-        $positionCounts = [
-            Player::POSITION_GK => 0,
-            Player::POSITION_DF => 0,
-            Player::POSITION_MF => 0,
-            Player::POSITION_FW => 0,
-        ];
-
-        foreach ($starters as $roster) {
-            $position = $roster->player->position;
-            $positionCounts[$position] = ($positionCounts[$position] ?? 0) + 1;
-        }
-
-        // Validar mínimos
-        foreach (self::FORMATION_MINIMUMS as $position => $minimum) {
-            if ($positionCounts[$position] < $minimum) {
-                $positionName = Player::POSITIONS[$position];
-                throw ValidationException::withMessages([
-                    'formation' => __('Formación inválida: mínimo :min :position.', [
-                        'min' => $minimum,
-                        'position' => $positionName,
-                    ]),
-                ]);
-            }
-        }
-    }
-
-    /**
-     * Verificar si se puede editar la alineación
-     */
-    public function canEditLineup(Gameweek $gameweek): bool
-    {
-        return !$gameweek->hasStarted();
-    }
-
-    /**
-     * Asegurar que se puede editar (lanza excepción si no)
-     */
-    protected function ensureCanEditLineup(Gameweek $gameweek): void
-    {
-        if (!$this->canEditLineup($gameweek)) {
-            throw ValidationException::withMessages([
-                'gameweek' => __('La gameweek ya ha iniciado. No puedes editar la alineación.'),
-            ]);
-        }
-    }
-
-    /**
-     * Obtener titulares
-     */
-    protected function getStarters(FantasyTeam $team, int $gameweekId): Collection
-    {
-        return FantasyRoster::where('fantasy_team_id', $team->id)
-            ->where('gameweek_id', $gameweekId)
-            ->where('is_starter', true)
-            ->with('player')
-            ->get();
-    }
-
-    /**
-     * Encontrar slot disponible en banco (12-23)
-     */
-    protected function findAvailableBenchSlot(FantasyTeam $team, int $gameweekId): int
-    {
-        $usedSlots = FantasyRoster::where('fantasy_team_id', $team->id)
-            ->where('gameweek_id', $gameweekId)
-            ->where('is_starter', false)
-            ->pluck('slot')
-            ->toArray();
-
-        // Buscar primer slot libre entre 12 y 23
-        for ($slot = 12; $slot <= 23; $slot++) {
-            if (!in_array($slot, $usedSlots)) {
-                return $slot;
-            }
-        }
-
-        throw ValidationException::withMessages([
-            'bench' => __('No hay slots disponibles en el banco.'),
-        ]);
     }
 
     /**
@@ -427,7 +387,10 @@ class LineupService
 
             // Validar alineación completa
             $starters = collect($updatedRosters)->where('is_starter', true);
-            $this->validateFormation($starters);
+            
+            if ($starters->count() === 11) {
+                $this->validateFormation($starters);
+            }
 
             // Validar capitanes
             $captainCount = collect($updatedRosters)
@@ -490,11 +453,136 @@ class LineupService
      */
     protected function isLineupValid($starters, $captain, $viceCaptain): bool
     {
+        if ($starters->count() !== 11) {
+            return false;
+        }
+
         try {
             $this->validateFormation($starters);
             return $captain !== null && $viceCaptain !== null;
         } catch (ValidationException $e) {
             return false;
         }
+    }
+
+    /**
+     * Validar formación (11 titulares con mínimos correctos)
+     */
+    public function validateFormation(Collection $starters): void
+    {
+        // Validar que hay 11 titulares
+        if ($starters->count() !== 11) {
+            throw ValidationException::withMessages([
+                'formation' => __('Debes tener exactamente 11 titulares.'),
+            ]);
+        }
+
+        // Contar por posición
+        $positionCounts = [
+            Player::POSITION_GK => 0,
+            Player::POSITION_DF => 0,
+            Player::POSITION_MF => 0,
+            Player::POSITION_FW => 0,
+        ];
+
+        foreach ($starters as $roster) {
+            $position = $roster->player->position;
+            $positionCounts[$position] = ($positionCounts[$position] ?? 0) + 1;
+        }
+
+        // Validar mínimos
+        foreach (self::FORMATION_MINIMUMS as $position => $minimum) {
+            if ($positionCounts[$position] < $minimum) {
+                $positionName = Player::POSITIONS[$position];
+                throw ValidationException::withMessages([
+                    'formation' => __('Formación inválida: mínimo :min :position.', [
+                        'min' => $minimum,
+                        'position' => $positionName,
+                    ]),
+                ]);
+            }
+        }
+    }
+
+    /**
+     * Verificar si se puede editar la alineación
+     * 
+     * TESTING MODE: Si está habilitado, permite editar siempre
+     */
+    public function canEditLineup(Gameweek $gameweek): bool
+    {
+        // Si el modo testing está habilitado, permitir siempre
+        if (config('lineup.testing_mode', false) || config('lineup.allow_edit_after_deadline', false)) {
+            return true;
+        }
+
+        return !$gameweek->hasStarted();
+    }
+
+    /**
+     * Asegurar que se puede editar (lanza excepción si no)
+     */
+    protected function ensureCanEditLineup(Gameweek $gameweek): void
+    {
+        if (!$this->canEditLineup($gameweek)) {
+            throw ValidationException::withMessages([
+                'gameweek' => __('La gameweek ya ha iniciado. No puedes editar la alineación.'),
+            ]);
+        }
+    }
+
+    /**
+     * Obtener titulares
+     */
+    protected function getStarters(FantasyTeam $team, int $gameweekId): Collection
+    {
+        return FantasyRoster::where('fantasy_team_id', $team->id)
+            ->where('gameweek_id', $gameweekId)
+            ->where('is_starter', true)
+            ->with('player')
+            ->get();
+    }
+
+    /**
+     * Encontrar slot disponible en titulares (1-11)
+     */
+    protected function findAvailableStarterSlot(FantasyTeam $team, int $gameweekId): int
+    {
+        $usedSlots = FantasyRoster::where('fantasy_team_id', $team->id)
+            ->where('gameweek_id', $gameweekId)
+            ->where('is_starter', true)
+            ->pluck('slot')
+            ->toArray();
+
+        // Buscar primer slot libre entre 1 y 11
+        for ($slot = 1; $slot <= 11; $slot++) {
+            if (!in_array($slot, $usedSlots)) {
+                return $slot;
+            }
+        }
+
+        // Si no hay slots libres, forzar slot 1 (no debe pasar si validamos antes)
+        return 1;
+    }
+
+    /**
+     * Encontrar slot disponible en banco (12-34 para 23 jugadores)
+     */
+    protected function findAvailableBenchSlot(FantasyTeam $team, int $gameweekId): int
+    {
+        $usedSlots = FantasyRoster::where('fantasy_team_id', $team->id)
+            ->where('gameweek_id', $gameweekId)
+            ->where('is_starter', false)
+            ->pluck('slot')
+            ->toArray();
+
+        // Buscar primer slot libre entre 12 y 34 (23 espacios para banco)
+        for ($slot = 12; $slot <= 34; $slot++) {
+            if (!in_array($slot, $usedSlots)) {
+                return $slot;
+            }
+        }
+
+        return 12;
     }
 }

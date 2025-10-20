@@ -264,6 +264,82 @@ class LineupManager extends Component
     }
 
     /**
+     * Agregar jugador a titulares (método simplificado)
+     */
+    public function addToStarting(int $playerId): void
+    {
+        if (!$this->canEdit) {
+            $this->errorMessage = __('No puedes editar esta alineación.');
+            return;
+        }
+
+        // Cerrar modal primero
+        $this->closePlayerModal();
+
+        try {
+            $this->loading = true;
+            
+            // Encontrar primer slot disponible en titulares
+            $targetSlot = $this->findAvailableStarterSlot();
+            
+            $lineupService = app(LineupService::class);
+            $result = $lineupService->moveToStarting(
+                $this->team,
+                $this->selectedGameweek->id,
+                $playerId,
+                $targetSlot
+            );
+
+            $this->successMessage = $result['message'];
+            $this->loadLineup();
+            $this->dispatch('lineup-updated');
+            
+        } catch (\Exception $e) {
+            $this->errorMessage = $e->getMessage();
+        } finally {
+            $this->loading = false;
+        }
+    }
+
+    /**
+     * Remover jugador de titulares (método simplificado)
+     */
+    public function removeFromStarting(int $playerId): void
+    {
+        if (!$this->canEdit) {
+            $this->errorMessage = __('No puedes editar esta alineación.');
+            return;
+        }
+
+        // Cerrar modal primero
+        $this->closePlayerModal();
+
+        try {
+            $this->loading = true;
+            
+            // Encontrar primer slot disponible en banco
+            $targetSlot = $this->findAvailableBenchSlot();
+            
+            $lineupService = app(LineupService::class);
+            $result = $lineupService->moveToBench(
+                $this->team,
+                $this->selectedGameweek->id,
+                $playerId,
+                $targetSlot
+            );
+
+            $this->successMessage = $result['message'];
+            $this->loadLineup();
+            $this->dispatch('lineup-updated');
+            
+        } catch (\Exception $e) {
+            $this->errorMessage = $e->getMessage();
+        } finally {
+            $this->loading = false;
+        }
+    }
+
+    /**
      * Asignar capitán
      */
     public function setCaptain(int $playerId): void

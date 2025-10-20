@@ -87,3 +87,5 @@ Route::middleware(['web', 'auth', 'verified', 'role:manager'])
             return view('manager.market.index');
         })->name('index');
     });
+
+    

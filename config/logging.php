@@ -129,4 +129,11 @@ return [
 
     ],
 
+    'moderation' => [
+        'driver' => 'daily',
+        'path' => storage_path('logs/moderation.log'),
+        'level' => 'info',
+        'days' => 90, // Retener 90 días
+    ],
+
 ];

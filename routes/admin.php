@@ -339,6 +339,7 @@ Route::middleware(['web', 'auth', 'verified', 'role:admin'])
         // Prices Management
         Route::get('market/prices', [PricesManagementController::class, 'index'])->name('prices.index');
 
-
+        // Moderation Panel
+        Route::get('market/moderation', [ModerationController::class, 'index'])->name('moderation.index');
 
     });

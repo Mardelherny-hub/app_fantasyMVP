@@ -16,6 +16,10 @@ use App\Http\Controllers\Admin\RealFixtureController;
 use App\Http\Controllers\Admin\RealMatchController;
 use App\Http\Controllers\Admin\Fantasy\LeagueController;
 use App\Http\Controllers\Admin\Fantasy\GameweekController;
+use App\Http\Controllers\Admin\Fantasy\TeamsController;
+use App\Http\Controllers\Admin\Fantasy\GameweeksController;
+use App\Http\Controllers\Admin\Fantasy\MarketDashboardController;
+
 
 /* ========================================
  * ADMIN ROUTES
@@ -314,4 +318,7 @@ Route::middleware(['web', 'auth', 'verified', 'role:admin'])
             Route::get('teams', [TeamsController::class, 'index'])->name('teams.index');
             Route::get('teams/{team}', [TeamsController::class, 'show'])->name('teams.show');
         });
+
+        // Market Overview
+        Route::get('/market-overview', [\App\Http\Controllers\Admin\Market\MarketOverviewController::class, 'index'])->name('market-overview.index');
     });

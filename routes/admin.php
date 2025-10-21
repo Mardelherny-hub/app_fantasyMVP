@@ -336,6 +336,8 @@ Route::middleware(['web', 'auth', 'verified', 'role:admin'])
         Route::get('market/settings', [MarketSettingsController::class, 'index'])->name('market.settings.index');
         Route::post('market/settings/{league}', [MarketSettingsController::class, 'update'])->name('market.settings.update');
 
+        // Prices Management
+        Route::get('market/prices', [PricesManagementController::class, 'index'])->name('prices.index');
 
 
 

@@ -325,4 +325,8 @@ Route::middleware(['web', 'auth', 'verified', 'role:admin'])
         // Listings Management
         Route::get('market/listings', [ListingsManagementController::class, 'index'])->name('market.listings.index');
         Route::post('market/listings/{listing}/cancel', [ListingsManagementController::class, 'cancel'])->name('market.listings.cancel');
+
+        // Offers Management
+        Route::get('market/offers', [OffersManagementController::class, 'index'])->name('market.offers.index');
+
     });

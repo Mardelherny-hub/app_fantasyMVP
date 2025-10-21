@@ -342,4 +342,7 @@ Route::middleware(['web', 'auth', 'verified', 'role:admin'])
         // Moderation Panel
         Route::get('market/moderation', [ModerationController::class, 'index'])->name('moderation.index');
 
+        // Analytics Dashboard
+        Route::get('analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
+
     });

@@ -197,4 +197,144 @@ class MarketAnalyticsService
             'acceptance_rate' => $this->getOfferAcceptanceRate($leagueId),
         ];
     }
+
+    /**
+     * Obtener jugadores más vendidos
+     *
+     * @param League|null $league
+     * @param int $limit
+     * @return array
+     */
+    public function getTopSoldPlayers(?League $league = null, int $limit = 10): array
+    {
+        $query = Transfer::with('player')
+            ->selectRaw('player_id, COUNT(*) as transfers_count, AVG(price) as avg_price, MAX(price) as max_price')
+            ->groupBy('player_id')
+            ->orderByDesc('transfers_count')
+            ->limit($limit);
+
+        if ($league) {
+            $query->where('league_id', $league->id);
+        }
+
+        return $query->get()->map(function ($item) {
+            return [
+                'player' => $item->player,
+                'transfers_count' => $item->transfers_count,
+                'avg_price' => round($item->avg_price, 2),
+                'max_price' => round($item->max_price, 2),
+            ];
+        })->toArray();
+    }
+
+    /**
+     * Obtener equipos más activos
+     *
+     * @param League|null $league
+     * @param int $limit
+     * @return array
+     */
+    public function getMostActiveTeams(?League $league = null, int $limit = 10): array
+    {
+        $query = Transfer::with('toTeam')
+            ->selectRaw('to_fantasy_team_id, COUNT(*) as purchases, SUM(price) as total_spent')
+            ->whereNotNull('to_fantasy_team_id')
+            ->groupBy('to_fantasy_team_id')
+            ->orderByDesc('purchases')
+            ->limit($limit);
+
+        if ($league) {
+            $query->where('league_id', $league->id);
+        }
+
+        return $query->get()->map(function ($item) {
+            return [
+                'team' => $item->toTeam,
+                'purchases' => $item->purchases,
+                'total_spent' => round($item->total_spent, 2),
+            ];
+        })->toArray();
+    }
+
+    /**
+     * Obtener precio promedio por posición
+     *
+     * @param Season $season
+     * @return array
+     */
+    public function getAveragePriceByPosition(Season $season): array
+    {
+        $positions = [
+            Player::POSITION_GK => 'GK',
+            Player::POSITION_DF => 'DF',
+            Player::POSITION_MF => 'MF',
+            Player::POSITION_FW => 'FW',
+        ];
+
+        $result = [];
+
+        foreach ($positions as $posId => $posName) {
+            $avg = PlayerValuation::where('season_id', $season->id)
+                ->whereHas('player', fn($q) => $q->where('position', $posId))
+                ->avg('market_value');
+
+            $result[$posName] = round($avg ?? 0, 2);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Obtener evolución de transfers por gameweek
+     *
+     * @param League $league
+     * @param int $limit
+     * @return array
+     */
+    public function getTransferTrends(League $league, int $limit = 10): array
+    {
+        $gameweeks = Gameweek::where('season_id', $league->season_id)
+            ->orderByDesc('number')
+            ->limit($limit)
+            ->get();
+
+        return $gameweeks->map(function ($gw) use ($league) {
+            $count = Transfer::where('league_id', $league->id)
+                ->whereBetween('effective_at', [$gw->starts_at, $gw->ends_at])
+                ->count();
+
+            return [
+                'gameweek' => $gw->number,
+                'transfers' => $count,
+            ];
+        })->reverse()->values()->toArray();
+    }
+
+    /**
+     * Tasa de éxito de ofertas
+     *
+     * @param League|null $league
+     * @return array
+     */
+    public function getOfferSuccessRate(?League $league = null): array
+    {
+        $query = Offer::query();
+
+        if ($league) {
+            $query->whereHas('listing', fn($q) => $q->where('league_id', $league->id));
+        }
+
+        $total = $query->count();
+        $accepted = $query->where('status', Offer::STATUS_ACCEPTED)->count();
+        $rejected = $query->where('status', Offer::STATUS_REJECTED)->count();
+        $pending = $query->where('status', Offer::STATUS_PENDING)->count();
+
+        return [
+            'total' => $total,
+            'accepted' => $accepted,
+            'rejected' => $rejected,
+            'pending' => $pending,
+            'success_rate' => $total > 0 ? round(($accepted / $total) * 100, 1) : 0,
+        ];
+    }
 }

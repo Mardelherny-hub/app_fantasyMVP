@@ -198,12 +198,68 @@
                             :key="'offer-manager-' . $childProps['team']->id" 
                         />
                     @elseif($activeTab === 'history')
-                        <livewire:manager.market.transfer-history 
-                            :team="$childProps['team']" 
-                            :gameweek="$childProps['gameweek']" 
-                            :marketOpen="$childProps['marketOpen']" 
-                            :key="'transfer-history-' . $childProps['team']->id" 
-                        />
+                        @php
+                            $historyTransfers = \App\Models\Transfer::where('league_id', $childProps['team']->league_id)
+                                ->where(function($q) use ($childProps) {
+                                    $q->where('to_fantasy_team_id', $childProps['team']->id)
+                                    ->orWhere('from_fantasy_team_id', $childProps['team']->id);
+                                })
+                                ->with(['player', 'fromTeam', 'toTeam'])
+                                ->orderBy('effective_at', 'desc')
+                                ->limit(20)
+                                ->get();
+                        @endphp
+                        
+                        <div>
+                            @if($historyTransfers->isEmpty())
+                                <div class="text-center py-12">
+                                    <svg class="w-16 h-16 text-gray-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    <p class="text-gray-400 text-lg">{{ __('No transfer history') }}</p>
+                                </div>
+                            @else
+                                <div class="space-y-3">
+                                    @foreach($historyTransfers as $transfer)
+                                        @php
+                                            $isBuy = $transfer->to_fantasy_team_id === $childProps['team']->id;
+                                            $isFreeAgent = is_null($transfer->from_fantasy_team_id);
+                                        @endphp
+
+                                        <div class="bg-slate-700 border border-slate-600 rounded-lg p-4">
+                                            <div class="flex items-center justify-between mb-2">
+                                                <div class="flex items-center gap-3">
+                                                    <h3 class="font-bold text-white">{{ $transfer->player->display_name }}</h3>
+                                                    @if($isBuy)
+                                                        <span class="px-2 py-1 bg-emerald-500/20 text-emerald-300 text-xs font-bold rounded">
+                                                            ↓ IN
+                                                        </span>
+                                                    @else
+                                                        <span class="px-2 py-1 bg-red-500/20 text-red-300 text-xs font-bold rounded">
+                                                            ↑ OUT
+                                                        </span>
+                                                    @endif
+                                                </div>
+                                                <span class="text-white font-bold">${{ number_format($transfer->price, 2) }}</span>
+                                            </div>
+
+                                            <div class="flex items-center justify-between text-sm text-gray-400">
+                                                <div>
+                                                    @if($isFreeAgent)
+                                                        <span class="text-blue-400">Free Agent</span> → {{ $transfer->toTeam->name }}
+                                                    @elseif($isBuy)
+                                                        {{ $transfer->fromTeam->name ?? 'Unknown' }} → <span class="text-emerald-400">{{ $transfer->toTeam->name }}</span>
+                                                    @else
+                                                        <span class="text-red-400">{{ $transfer->fromTeam->name }}</span> → {{ $transfer->toTeam->name }}
+                                                    @endif
+                                                </div>
+                                                <span class="text-xs">{{ $transfer->effective_at->format('d/m/Y') }}</span>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endif
+                        </div>
                     @endif
                 </div>
             @endif

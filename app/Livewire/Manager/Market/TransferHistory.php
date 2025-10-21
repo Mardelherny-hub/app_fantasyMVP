@@ -16,8 +16,6 @@ class TransferHistory extends Component
 
     public function mount(FantasyTeam $team, ?Gameweek $gameweek, bool $marketOpen)
     {
-        // Autorización: verificar que el user puede ver transfers de este equipo
-        $this->authorize('viewForTeam', [Transfer::class, $team]);
         $this->team = $team;
         $this->currentGameweek = $gameweek;
         $this->marketOpen = $marketOpen;

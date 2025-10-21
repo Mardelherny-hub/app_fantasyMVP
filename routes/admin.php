@@ -329,4 +329,7 @@ Route::middleware(['web', 'auth', 'verified', 'role:admin'])
         // Offers Management
         Route::get('market/offers', [OffersManagementController::class, 'index'])->name('market.offers.index');
 
+        // Transfers Management
+        Route::get('market/transfers', [TransfersController::class, 'index'])->name('market.transfers.index');
+
     });

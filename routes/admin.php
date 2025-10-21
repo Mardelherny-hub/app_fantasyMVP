@@ -321,4 +321,8 @@ Route::middleware(['web', 'auth', 'verified', 'role:admin'])
 
         // Market Overview
         Route::get('/market-overview', [\App\Http\Controllers\Admin\Market\MarketOverviewController::class, 'index'])->name('market-overview.index');
+
+        // Listings Management
+        Route::get('market/listings', [ListingsManagementController::class, 'index'])->name('market.listings.index');
+        Route::post('market/listings/{listing}/cancel', [ListingsManagementController::class, 'cancel'])->name('market.listings.cancel');
     });

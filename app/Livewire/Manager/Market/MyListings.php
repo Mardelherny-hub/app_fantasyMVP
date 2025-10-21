@@ -31,6 +31,8 @@ class MyListings extends Component
             $this->loading = true;
             
             $listing = Listing::findOrFail($listingId);
+            // Autorización: verificar que el user puede retirar este listing
+            $this->authorize('withdraw', $listing);
             $listingService = app(ListingService::class);
             
             $listingService->withdrawListing($listing);
@@ -38,6 +40,8 @@ class MyListings extends Component
             $this->dispatch('notify', message: __('Listing retirado.'), type: 'success');
             $this->dispatch('listingWithdrawn');
             
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            $this->dispatch('notify', message: __('No autorizado para retirar este listing.'), type: 'error');
         } catch (\Exception $e) {
             Log::error('Error withdrawing listing: ' . $e->getMessage());
             $this->dispatch('notify', message: $e->getMessage(), type: 'error');

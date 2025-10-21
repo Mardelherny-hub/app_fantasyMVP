@@ -5,6 +5,7 @@ namespace App\Livewire\Manager\Market;
 use App\Models\FantasyTeam;
 use App\Models\Listing;
 use App\Models\Gameweek;
+use App\Models\Offer;
 use App\Services\Manager\Market\OfferService;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -85,6 +86,8 @@ class MarketListings extends Component
             $this->loading = true;
             
             $listing = Listing::findOrFail($this->selectedListingId);
+            // Autorización: verificar que el user puede crear oferta para este listing
+            $this->authorize('create', [Offer::class, $listing, $this->team]);
             $offerService = app(OfferService::class);
             
             $offer = $offerService->createOffer($this->team, $listing, $this->offerPrice);
@@ -93,6 +96,8 @@ class MarketListings extends Component
             $this->dispatch('offerSent', data: ['offer' => $offer]);
             $this->closeOfferModal();
             
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            $this->dispatch('notify', message: __('No autorizado para crear esta oferta.'), type: 'error');
         } catch (\Exception $e) {
             Log::error('Error making offer: ' . $e->getMessage());
             $this->dispatch('notify', message: $e->getMessage(), type: 'error');

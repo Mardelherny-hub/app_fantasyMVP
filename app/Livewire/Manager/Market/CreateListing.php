@@ -6,6 +6,7 @@ use App\Models\FantasyTeam;
 use App\Models\Player;
 use App\Models\FantasyRoster;
 use App\Models\Gameweek;
+use App\Models\Listing;
 use App\Services\Manager\Market\ListingService;
 use Livewire\Component;
 use Illuminate\Support\Facades\Log;
@@ -49,6 +50,14 @@ class CreateListing extends Component
 
     public function createListing()
     {
+        // Autorización: verificar que el user puede crear listing para este team
+        try {
+            $this->authorize('create', [Listing::class, $this->team]);
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            $this->dispatch('notify', message: __('No autorizado para crear listing.'), type: 'error');
+            return;
+        }
+        
         $this->validate([
             'selectedPlayerId' => 'required|exists:players,id',
             'price' => 'required|numeric|min:0.50',

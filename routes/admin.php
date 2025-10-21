@@ -332,4 +332,11 @@ Route::middleware(['web', 'auth', 'verified', 'role:admin'])
         // Transfers Management
         Route::get('market/transfers', [TransfersController::class, 'index'])->name('market.transfers.index');
 
+        // Market Settings
+        Route::get('market/settings', [MarketSettingsController::class, 'index'])->name('market.settings.index');
+        Route::post('market/settings/{league}', [MarketSettingsController::class, 'update'])->name('market.settings.update');
+
+
+
+
     });

@@ -61,7 +61,7 @@ class Season extends Model
      */
     public function leagues(): HasMany
     {
-        return $this->hasMany(FootballFootballMatch::class);
+        return $this->hasMany(League::class);
     }
 
     /**

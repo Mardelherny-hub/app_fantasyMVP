@@ -62,19 +62,19 @@ class RealTeam extends Model
     }
 
     /**
-     * Get home matches.
+     * Get home fixtures.
      */
-    public function homeMatches(): HasMany
+    public function homeFixtures(): HasMany
     {
-        return $this->hasMany(\App\Models\FootballMatch::class, 'home_team_id');
+        return $this->hasMany(\App\Models\RealFixture::class, 'home_team_id');
     }
 
     /**
-     * Get away matches.
+     * Get away fixtures.
      */
-    public function awayMatches(): HasMany
+    public function awayFixtures(): HasMany
     {
-        return $this->hasMany(\App\Models\FootballMatch::class, 'away_team_id');
+        return $this->hasMany(\App\Models\RealFixture::class, 'away_team_id');
     }
 
     /**

@@ -26,6 +26,7 @@ use App\Http\Controllers\Admin\Market\MarketSettingsController;
 use App\Http\Controllers\Admin\Market\PricesManagementController;      // FASE 6
 use App\Http\Controllers\Admin\Market\ModerationController;            // FASE 7
 use App\Http\Controllers\Admin\Market\AnalyticsController;             // FASE 8
+use App\Http\Controllers\Admin\ScoringController;
 
 
 /* ========================================
@@ -354,4 +355,15 @@ Route::middleware(['web', 'auth', 'verified', 'role:admin'])
             // Analytics Dashboard (FASE 8)
             Route::get('analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
         });
+
+
+        // Scoring & Fixtures
+        Route::prefix('scoring')->name('scoring.')->group(function () {
+            Route::get('/', [ScoringController::class, 'index'])->name('index');
+            Route::get('/{gameweek}', [ScoringController::class, 'show'])->name('show');
+            Route::post('/{gameweek}/process', [ScoringController::class, 'process'])->name('process');
+            Route::post('/{gameweek}/recalculate', [ScoringController::class, 'recalculate'])->name('recalculate');
+        });
+
+
     });

@@ -18,7 +18,14 @@ use App\Http\Controllers\Admin\Fantasy\LeagueController;
 use App\Http\Controllers\Admin\Fantasy\GameweekController;
 use App\Http\Controllers\Admin\Fantasy\TeamsController;
 use App\Http\Controllers\Admin\Fantasy\GameweeksController;
-use App\Http\Controllers\Admin\Fantasy\MarketDashboardController;
+use App\Http\Controllers\Admin\Market\MarketDashboardController;
+use App\Http\Controllers\Admin\Market\ListingsManagementController;
+use App\Http\Controllers\Admin\Market\OffersManagementController;
+use App\Http\Controllers\Admin\Market\TransfersController;
+use App\Http\Controllers\Admin\Market\MarketSettingsController;
+use App\Http\Controllers\Admin\Market\PricesManagementController;      // FASE 6
+use App\Http\Controllers\Admin\Market\ModerationController;            // FASE 7
+use App\Http\Controllers\Admin\Market\AnalyticsController;             // FASE 8
 
 
 /* ========================================
@@ -319,30 +326,32 @@ Route::middleware(['web', 'auth', 'verified', 'role:admin'])
             Route::get('teams/{team}', [TeamsController::class, 'show'])->name('teams.show');
         });
 
-        // Market Overview
-        Route::get('/market-overview', [\App\Http\Controllers\Admin\Market\MarketOverviewController::class, 'index'])->name('market-overview.index');
-
-        // Listings Management
-        Route::get('market/listings', [ListingsManagementController::class, 'index'])->name('market.listings.index');
-        Route::post('market/listings/{listing}/cancel', [ListingsManagementController::class, 'cancel'])->name('market.listings.cancel');
-
-        // Offers Management
-        Route::get('market/offers', [OffersManagementController::class, 'index'])->name('market.offers.index');
-
-        // Transfers Management
-        Route::get('market/transfers', [TransfersController::class, 'index'])->name('market.transfers.index');
-
-        // Market Settings
-        Route::get('market/settings', [MarketSettingsController::class, 'index'])->name('market.settings.index');
-        Route::post('market/settings/{league}', [MarketSettingsController::class, 'update'])->name('market.settings.update');
-
-        // Prices Management
-        Route::get('market/prices', [PricesManagementController::class, 'index'])->name('prices.index');
-
-        // Moderation Panel
-        Route::get('market/moderation', [ModerationController::class, 'index'])->name('moderation.index');
-
-        // Analytics Dashboard
-        Route::get('analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
-
+        // Market Routes
+        Route::prefix('market')->as('market.')->group(function () {
+            // Dashboard/Overview
+            Route::get('/', [MarketDashboardController::class, 'index'])->name('index');
+            
+            // Listings Management
+            Route::get('listings', [ListingsManagementController::class, 'index'])->name('listings.index');
+            Route::post('listings/{listing}/cancel', [ListingsManagementController::class, 'cancel'])->name('listings.cancel');
+            
+            // Offers Management
+            Route::get('offers', [OffersManagementController::class, 'index'])->name('offers.index');
+            
+            // Transfers Management
+            Route::get('transfers', [TransfersController::class, 'index'])->name('transfers.index');
+            
+            // Market Settings
+            Route::get('settings', [MarketSettingsController::class, 'index'])->name('settings.index');
+            Route::post('settings/{league}', [MarketSettingsController::class, 'update'])->name('settings.update');
+            
+            // Prices Management (FASE 6)
+            Route::get('prices', [PricesManagementController::class, 'index'])->name('prices.index');
+            
+            // Moderation Panel (FASE 7)
+            Route::get('moderation', [ModerationController::class, 'index'])->name('moderation.index');
+            
+            // Analytics Dashboard (FASE 8)
+            Route::get('analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
+        });
     });

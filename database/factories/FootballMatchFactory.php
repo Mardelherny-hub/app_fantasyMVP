@@ -2,22 +2,22 @@
 
 namespace Database\Factories;
 
-use App\Models\FootballMatch;
-use App\Models\Season;
-use App\Models\RealTeam;
+use App\Models\PlayerMatchStats;
+use App\Models\RealMatch;  // ✅ CORREGIDO: era FootballMatch
+use App\Models\Player;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\FootballMatch>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\PlayerMatchStats>
  */
-class FootballMatchFactory extends Factory
+class PlayerMatchStatsFactory extends Factory
 {
     /**
      * The name of the factory's corresponding model.
      *
      * @var string
      */
-    protected $model = FootballMatch::class;
+    protected $model = PlayerMatchStats::class;
 
     /**
      * Define the model's default state.
@@ -26,215 +26,258 @@ class FootballMatchFactory extends Factory
      */
     public function definition(): array
     {
+        $minutes = fake()->numberBetween(0, 90);
+        
+        // Estadísticas base (serán ajustadas por posición)
         return [
-            'season_id' => Season::factory(),
-            'matchday' => fake()->numberBetween(1, 30),
-            'home_team_id' => RealTeam::factory(),
-            'away_team_id' => RealTeam::factory(),
-            'starts_at' => fake()->dateTimeBetween('now', '+3 months'),
-            'status' => FootballMatch::STATUS_PENDING,
-            'home_goals' => 0,
-            'away_goals' => 0,
-            'data' => null,
+            'real_match_id' => RealMatch::factory(),  // ✅ CORREGIDO: era match_id => FootballMatch::factory()
+            'player_id' => Player::factory(),
+            'minutes' => $minutes,
+            'goals' => 0,
+            'assists' => 0,
+            'shots' => 0,
+            'saves' => 0,
+            'yellow' => fake()->boolean(15) ? 1 : 0, // 15% probabilidad amarilla
+            'red' => fake()->boolean(2) ? 1 : 0, // 2% probabilidad roja
+            'clean_sheet' => false,
+            'conceded' => 0,
+            'rating' => $minutes > 0 ? fake()->randomFloat(2, 5.0, 9.5) : null,
+            'raw' => null,
         ];
     }
 
     /**
-     * Indicate that the match is finished with random score.
+     * Stats for a goalkeeper.
      */
-    public function finished(): static
+    public function goalkeeper(): static
     {
         return $this->state(function (array $attributes) {
-            $homeGoals = fake()->numberBetween(0, 5);
-            $awayGoals = fake()->numberBetween(0, 5);
+            $minutes = $attributes['minutes'];
+            $cleanSheet = fake()->boolean(35); // 35% clean sheet
+            $saves = $minutes > 0 ? fake()->numberBetween(2, 10) : 0;
+            $conceded = $cleanSheet ? 0 : fake()->numberBetween(1, 4);
             
             return [
-                'starts_at' => fake()->dateTimeBetween('-2 months', '-1 day'),
-                'status' => FootballMatch::STATUS_FINISHED,
-                'home_goals' => $homeGoals,
-                'away_goals' => $awayGoals,
+                'goals' => fake()->boolean(1) ? 1 : 0, // 1% gol de portero
+                'assists' => 0,
+                'shots' => 0,
+                'saves' => $saves,
+                'clean_sheet' => $cleanSheet,
+                'conceded' => $conceded,
+                'rating' => $minutes > 0 ? fake()->randomFloat(2, 5.5, 9.0) : null,
             ];
         });
     }
 
     /**
-     * Indicate that the match is live.
+     * Stats for a defender.
      */
-    public function live(): static
+    public function defender(): static
     {
         return $this->state(function (array $attributes) {
-            // Partido en curso con goles parciales
-            $homeGoals = fake()->numberBetween(0, 3);
-            $awayGoals = fake()->numberBetween(0, 3);
+            $minutes = $attributes['minutes'];
+            $cleanSheet = fake()->boolean(30); // 30% clean sheet
             
             return [
-                'starts_at' => fake()->dateTimeBetween('-2 hours', 'now'),
-                'status' => FootballMatch::STATUS_LIVE,
-                'home_goals' => $homeGoals,
-                'away_goals' => $awayGoals,
+                'goals' => fake()->boolean(8) ? 1 : 0, // 8% probabilidad de gol
+                'assists' => fake()->boolean(12) ? 1 : 0, // 12% asistencia
+                'shots' => $minutes > 0 ? fake()->numberBetween(0, 3) : 0,
+                'saves' => 0,
+                'clean_sheet' => $cleanSheet,
+                'conceded' => $cleanSheet ? 0 : fake()->numberBetween(1, 3),
+                'rating' => $minutes > 0 ? fake()->randomFloat(2, 5.5, 8.5) : null,
             ];
         });
     }
 
     /**
-     * Indicate that the match is postponed.
+     * Stats for a midfielder.
      */
-    public function postponed(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'status' => FootballMatch::STATUS_POSTPONED,
-        ]);
-    }
-
-    /**
-     * Set specific matchday.
-     */
-    public function matchday(int $matchday): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'matchday' => $matchday,
-        ]);
-    }
-
-    /**
-     * Set specific season.
-     */
-    public function forSeason(int $seasonId): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'season_id' => $seasonId,
-        ]);
-    }
-
-    /**
-     * Set specific teams.
-     */
-    public function between(int $homeTeamId, int $awayTeamId): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'home_team_id' => $homeTeamId,
-            'away_team_id' => $awayTeamId,
-        ]);
-    }
-
-    /**
-     * Set specific score (only for finished matches).
-     */
-    public function withScore(int $homeGoals, int $awayGoals): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'home_goals' => $homeGoals,
-            'away_goals' => $awayGoals,
-        ]);
-    }
-
-    /**
-     * Add match data (referee, stadium, etc).
-     */
-    public function withData(): static
+    public function midfielder(): static
     {
         return $this->state(function (array $attributes) {
-            $stadiums = [
-                'BMO Field', 'BC Place', 'Tim Hortons Field', 'TD Place',
-                'IG Field', 'Wanderers Grounds', 'Spruce Meadows', 'Stade Saputo'
-            ];
-            
-            $referees = [
-                'John Smith', 'Marie Dubois', 'Carlos Rodriguez', 'David Johnson',
-                'Sarah Williams', 'Pierre Tremblay', 'Michael Brown', 'Lisa Chen'
-            ];
+            $minutes = $attributes['minutes'];
+            $cleanSheet = fake()->boolean(20); // 20% clean sheet
             
             return [
-                'data' => [
-                    'stadium' => fake()->randomElement($stadiums),
-                    'referee' => fake()->randomElement($referees),
-                    'attendance' => fake()->numberBetween(2000, 15000),
-                    'weather' => fake()->randomElement(['Sunny', 'Cloudy', 'Rainy', 'Clear']),
-                    'temperature' => fake()->numberBetween(-5, 30),
+                'goals' => fake()->boolean(15) ? fake()->numberBetween(1, 2) : 0, // 15% gol
+                'assists' => fake()->boolean(25) ? fake()->numberBetween(1, 2) : 0, // 25% asistencia
+                'shots' => $minutes > 0 ? fake()->numberBetween(1, 5) : 0,
+                'saves' => 0,
+                'clean_sheet' => $cleanSheet,
+                'conceded' => 0,
+                'rating' => $minutes > 0 ? fake()->randomFloat(2, 5.0, 9.0) : null,
+            ];
+        });
+    }
+
+    /**
+     * Stats for a forward.
+     */
+    public function forward(): static
+    {
+        return $this->state(function (array $attributes) {
+            $minutes = $attributes['minutes'];
+            
+            return [
+                'goals' => fake()->boolean(30) ? fake()->numberBetween(1, 3) : 0, // 30% gol
+                'assists' => fake()->boolean(20) ? 1 : 0, // 20% asistencia
+                'shots' => $minutes > 0 ? fake()->numberBetween(2, 8) : 0,
+                'saves' => 0,
+                'clean_sheet' => false,
+                'conceded' => 0,
+                'rating' => $minutes > 0 ? fake()->randomFloat(2, 5.0, 9.5) : null,
+            ];
+        });
+    }
+
+    /**
+     * Player who scored.
+     */
+    public function scored(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'goals' => fake()->numberBetween(1, 3),
+            'shots' => fake()->numberBetween(3, 8),
+            'rating' => fake()->randomFloat(2, 7.0, 9.5),
+        ]);
+    }
+
+    /**
+     * Player who assisted.
+     */
+    public function assisted(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'assists' => fake()->numberBetween(1, 2),
+            'rating' => fake()->randomFloat(2, 7.0, 9.0),
+        ]);
+    }
+
+    /**
+     * Player with full 90 minutes.
+     */
+    public function fullMatch(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'minutes' => 90,
+        ]);
+    }
+
+    /**
+     * Player as substitute (less than 45 minutes).
+     */
+    public function substitute(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'minutes' => fake()->numberBetween(10, 44),
+        ]);
+    }
+
+    /**
+     * Player who didn't play.
+     */
+    public function unused(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'minutes' => 0,
+            'goals' => 0,
+            'assists' => 0,
+            'shots' => 0,
+            'saves' => 0,
+            'yellow' => 0,
+            'red' => 0,
+            'rating' => null,
+        ]);
+    }
+
+    /**
+     * Player with yellow card.
+     */
+    public function booked(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'yellow' => 1,
+            'rating' => fake()->randomFloat(2, 5.0, 7.0),
+        ]);
+    }
+
+    /**
+     * Player with red card.
+     */
+    public function sentOff(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'red' => 1,
+            'minutes' => fake()->numberBetween(15, 80), // Expulsado antes del final
+            'rating' => fake()->randomFloat(2, 3.0, 5.5),
+        ]);
+    }
+
+    /**
+     * Man of the match performance.
+     */
+    public function manOfTheMatch(): static
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'minutes' => 90,
+                'goals' => fake()->numberBetween(1, 3),
+                'assists' => fake()->numberBetween(0, 2),
+                'shots' => fake()->numberBetween(4, 10),
+                'yellow' => 0,
+                'red' => 0,
+                'rating' => fake()->randomFloat(2, 8.5, 10.0),
+            ];
+        });
+    }
+
+    /**
+     * Poor performance.
+     */
+    public function poorPerformance(): static
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'minutes' => fake()->numberBetween(45, 90),
+                'goals' => 0,
+                'assists' => 0,
+                'shots' => fake()->numberBetween(0, 2),
+                'yellow' => fake()->boolean(40) ? 1 : 0,
+                'rating' => fake()->randomFloat(2, 3.5, 5.5),
+            ];
+        });
+    }
+
+    /**
+     * Set specific real match and player.
+     * ✅ CORREGIDO: Renombrado parámetro y campo
+     */
+    public function forRealMatchAndPlayer(int $realMatchId, int $playerId): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'real_match_id' => $realMatchId,  // ✅ CORREGIDO: era match_id
+            'player_id' => $playerId,
+        ]);
+    }
+
+    /**
+     * Add additional raw stats data.
+     */
+    public function withRawData(): static
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'raw' => [
+                    'passes_completed' => fake()->numberBetween(20, 80),
+                    'passes_attempted' => fake()->numberBetween(25, 90),
+                    'tackles' => fake()->numberBetween(0, 8),
+                    'interceptions' => fake()->numberBetween(0, 6),
+                    'duels_won' => fake()->numberBetween(2, 15),
+                    'fouls_committed' => fake()->numberBetween(0, 4),
+                    'fouls_suffered' => fake()->numberBetween(0, 4),
                 ],
             ];
         });
-    }
-
-    /**
-     * Home win result.
-     */
-    public function homeWin(): static
-    {
-        return $this->state(function (array $attributes) {
-            $homeGoals = fake()->numberBetween(2, 5);
-            $awayGoals = fake()->numberBetween(0, $homeGoals - 1);
-            
-            return [
-                'starts_at' => fake()->dateTimeBetween('-2 months', '-1 day'),
-                'status' => FootballMatch::STATUS_FINISHED,
-                'home_goals' => $homeGoals,
-                'away_goals' => $awayGoals,
-            ];
-        });
-    }
-
-    /**
-     * Away win result.
-     */
-    public function awayWin(): static
-    {
-        return $this->state(function (array $attributes) {
-            $awayGoals = fake()->numberBetween(2, 5);
-            $homeGoals = fake()->numberBetween(0, $awayGoals - 1);
-            
-            return [
-                'starts_at' => fake()->dateTimeBetween('-2 months', '-1 day'),
-                'status' => FootballMatch::STATUS_FINISHED,
-                'home_goals' => $homeGoals,
-                'away_goals' => $awayGoals,
-            ];
-        });
-    }
-
-    /**
-     * Draw result.
-     */
-    public function draw(): static
-    {
-        return $this->state(function (array $attributes) {
-            $goals = fake()->numberBetween(0, 3);
-            
-            return [
-                'starts_at' => fake()->dateTimeBetween('-2 months', '-1 day'),
-                'status' => FootballMatch::STATUS_FINISHED,
-                'home_goals' => $goals,
-                'away_goals' => $goals,
-            ];
-        });
-    }
-
-    /**
-     * High-scoring match.
-     */
-    public function highScoring(): static
-    {
-        return $this->state(function (array $attributes) {
-            $homeGoals = fake()->numberBetween(3, 6);
-            $awayGoals = fake()->numberBetween(3, 6);
-            
-            return [
-                'starts_at' => fake()->dateTimeBetween('-2 months', '-1 day'),
-                'status' => FootballMatch::STATUS_FINISHED,
-                'home_goals' => $homeGoals,
-                'away_goals' => $awayGoals,
-            ];
-        });
-    }
-
-    /**
-     * Upcoming match (future date).
-     */
-    public function upcoming(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'starts_at' => fake()->dateTimeBetween('now', '+3 months'),
-            'status' => FootballMatch::STATUS_PENDING,
-        ]);
     }
 }

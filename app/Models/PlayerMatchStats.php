@@ -18,7 +18,7 @@ class PlayerMatchStats extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'match_id',
+        'real_match_id',  // ✅ CORREGIDO: era match_id
         'player_id',
         'minutes',
         'goals',
@@ -57,11 +57,12 @@ class PlayerMatchStats extends Model
     // ========================================
 
     /**
-     * Get the match for these stats.
+     * Get the real match for these stats.
+     * ✅ CORREGIDO: Ahora apunta a RealMatch en lugar de FootballMatch
      */
-    public function match(): BelongsTo
+    public function realMatch(): BelongsTo
     {
-        return $this->belongsTo(FootballMatch::class, 'match_id');
+        return $this->belongsTo(RealMatch::class, 'real_match_id');
     }
 
     /**
@@ -85,11 +86,12 @@ class PlayerMatchStats extends Model
     }
 
     /**
-     * Scope by match.
+     * Scope by real match.
+     * ✅ CORREGIDO: Renombrado de scopeMatch() y actualizado campo
      */
-    public function scopeMatch($query, int $matchId)
+    public function scopeRealMatch($query, int $realMatchId)
     {
-        return $query->where('match_id', $matchId);
+        return $query->where('real_match_id', $realMatchId);
     }
 
     /**
@@ -128,12 +130,17 @@ class PlayerMatchStats extends Model
     }
 
     /**
-     * Scope by season (through match).
+     * Scope by season (through real match).
+     * ✅ CORREGIDO: Actualizado para usar realMatch
      */
     public function scopeSeason($query, int $seasonId)
     {
-        return $query->whereHas('match', function($q) use ($seasonId) {
-            $q->where('season_id', $seasonId);
+        return $query->whereHas('realMatch', function($q) use ($seasonId) {
+            $q->whereHas('fixture', function($fq) use ($seasonId) {
+                $fq->whereHas('competition', function($cq) use ($seasonId) {
+                    $cq->where('season_id', $seasonId);
+                });
+            });
         });
     }
 
@@ -216,49 +223,33 @@ class PlayerMatchStats extends Model
     /**
      * Calculate basic fantasy points (example logic).
      * This is a simple example - real calculation should use ScoringRules.
+     * 
+     * @return int
      */
     public function calculateBasicPoints(): int
     {
         $points = 0;
 
-        // Minutes played
+        // Minutos jugados
         if ($this->minutes >= 60) {
             $points += 2;
         } elseif ($this->minutes > 0) {
             $points += 1;
         }
 
-        // Goals (varies by position)
-        $player = $this->player;
-        if ($player->isGoalkeeper() || $player->isDefender()) {
-            $points += $this->goals * 6;
-        } elseif ($player->isMidfielder()) {
-            $points += $this->goals * 5;
-        } else {
-            $points += $this->goals * 4;
-        }
-
-        // Assists
+        // Goles y asistencias (valores básicos)
+        $points += $this->goals * 4;
         $points += $this->assists * 3;
 
         // Clean sheet
         if ($this->clean_sheet) {
-            if ($player->isGoalkeeper() || $player->isDefender()) {
-                $points += 4;
-            } elseif ($player->isMidfielder()) {
-                $points += 1;
-            }
+            $points += 4;
         }
 
-        // Saves (GK)
-        if ($player->isGoalkeeper()) {
-            $points += floor($this->saves / 3);
-        }
-
-        // Cards
+        // Tarjetas
         $points -= $this->yellow * 1;
         $points -= $this->red * 3;
 
-        return max(0, $points); // No negative points
+        return $points;
     }
 }

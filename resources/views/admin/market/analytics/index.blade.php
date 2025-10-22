@@ -1,10 +1,12 @@
-@extends('layouts.admin')
-@section('title', __('Analytics del Mercado'))
-@section('content')
-<div class="container mx-auto px-4 py-6">
-    @livewire('admin.market.analytics-panel', [
-        'selectedLeague' => $selectedLeague,
-        'currentSeason' => $currentSeason
-    ])
-</div>
-@endsection
+<x-admin-layout>
+    <x-slot name="header">
+        <h1 class="text-2xl font-bold text-gray-900">{{ __('Market Analytics') }}</h1>
+    </x-slot>
+
+    <div class="py-6">
+        @livewire('admin.market.analytics-panel', [
+            'selectedLeague' => $selectedLeague ?? null,
+            'currentSeason' => $currentSeason
+        ])
+    </div>
+</x-admin-layout>

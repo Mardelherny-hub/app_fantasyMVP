@@ -82,44 +82,102 @@
     </li>
 
     {{-- Fantasy --}}
-<div x-data="{ open: {{ request()->is('*/admin/fantasy/*') ? 'true' : 'false' }} }">
-    <button @click="open = !open" 
-            class="flex items-center justify-between w-full px-4 py-2.5 text-sm font-medium rounded-lg transition-colors
-                {{ request()->is('*/admin/fantasy/*') ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-700' }}">
-        <div class="flex items-center">
-            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"></path>
+    <div x-data="{ open: {{ request()->is('*/admin/fantasy/*') ? 'true' : 'false' }} }">
+        <button @click="open = !open" 
+                class="flex items-center justify-between w-full px-4 py-2.5 text-sm font-medium rounded-lg transition-colors
+                    {{ request()->is('*/admin/fantasy/*') ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-700' }}">
+            <div class="flex items-center">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"></path>
+                </svg>
+                <span>{{ __('Fantasy') }}</span>
+            </div>
+            <svg class="w-4 h-4 transition-transform" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
             </svg>
-            <span>{{ __('Fantasy') }}</span>
+        </button>
+        
+        <div x-show="open" x-collapse class="ml-8 mt-2 space-y-1">
+            <a href="{{ route('admin.fantasy.leagues.index', ['locale' => app()->getLocale()]) }}" 
+            class="block px-4 py-2 text-sm rounded-lg transition-colors
+                {{ request()->routeIs('admin.fantasy.leagues.*') ? 'bg-gray-700 text-white' : 'text-gray-400 hover:bg-gray-700 hover:text-white' }}">
+                {{ __('Ligas') }}
+            </a>
+            <a href="{{ route('admin.fantasy.seasons.index', ['locale' => app()->getLocale()]) }}" 
+            class="block px-4 py-2 text-sm rounded-lg transition-colors
+                {{ request()->routeIs('admin.fantasy.seasons.*') ? 'bg-gray-700 text-white' : 'text-gray-400 hover:bg-gray-700 hover:text-white' }}">
+                {{ __('Temporadas') }}
+            </a>
+            <a href="{{-- route('admin.fantasy.gameweeks.index', ['locale' => app()->getLocale()]) --}}#" 
+            class="block px-4 py-2 text-sm rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed
+                {{ request()->routeIs('admin.fantasy.gameweeks.*') ? 'bg-gray-700 text-white' : 'text-gray-400 hover:bg-gray-700 hover:text-white' }}">
+                {{ __('Jornadas') }}
+            </a>
+            <a href="{{-- route('admin.fantasy.teams.index', ['locale' => app()->getLocale()]) --}}#" 
+            class="block px-4 py-2 text-sm rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed
+                {{ request()->routeIs('admin.fantasy.teams.*') ? 'bg-gray-700 text-white' : 'text-gray-400 hover:bg-gray-700 hover:text-white' }}">
+                {{ __('Equipos Fantasy') }}
+            </a>
         </div>
-        <svg class="w-4 h-4 transition-transform" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-        </svg>
-    </button>
-    
-    <div x-show="open" x-collapse class="ml-8 mt-2 space-y-1">
-        <a href="{{ route('admin.fantasy.leagues.index', ['locale' => app()->getLocale()]) }}" 
-           class="block px-4 py-2 text-sm rounded-lg transition-colors
-               {{ request()->routeIs('admin.fantasy.leagues.*') ? 'bg-gray-700 text-white' : 'text-gray-400 hover:bg-gray-700 hover:text-white' }}">
-            {{ __('Ligas') }}
-        </a>
-        <a href="{{ route('admin.fantasy.seasons.index', ['locale' => app()->getLocale()]) }}" 
-           class="block px-4 py-2 text-sm rounded-lg transition-colors
-               {{ request()->routeIs('admin.fantasy.seasons.*') ? 'bg-gray-700 text-white' : 'text-gray-400 hover:bg-gray-700 hover:text-white' }}">
-            {{ __('Temporadas') }}
-        </a>
-        <a href="{{-- route('admin.fantasy.gameweeks.index', ['locale' => app()->getLocale()]) --}}#" 
-           class="block px-4 py-2 text-sm rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed
-               {{ request()->routeIs('admin.fantasy.gameweeks.*') ? 'bg-gray-700 text-white' : 'text-gray-400 hover:bg-gray-700 hover:text-white' }}">
-            {{ __('Jornadas') }}
-        </a>
-        <a href="{{-- route('admin.fantasy.teams.index', ['locale' => app()->getLocale()]) --}}#" 
-           class="block px-4 py-2 text-sm rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed
-               {{ request()->routeIs('admin.fantasy.teams.*') ? 'bg-gray-700 text-white' : 'text-gray-400 hover:bg-gray-700 hover:text-white' }}">
-            {{ __('Equipos Fantasy') }}
-        </a>
     </div>
-</div>
+
+    {{-- Market --}}
+    <li x-data="{ open: {{ request()->routeIs('admin.market.*') ? 'true' : 'false' }} }">
+        <button @click="open = !open" 
+                class="w-full flex items-center justify-between px-3 py-2.5 text-sm font-medium rounded-lg transition-colors group
+                       {{ request()->routeIs('admin.market.*') 
+                          ? 'bg-gray-800 text-white' 
+                          : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
+            <div class="flex items-center">
+                <svg class="w-5 h-5 flex-shrink-0" :class="sidebarOpen ? 'mr-3' : 'mx-auto'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                <span x-show="sidebarOpen">{{ __('Market') }}</span>
+            </div>
+            <svg x-show="sidebarOpen" :class="open ? 'rotate-180' : ''" class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+        </button>
+        
+        <ul x-show="open && sidebarOpen" x-collapse class="mt-1 space-y-1 ml-4">
+            <li>
+                <a href="{{ route('admin.market.index', ['locale' => app()->getLocale()]) }}" 
+                   class="flex items-center px-3 py-2 text-sm rounded-lg transition-colors
+                          {{ request()->routeIs('admin.market.index') 
+                             ? 'bg-gray-700 text-white' 
+                             : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
+                    {{ __('Dashboard') }}
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('admin.market.prices.index', ['locale' => app()->getLocale()]) }}" 
+                   class="flex items-center px-3 py-2 text-sm rounded-lg transition-colors
+                          {{ request()->routeIs('admin.market.prices.*') 
+                             ? 'bg-gray-700 text-white' 
+                             : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
+                    {{ __('Prices') }}
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('admin.market.moderation.index', ['locale' => app()->getLocale()]) }}" 
+                   class="flex items-center px-3 py-2 text-sm rounded-lg transition-colors
+                          {{ request()->routeIs('admin.market.moderation.*') 
+                             ? 'bg-gray-700 text-white' 
+                             : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
+                    {{ __('Moderation') }}
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('admin.market.analytics.index', ['locale' => app()->getLocale()]) }}" 
+                   class="flex items-center px-3 py-2 text-sm rounded-lg transition-colors
+                          {{ request()->routeIs('admin.market.analytics.*') 
+                             ? 'bg-gray-700 text-white' 
+                             : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
+                    {{ __('Analytics') }}
+                </a>
+            </li>
+        </ul>
+    </li>
 
     {{-- Usuarios y Roles --}}
     <li x-data="{ open: {{ request()->routeIs('admin.users.*') || request()->routeIs('admin.roles.*') ? 'true' : 'false' }} }">

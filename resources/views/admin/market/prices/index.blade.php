@@ -1,9 +1,12 @@
-@extends('layouts.admin')
+<x-admin-layout>
+    <x-slot name="header">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">{{ __('Price Management') }}</h1>
+            <p class="text-gray-600 mt-1">{{ __('Manage player market values') }}</p>
+        </div>
+    </x-slot>
 
-@section('title', __('Gestión de Precios'))
-
-@section('content')
-<div class="container mx-auto px-4 py-6">
-    @livewire('admin.market.prices-manager', ['season' => $currentSeason])
-</div>
-@endsection
+    <div class="py-6">
+        @livewire('admin.market.prices-manager')
+    </div>
+</x-admin-layout>

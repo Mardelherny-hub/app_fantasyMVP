@@ -140,3 +140,16 @@ Route::middleware(['web', 'auth', 'verified', 'role:manager'])
             })->name('index');
         });
 
+    // ========================================
+    // STATS ROUTES (Estadísticas)
+    // ========================================
+    Route::middleware(['web', 'auth', 'verified', 'role:manager'])
+        ->prefix('{locale}/manager/stats')
+        ->where(['locale' => 'es|en|fr'])
+        ->as('manager.stats.')
+        ->group(function () {
+            Route::get('/', function() {
+                return view('manager.stats.index');
+            })->name('index');
+        });
+

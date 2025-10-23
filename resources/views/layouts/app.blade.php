@@ -81,6 +81,11 @@
         </a>
     @endif
 
+     {{-- Divider --}}
+    <div x-show="sidebarOpen" x-transition class="pt-4 pb-2">
+        <div class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ __('Competición') }}</div>
+    </div>
+
     {{-- Mis Partidos --}}
     @if(auth()->user()->hasRole('manager'))
         <a href="{{ route('manager.fixtures.index', ['locale' => app()->getLocale()]) }}" 
@@ -129,6 +134,23 @@
         </a>
     @endif
 
+    {{-- Estadísticas --}}
+    @if(auth()->user()->hasRole('manager'))
+        <a href="{{ route('manager.stats.index', ['locale' => app()->getLocale()]) }}" 
+        class="flex items-center px-3 py-2.5 rounded-lg {{ request()->routeIs('manager.stats.*') ? 
+            'bg-emerald-500/20 text-emerald-400' : 'text-gray-300 hover:bg-white/5 hover:text-white' }}">
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+            <span x-show="sidebarOpen" x-transition class="ml-3 font-medium">{{ __('Estadísticas') }}</span>
+        </a>
+    @endif
+
+     {{-- Divider --}}
+    <div x-show="sidebarOpen" x-transition class="pt-4 pb-2">
+        <div class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ __('Mercado') }}</div>
+    </div>
+
     {{-- MARKET --}}
     <a href="{{ route('manager.market.index', ['locale' => app()->getLocale()]) }}" 
     class="flex items-center px-3 py-2.5 rounded-lg {{ request()->routeIs('manager.market.*') ? 'bg-emerald-600 text-white' : 'text-gray-400 hover:bg-slate-700/50 hover:text-white' }}"
@@ -140,41 +162,6 @@
             <span class="block font-medium">{{ __('Market') }}</span>
             <span class="text-[10px] text-gray-500">{{ __('Transfer Market') }}</span>
         </div>
-    </a>
-
-    {{-- Divider --}}
-    <div x-show="sidebarOpen" x-transition class="pt-4 pb-2">
-        <div class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ __('Competición') }}</div>
-    </div>
-
-    {{-- Clasificación --}}
-    <a href="#" 
-       class="flex items-center px-3 py-2.5 rounded-lg transition group text-gray-300 hover:bg-white/5 hover:text-white opacity-50 cursor-not-allowed">
-        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-        </svg>
-        <span x-show="sidebarOpen" x-transition class="ml-3 font-medium">{{ __('Clasificación') }}</span>
-        <span x-show="sidebarOpen" x-transition class="ml-auto text-xs text-gray-500 bg-gray-800 px-2 py-0.5 rounded">{{ __('Próximo') }}</span>
-    </a>
-
-    {{-- Fixtures --}}
-    <a href="#" 
-       class="flex items-center px-3 py-2.5 rounded-lg transition group text-gray-300 hover:bg-white/5 hover:text-white opacity-50 cursor-not-allowed">
-        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-        </svg>
-        <span x-show="sidebarOpen" x-transition class="ml-3 font-medium">{{ __('Calendario') }}</span>
-        <span x-show="sidebarOpen" x-transition class="ml-auto text-xs text-gray-500 bg-gray-800 px-2 py-0.5 rounded">{{ __('Próximo') }}</span>
-    </a>
-
-    {{-- Estadísticas --}}
-    <a href="#" 
-       class="flex items-center px-3 py-2.5 rounded-lg transition group text-gray-300 hover:bg-white/5 hover:text-white opacity-50 cursor-not-allowed">
-        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-        </svg>
-        <span x-show="sidebarOpen" x-transition class="ml-3 font-medium">{{ __('Estadísticas') }}</span>
-        <span x-show="sidebarOpen" x-transition class="ml-auto text-xs text-gray-500 bg-gray-800 px-2 py-0.5 rounded">{{ __('Próximo') }}</span>
     </a>
 
     {{-- Divider --}}

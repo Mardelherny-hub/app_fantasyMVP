@@ -125,6 +125,8 @@ Route::middleware(['web', 'auth', 'verified', 'role:admin'])
             Route::patch('gameweeks/{gameweek}/toggle', [GameweekController::class, 'toggle'])->name('gameweeks.toggle');
             Route::get('teams', [TeamsController::class, 'index'])->name('teams.index');
             Route::get('teams/{team}', [TeamsController::class, 'show'])->name('teams.show');
+            Route::get('teams/{team}/edit', [TeamsController::class, 'edit'])->name('teams.edit');
+            Route::put('teams/{team}', [TeamsController::class, 'update'])->name('teams.update');
             
             // Fixtures
             Route::prefix('fixtures')->as('fixtures.')->group(function () {

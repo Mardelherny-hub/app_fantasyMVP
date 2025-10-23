@@ -50,7 +50,6 @@
     </a>
 
 
-  { {-- Divider --}}
     <div x-show="sidebarOpen" x-transition class="pt-4 pb-2">
         <div class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ __('Mi Equipo') }}</div>
     </div>
@@ -91,6 +90,18 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
             <span x-show="sidebarOpen" x-transition class="ml-3 font-medium">{{ __('Mis Partidos') }}</span>
+        </a>
+    @endif
+
+    {{-- Mis Puntos --}}
+    @if(auth()->user()->hasRole('manager'))
+        <a href="{{ route('manager.scores.index', ['locale' => app()->getLocale()]) }}" 
+        class="flex items-center px-3 py-2.5 rounded-lg {{ request()->routeIs('manager.scores.*') ? 
+            'bg-emerald-500/20 text-emerald-400' : 'text-gray-300 hover:bg-white/5 hover:text-white' }}">
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+            <span x-show="sidebarOpen" x-transition class="ml-3 font-medium">{{ __('Mis Puntos') }}</span>
         </a>
     @endif
 

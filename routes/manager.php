@@ -101,3 +101,16 @@ Route::middleware(['web', 'auth', 'verified', 'role:manager'])
             })->name('index');
         });
 
+    // ========================================
+    // SCORES ROUTES (Puntos Detallados)
+    // ========================================
+    Route::middleware(['web', 'auth', 'verified', 'role:manager'])
+        ->prefix('{locale}/manager/scores')
+        ->where(['locale' => 'es|en|fr'])
+        ->as('manager.scores.')
+        ->group(function () {
+            Route::get('/', function() {
+                return view('manager.scores.index');
+            })->name('index');
+        });
+

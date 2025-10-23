@@ -114,3 +114,16 @@ Route::middleware(['web', 'auth', 'verified', 'role:manager'])
             })->name('index');
         });
 
+    // ========================================
+    // LEAGUE ROUTES (Clasificación)
+    // ========================================
+    Route::middleware(['web', 'auth', 'verified', 'role:manager'])
+        ->prefix('{locale}/manager/league')
+        ->where(['locale' => 'es|en|fr'])
+        ->as('manager.league.')
+        ->group(function () {
+            Route::get('/standings', function() {
+                return view('manager.league.standings');
+            })->name('standings');
+        });
+

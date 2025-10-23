@@ -11,7 +11,6 @@ use App\Models\Season;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-$service = new \App\Services\Admin\LeagueService;
 
 class LeagueController extends Controller
 {

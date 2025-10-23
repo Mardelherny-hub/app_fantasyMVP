@@ -165,7 +165,7 @@
     @endif
 
     <div class="pt-4 flex items-center justify-end gap-3">
-        <a href="{{ route('admin.leagues.index', app()->getLocale()) }}" class="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200">{{ __('Cancelar') }}</a>
+        <a href="{{ route('admin.fantasy.leagues.index', app()->getLocale()) }}" class="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200">{{ __('Cancelar') }}</a>
         <x-button>{{ ($mode ?? null)==='edit' ? __('Guardar cambios') : __('Crear liga') }}</x-primary-button>
     </div>
 </div>

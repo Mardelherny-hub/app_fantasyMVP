@@ -78,6 +78,15 @@
                     {{ __('Matches Played') }}
                 </a>
             </li>
+            <li>
+                <a href="{{ route('admin.cpl.matches.index', ['locale' => app()->getLocale()]) }}" 
+                   class="flex items-center px-3 py-2 text-sm rounded-lg transition-colors
+                          {{ request()->routeIs('admin.cpl.*') 
+                             ? 'bg-gray-700 text-white' 
+                             : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
+                    {{ __('CPL Matches') }}
+                </a>
+            </li>
         </ul>
     </li>
 
@@ -108,12 +117,12 @@
                 {{ request()->routeIs('admin.fantasy.seasons.*') ? 'bg-gray-700 text-white' : 'text-gray-400 hover:bg-gray-700 hover:text-white' }}">
                 {{ __('Temporadas') }}
             </a>
-            <a href="{{-- route('admin.fantasy.gameweeks.index', ['locale' => app()->getLocale()]) --}}#" 
+            <a href="{{ route('admin.fantasy.gameweeks.index', ['locale' => app()->getLocale()]) }}" 
             class="block px-4 py-2 text-sm rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed
                 {{ request()->routeIs('admin.fantasy.gameweeks.*') ? 'bg-gray-700 text-white' : 'text-gray-400 hover:bg-gray-700 hover:text-white' }}">
                 {{ __('Jornadas') }}
             </a>
-            <a href="{{-- route('admin.fantasy.teams.index', ['locale' => app()->getLocale()]) --}}#" 
+            <a href="{{ route('admin.fantasy.teams.index', ['locale' => app()->getLocale()]) }}#" 
             class="block px-4 py-2 text-sm rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed
                 {{ request()->routeIs('admin.fantasy.teams.*') ? 'bg-gray-700 text-white' : 'text-gray-400 hover:bg-gray-700 hover:text-white' }}">
                 {{ __('Equipos Fantasy') }}

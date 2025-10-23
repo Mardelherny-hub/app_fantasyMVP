@@ -3,7 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\PlayerMatchStats;
-use App\Models\FootballMatch;
+use App\Models\RealMatch;  // ✅ CORREGIDO: era FootballMatch
 use App\Models\Player;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -30,7 +30,7 @@ class PlayerMatchStatsFactory extends Factory
         
         // Estadísticas base (serán ajustadas por posición)
         return [
-            'match_id' => FootballMatch::factory(),
+            'real_match_id' => RealMatch::factory(),  // ✅ CORREGIDO: era match_id => FootballMatch::factory()
             'player_id' => Player::factory(),
             'minutes' => $minutes,
             'goals' => 0,
@@ -250,12 +250,13 @@ class PlayerMatchStatsFactory extends Factory
     }
 
     /**
-     * Set specific match and player.
+     * Set specific real match and player.
+     * ✅ CORREGIDO: Renombrado parámetro y campo
      */
-    public function forMatchAndPlayer(int $matchId, int $playerId): static
+    public function forRealMatchAndPlayer(int $realMatchId, int $playerId): static
     {
         return $this->state(fn (array $attributes) => [
-            'match_id' => $matchId,
+            'real_match_id' => $realMatchId,  // ✅ CORREGIDO: era match_id
             'player_id' => $playerId,
         ]);
     }

@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ __('Jornadas') }}</h2>
-            <a href="{{ route('admin.gameweeks.create', app()->getLocale()) }}" 
+            <a href="{{ route('admin.fantasy.gameweeks.create', app()->getLocale()) }}" 
                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
                 {{ __('Crear Jornada') }}
             </a>
@@ -109,7 +109,7 @@
                                     @endif
                                 </td>
                                 <td class="px-4 py-3">
-                                    <form method="POST" action="{{ route('admin.gameweeks.toggle', [app()->getLocale(), $gameweek]) }}" class="inline">
+                                    <form method="POST" action="{{ route('admin.fantasy.gameweeks.toggle', [app()->getLocale(), $gameweek]) }}" class="inline">
                                         @csrf @method('PATCH')
                                         <button type="submit" 
                                                 class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium transition
@@ -121,11 +121,11 @@
                                     </form>
                                 </td>
                                 <td class="px-4 py-3 text-right text-sm font-medium space-x-2">
-                                    <a href="{{ route('admin.gameweeks.edit', [app()->getLocale(), $gameweek]) }}" 
+                                    <a href="{{ route('admin.fantasy.gameweeks.edit', [app()->getLocale(), $gameweek]) }}" 
                                        class="text-blue-600 hover:text-blue-900">{{ __('Editar') }}</a>
                                     
                                     <form method="POST" 
-                                          action="{{ route('admin.gameweeks.destroy', [app()->getLocale(), $gameweek]) }}" 
+                                          action="{{ route('admin.fantasy.gameweeks.destroy', [app()->getLocale(), $gameweek]) }}" 
                                           class="inline"
                                           onsubmit="return confirm('¿Estás seguro de eliminar esta jornada?');">
                                         @csrf @method('DELETE')

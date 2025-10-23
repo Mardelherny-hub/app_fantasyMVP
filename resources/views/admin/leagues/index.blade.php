@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ __('Ligas') }}</h2>
-            <a href="{{ route('admin.leagues.create', app()->getLocale()) }}"
+            <a href="{{ route('admin.fantasy.leagues.create', app()->getLocale()) }}"
                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
                 {{ __('Crear Liga') }}
             </a>
@@ -88,7 +88,7 @@
                             <tr class="hover:bg-gray-50">
                                 <td class="px-4 py-3 text-sm text-gray-900">{{ $league->id }}</td>
                                 <td class="px-4 py-3">
-                                    <a href="{{ route('admin.leagues.show', [app()->getLocale(), $league]) }}" 
+                                    <a href="{{ route('admin.fantasy.leagues.show', [app()->getLocale(), $league]) }}" 
                                        class="text-sm font-medium text-blue-600 hover:text-blue-900">
                                         {{ $league->name }}
                                     </a>
@@ -119,7 +119,7 @@
                                     <div class="flex items-center justify-end gap-2">
                                         {{-- Toggle Lock --}}
                                         <form method="POST" 
-                                              action="{{ route('admin.leagues.toggle-lock', [app()->getLocale(), $league]) }}"
+                                              action="{{ route('admin.fantasy.leagues.toggle-lock', [app()->getLocale(), $league]) }}"
                                               class="inline">
                                             @csrf @method('PATCH')
                                             <button type="submit" 
@@ -129,14 +129,14 @@
                                         </form>
 
                                         {{-- Editar --}}
-                                        <a href="{{ route('admin.leagues.edit', [app()->getLocale(), $league]) }}" 
+                                        <a href="{{ route('admin.fantasy.leagues.edit', [app()->getLocale(), $league]) }}" 
                                            class="text-blue-600 hover:text-blue-900">
                                             {{ __('Editar') }}
                                         </a>
 
                                         {{-- Eliminar --}}
                                         <form method="POST" 
-                                              action="{{ route('admin.leagues.destroy', [app()->getLocale(), $league]) }}"
+                                              action="{{ route('admin.fantasy.leagues.destroy', [app()->getLocale(), $league]) }}"
                                               class="inline"
                                               onsubmit="return confirm('{{ __('¿Estás seguro de eliminar esta liga?') }}')">
                                             @csrf @method('DELETE')

@@ -363,6 +363,20 @@ Route::middleware(['web', 'auth', 'verified', 'role:admin'])
             Route::get('/{gameweek}', [ScoringController::class, 'show'])->name('show');
             Route::post('/{gameweek}/process', [ScoringController::class, 'process'])->name('process');
             Route::post('/{gameweek}/recalculate', [ScoringController::class, 'recalculate'])->name('recalculate');
+
+            // ✅ NUEVAS RUTAS
+            Route::post('/{gameweek}/close', [ScoringController::class, 'close'])->name('close');
+            Route::post('/{gameweek}/reopen', [ScoringController::class, 'reopen'])->name('reopen');
+
+            Route::get('/rules', [ScoringController::class, 'rules'])->name('rules');
+        });
+
+        // Fixtures
+        Route::prefix('fantasy/fixtures')->as('fantasy.fixtures.')->group(function () {
+            Route::get('/', [App\Http\Controllers\Admin\Fantasy\FixtureController::class, 'index'])->name('index');
+            Route::get('/{fixture}', [App\Http\Controllers\Admin\Fantasy\FixtureController::class, 'show'])->name('show');
+            Route::post('/generate', [App\Http\Controllers\Admin\Fantasy\FixtureController::class, 'generate'])->name('generate');
+            Route::post('/{fixture}/finish', [App\Http\Controllers\Admin\Fantasy\FixtureController::class, 'finish'])->name('finish');
         });
 
 

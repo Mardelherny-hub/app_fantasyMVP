@@ -4,20 +4,37 @@
         <div class="flex items-center justify-between">
             <div>
                 <div class="flex items-center space-x-3">
-                    <a href="{{ route('admin.scoring.index', ['locale' => app()->getLocale()]) }}" 
-                       class="text-gray-400 hover:text-gray-600">
+                    <a href="{{ route('admin.scoring.index', ['locale' => app()->getLocale()]) }}"
+                    class="text-gray-400 hover:text-gray-600">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                         </svg>
                     </a>
                     <h1 class="text-2xl font-bold text-gray-900">
-                        {{ __('Gameweek') }} {{ $gameweek->week_number }}
+                        {{ __('Gameweek') }} {{ $gameweek->number }}
                         @if($gameweek->is_playoff)
                             <span class="ml-2 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800">
                                 {{ __('Playoff') }}
                                 @if($gameweek->playoff_round)
                                     - {{ __(App\Models\Fixture::PLAYOFF_ROUNDS[$gameweek->playoff_round] ?? 'Round') }}
                                 @endif
+                            </span>
+                        @endif
+                        
+                        {{-- Badge de estado cerrado/abierto --}}
+                        @if($gameweek->is_closed)
+                            <span class="ml-2 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                </svg>
+                                {{ __('Closed') }}
+                            </span>
+                        @else
+                            <span class="ml-2 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/>
+                                </svg>
+                                {{ __('Open') }}
                             </span>
                         @endif
                     </h1>
@@ -27,18 +44,19 @@
 
             {{-- Botones de acción --}}
             <div class="flex items-center space-x-3">
-                @if($gameweek->is_closed)
-                    {{-- Procesar --}}
+                @if(!$gameweek->is_closed)
+                    {{-- Gameweek ABIERTA --}}
                     @php
                         $totalFixtures = $gameweek->fixtures->count();
                         $finishedFixtures = $gameweek->fixtures->where('status', 1)->count();
                         $canProcess = $totalFixtures > 0 && $finishedFixtures < $totalFixtures;
                     @endphp
-                    
+
+                    {{-- Botón Procesar Scoring --}}
                     @if($canProcess)
                         <form method="POST" action="{{ route('admin.scoring.process', ['locale' => app()->getLocale(), 'gameweek' => $gameweek->id]) }}">
                             @csrf
-                            <button type="submit" 
+                            <button type="submit"
                                     class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
                                     onclick="return confirm('{{ __('¿Procesar el scoring de esta gameweek?') }}')">
                                 {{ __('Procesar Scoring') }}
@@ -46,21 +64,55 @@
                         </form>
                     @endif
 
-                    {{-- Recalcular --}}
-                    @if($finishedFixtures > 0)
-                        <form method="POST" action="{{ route('admin.scoring.recalculate', ['locale' => app()->getLocale(), 'gameweek' => $gameweek->id]) }}">
+                    {{-- Botón Close Gameweek (solo si ha terminado) --}}
+                    @if($gameweek->ends_at <= now())
+                        <form method="POST" action="{{ route('admin.scoring.close', ['locale' => app()->getLocale(), 'gameweek' => $gameweek->id]) }}">
                             @csrf
-                            <button type="submit" 
-                                    class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
-                                    onclick="return confirm('{{ __('¿Recalcular los puntos? Esto eliminará los datos actuales.') }}')">
-                                {{ __('Recalcular') }}
+                            <button type="submit"
+                                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                                    onclick="return confirm('{{ __('¿Cerrar esta gameweek? Se procesarán todos los cálculos automáticamente.') }}')">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                </svg>
+                                {{ __('Cerrar Gameweek') }}
                             </button>
                         </form>
+                    @else
+                        <span class="px-4 py-2 bg-gray-100 text-gray-500 rounded-lg text-sm">
+                            {{ __('Termina: :date', ['date' => $gameweek->ends_at->format('d/m/Y H:i')]) }}
+                        </span>
                     @endif
+
                 @else
-                    <span class="px-4 py-2 bg-gray-100 text-gray-500 rounded-lg">
-                        {{ __('Gameweek abierta') }}
-                    </span>
+                    {{-- Gameweek CERRADA --}}
+                    @php
+                        $finishedFixtures = $gameweek->fixtures->where('status', 1)->count();
+                    @endphp
+
+                    {{-- Botón Reabrir --}}
+                    <form method="POST" action="{{ route('admin.scoring.reopen', ['locale' => app()->getLocale(), 'gameweek' => $gameweek->id]) }}">
+                        @csrf
+                        <button type="submit"
+                                class="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors flex items-center gap-2"
+                                onclick="return confirm('{{ __('¿Reabrir esta gameweek? Se permitirán cambios nuevamente.') }}')">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/>
+                            </svg>
+                            {{ __('Reabrir') }}
+                        </button>
+                    </form>
+                @endif
+
+                {{-- Botón Recalcular (siempre disponible) --}}
+                @if($gameweek->fixtures->where('status', 1)->count() > 0)
+                    <form method="POST" action="{{ route('admin.scoring.recalculate', ['locale' => app()->getLocale(), 'gameweek' => $gameweek->id]) }}">
+                        @csrf
+                        <button type="submit"
+                                class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
+                                onclick="return confirm('{{ __('¿Recalcular los puntos? Esto eliminará los datos actuales.') }}')">
+                            {{ __('Recalcular') }}
+                        </button>
+                    </form>
                 @endif
             </div>
         </div>

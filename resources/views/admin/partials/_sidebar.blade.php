@@ -118,6 +118,11 @@
                 {{ request()->routeIs('admin.fantasy.teams.*') ? 'bg-gray-700 text-white' : 'text-gray-400 hover:bg-gray-700 hover:text-white' }}">
                 {{ __('Equipos Fantasy') }}
             </a>
+            <a href="{{ route('admin.fantasy.fixtures.index', ['locale' => app()->getLocale()]) }}" 
+            class="block px-4 py-2 text-sm rounded-lg transition-colors
+                {{ request()->routeIs('admin.fantasy.fixtures.*') ? 'bg-gray-700 text-white' : 'text-gray-400 hover:bg-gray-700 hover:text-white' }}">
+                {{ __('Fixtures') }}
+            </a>
         </div>
     </div>
 
@@ -147,6 +152,15 @@
                              ? 'bg-gray-700 text-white' 
                              : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
                     {{ __('Gameweeks') }}
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('admin.scoring.rules', ['locale' => app()->getLocale()]) }}" 
+                class="flex items-center px-3 py-2 text-sm rounded-lg transition-colors
+                        {{ request()->routeIs('admin.scoring.rules') 
+                            ? 'bg-gray-700 text-white' 
+                            : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
+                    {{ __('Scoring Rules') }}
                 </a>
             </li>
         </ul>

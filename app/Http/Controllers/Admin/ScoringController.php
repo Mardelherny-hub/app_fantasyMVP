@@ -100,6 +100,15 @@ class ScoringController extends Controller
         }
     }
 
+    public function rules(string $locale)
+    {
+        app()->setLocale($locale);
+        
+        $seasons = \App\Models\Season::with('scoringRules')->get();
+        
+        return view('admin.scoring.rules', compact('seasons'));
+    }
+
     /**
      * Recalcular puntos de gameweek.
      */
@@ -122,6 +131,92 @@ class ScoringController extends Controller
             return redirect()
                 ->back()
                 ->with('error', "Error recalculando: {$e->getMessage()}");
+        }
+    }
+
+    /**
+     * Cerrar gameweek y disparar cálculos.
+     */
+    public function close($locale, $gameweek)
+    {
+        $gameweek = Gameweek::findOrFail($gameweek);
+
+        // Verificar si ya está cerrado
+        if ($gameweek->is_closed) {
+            return redirect()
+                ->back()
+                ->with('warning', __('Gameweek already closed.'));
+        }
+
+        // Verificar si ha terminado
+        if ($gameweek->ends_at > now()) {
+            return redirect()
+                ->back()
+                ->with('error', __('Cannot close gameweek before it ends.'));
+        }
+
+        try {
+            DB::transaction(function () use ($gameweek) {
+                // 1. Actualizar fixtures pendientes
+                $this->fixtureService->processCompletedGameweek($gameweek);
+                
+                // 2. Marcar como cerrado
+                $gameweek->update(['is_closed' => true]);
+                
+                // 3. Disparar job de cálculo
+                \App\Jobs\Admin\Scoring\CalculateGameweekScoresJob::dispatch($gameweek);
+            });
+
+            Log::info("Gameweek closed from admin panel", [
+                'gameweek_id' => $gameweek->id,
+                'user_id' => auth()->id()
+            ]);
+
+            return redirect()
+                ->route('admin.scoring.show', ['locale' => $locale, 'gameweek' => $gameweek->id])
+                ->with('success', __('Gameweek closed successfully. Points will be calculated in background.'));
+
+        } catch (\Exception $e) {
+            Log::error("Failed to close gameweek from admin", [
+                'gameweek_id' => $gameweek->id,
+                'error' => $e->getMessage()
+            ]);
+
+            return redirect()
+                ->back()
+                ->with('error', __('Error closing gameweek: :message', ['message' => $e->getMessage()]));
+        }
+    }
+
+    /**
+     * Reabrir gameweek cerrado.
+     */
+    public function reopen($locale, $gameweek)
+    {
+        $gameweek = Gameweek::findOrFail($gameweek);
+
+        if (!$gameweek->is_closed) {
+            return redirect()
+                ->back()
+                ->with('warning', __('Gameweek is already open.'));
+        }
+
+        try {
+            $gameweek->update(['is_closed' => false]);
+
+            Log::info("Gameweek reopened from admin panel", [
+                'gameweek_id' => $gameweek->id,
+                'user_id' => auth()->id()
+            ]);
+
+            return redirect()
+                ->back()
+                ->with('success', __('Gameweek reopened successfully.'));
+
+        } catch (\Exception $e) {
+            return redirect()
+                ->back()
+                ->with('error', __('Error reopening gameweek: :message', ['message' => $e->getMessage()]));
         }
     }
 }

@@ -49,42 +49,51 @@
         <span x-show="sidebarOpen" x-transition class="ml-3 font-medium">{{ __('Mi Liga') }}</span>
     </a>
 
-    
-    
 
-  {{-- Divider --}}
-<div x-show="sidebarOpen" x-transition class="pt-4 pb-2">
-    <div class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ __('Mi Equipo') }}</div>
-</div>
+  { {-- Divider --}}
+    <div x-show="sidebarOpen" x-transition class="pt-4 pb-2">
+        <div class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ __('Mi Equipo') }}</div>
+    </div>
 
-{{-- Plantilla (Squad Builder) - Solo si NO completó --}}
-@if(!auth()->user()->fantasyTeams()->first()?->is_squad_complete)
-    <a href="{{ route('manager.squad-builder.index', ['locale' => app()->getLocale()]) }}" 
-       class="flex items-center px-3 py-2.5 rounded-lg transition group {{ request()->routeIs('manager.squad-builder.*') ? 
-           'bg-emerald-500/20 text-emerald-400' : 'text-gray-300 hover:bg-white/5 hover:text-white' }}">
-        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
-        </svg>
-        <span x-show="sidebarOpen" x-transition class="ml-3 font-medium">{{ __('Armar Plantilla') }}</span>
-        <span x-show="sidebarOpen" x-transition class="ml-auto">
-            <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+    {{-- Plantilla (Squad Builder) - Solo si NO completó --}}
+    @if(!auth()->user()->fantasyTeams()->first()?->is_squad_complete)
+        <a href="{{ route('manager.squad-builder.index', ['locale' => app()->getLocale()]) }}" 
+        class="flex items-center px-3 py-2.5 rounded-lg transition group {{ request()->routeIs('manager.squad-builder.*') ? 
+            'bg-emerald-500/20 text-emerald-400' : 'text-gray-300 hover:bg-white/5 hover:text-white' }}">
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
             </svg>
-        </span>
-    </a>
-@else
-    {{-- Alineación (Lineup Manager) - Solo si completó plantilla --}}
-    <a href="{{ route('manager.lineup.index', ['locale' => app()->getLocale()]) }}" 
-       class="flex items-center px-3 py-2.5 rounded-lg transition group {{ request()->routeIs('manager.lineup.*') ? 
-           'bg-emerald-500/20 text-emerald-400' : 'text-gray-300 hover:bg-white/5 hover:text-white' }}">
-        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
-        </svg>
-        <span x-show="sidebarOpen" x-transition class="ml-3 font-medium">{{ __('Gestionar Alineación') }}</span>
-    </a>
-@endif
+            <span x-show="sidebarOpen" x-transition class="ml-3 font-medium">{{ __('Armar Plantilla') }}</span>
+            <span x-show="sidebarOpen" x-transition class="ml-auto">
+                <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                </svg>
+            </span>
+        </a>
+    @else
+        {{-- Alineación (Lineup Manager) - Solo si completó plantilla --}}
+        <a href="{{ route('manager.lineup.index', ['locale' => app()->getLocale()]) }}" 
+        class="flex items-center px-3 py-2.5 rounded-lg transition group {{ request()->routeIs('manager.lineup.*') ? 
+            'bg-emerald-500/20 text-emerald-400' : 'text-gray-300 hover:bg-white/5 hover:text-white' }}">
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+            </svg>
+            <span x-show="sidebarOpen" x-transition class="ml-3 font-medium">{{ __('Gestionar Alineación') }}</span>
+        </a>
+    @endif
 
-    {{-- Mercado de Fichajes --}}
+    {{-- Mis Partidos --}}
+    @if(auth()->user()->hasRole('manager'))
+        <a href="{{ route('manager.fixtures.index', ['locale' => app()->getLocale()]) }}" 
+        class="flex items-center px-3 py-2.5 rounded-lg {{ request()->routeIs('manager.fixtures.*') ? 
+            'bg-emerald-500/20 text-emerald-400' : 'text-gray-300 hover:bg-white/5 hover:text-white' }}">
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <span x-show="sidebarOpen" x-transition class="ml-3 font-medium">{{ __('Mis Partidos') }}</span>
+        </a>
+    @endif
+
     {{-- MARKET --}}
     <a href="{{ route('manager.market.index', ['locale' => app()->getLocale()]) }}" 
     class="flex items-center px-3 py-2.5 rounded-lg {{ request()->routeIs('manager.market.*') ? 'bg-emerald-600 text-white' : 'text-gray-400 hover:bg-slate-700/50 hover:text-white' }}"

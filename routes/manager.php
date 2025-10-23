@@ -75,17 +75,29 @@ Route::middleware(['web', 'auth', 'verified', 'role:manager'])
             })->name('index');
         });
 
-   // ========================================
-// MARKET ROUTES (Transfer Market)
-// ========================================
-Route::middleware(['web', 'auth', 'verified', 'role:manager'])
-    ->prefix('{locale}/manager/market')
-    ->where(['locale' => 'es|en|fr'])
-    ->name('manager.market.')
-    ->group(function () {
-        Route::get('/', function() {
-            return view('manager.market.index');
-        })->name('index');
-    });
+    // ========================================
+    // MARKET ROUTES (Transfer Market)
+    // ========================================
+    Route::middleware(['web', 'auth', 'verified', 'role:manager'])
+        ->prefix('{locale}/manager/market')
+        ->where(['locale' => 'es|en|fr'])
+        ->name('manager.market.')
+        ->group(function () {
+            Route::get('/', function() {
+                return view('manager.market.index');
+            })->name('index');
+        });
 
-    
+    // ========================================
+    // FIXTURES ROUTES (Calendario de Partidos)
+    // ========================================
+    Route::middleware(['web', 'auth', 'verified', 'role:manager'])
+        ->prefix('{locale}/manager/fixtures')
+        ->where(['locale' => 'es|en|fr'])
+        ->as('manager.fixtures.')
+        ->group(function () {
+            Route::get('/', function() {
+                return view('manager.fixtures.index');
+            })->name('index');
+        });
+

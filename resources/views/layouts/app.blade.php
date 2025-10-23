@@ -117,6 +117,18 @@
         </a>
     @endif
 
+    {{-- Calendario --}}
+    @if(auth()->user()->hasRole('manager'))
+        <a href="{{ route('manager.calendar.index', ['locale' => app()->getLocale()]) }}" 
+        class="flex items-center px-3 py-2.5 rounded-lg {{ request()->routeIs('manager.calendar.*') ? 
+            'bg-emerald-500/20 text-emerald-400' : 'text-gray-300 hover:bg-white/5 hover:text-white' }}">
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <span x-show="sidebarOpen" x-transition class="ml-3 font-medium">{{ __('Calendario') }}</span>
+        </a>
+    @endif
+
     {{-- MARKET --}}
     <a href="{{ route('manager.market.index', ['locale' => app()->getLocale()]) }}" 
     class="flex items-center px-3 py-2.5 rounded-lg {{ request()->routeIs('manager.market.*') ? 'bg-emerald-600 text-white' : 'text-gray-400 hover:bg-slate-700/50 hover:text-white' }}"

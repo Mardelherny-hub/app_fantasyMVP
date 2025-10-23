@@ -127,3 +127,16 @@ Route::middleware(['web', 'auth', 'verified', 'role:manager'])
             })->name('standings');
         });
 
+    // ========================================
+    // CALENDAR ROUTES (Calendario de Jornadas)
+    // ========================================
+    Route::middleware(['web', 'auth', 'verified', 'role:manager'])
+        ->prefix('{locale}/manager/calendar')
+        ->where(['locale' => 'es|en|fr'])
+        ->as('manager.calendar.')
+        ->group(function () {
+            Route::get('/', function() {
+                return view('manager.calendar.index');
+            })->name('index');
+        });
+

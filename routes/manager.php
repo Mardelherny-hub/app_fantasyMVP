@@ -153,3 +153,16 @@ Route::middleware(['web', 'auth', 'verified', 'role:manager'])
             })->name('index');
         });
 
+    // ========================================
+    // SETTINGS ROUTES (Configuración)
+    // ========================================
+    Route::middleware(['web', 'auth', 'verified', 'role:manager'])
+        ->prefix('{locale}/manager/settings')
+        ->where(['locale' => 'es|en|fr'])
+        ->as('manager.settings.')
+        ->group(function () {
+            Route::get('/', function() {
+                return view('manager.settings.index');
+            })->name('index');
+        });
+

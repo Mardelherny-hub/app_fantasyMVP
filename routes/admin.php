@@ -154,12 +154,13 @@ Route::middleware(['web', 'auth', 'verified', 'role:admin'])
         // Scoring
         Route::prefix('scoring')->as('scoring.')->group(function () {
             Route::get('/', [ScoringController::class, 'index'])->name('index');
+            Route::get('/rules', [ScoringController::class, 'rules'])->name('rules');
             Route::get('/{gameweek}', [ScoringController::class, 'show'])->name('show');
             Route::post('/{gameweek}/process', [ScoringController::class, 'process'])->name('process');
             Route::post('/{gameweek}/recalculate', [ScoringController::class, 'recalculate'])->name('recalculate');
             Route::post('/{gameweek}/close', [ScoringController::class, 'close'])->name('close');
             Route::post('/{gameweek}/reopen', [ScoringController::class, 'reopen'])->name('reopen');
-            Route::get('/rules', [ScoringController::class, 'rules'])->name('rules');
+            
         });
         
         // CPL Management

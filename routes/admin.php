@@ -25,6 +25,8 @@ use App\Http\Controllers\Admin\Market\AnalyticsController;
 use App\Http\Controllers\Admin\ScoringController;
 use App\Http\Controllers\Admin\CPL\RealMatchController as CPLMatchController;
 use App\Http\Controllers\Admin\CPL\RealPlayerEventController;
+use App\Http\Controllers\Admin\Quiz\QuestionController;
+
 
 /* ========================================
  * ADMIN ROUTES - GRUPO ÚNICO
@@ -180,4 +182,32 @@ Route::middleware(['web', 'auth', 'verified', 'role:admin'])
                 Route::post('/{match}/events/process', [RealPlayerEventController::class, 'process'])->name('events.process');
             });
         });
+        
+        // QUIZ MODULE - VERSIÓN SIMPLE CON IDs
+Route::prefix('quiz')->as('quiz.')->group(function () {
+    
+    Route::get('questions', [App\Http\Controllers\Admin\Quiz\QuestionController::class, 'index'])
+        ->name('questions.index');
+    Route::get('questions/create', [App\Http\Controllers\Admin\Quiz\QuestionController::class, 'create'])
+        ->name('questions.create');
+    Route::post('questions', [App\Http\Controllers\Admin\Quiz\QuestionController::class, 'store'])
+        ->name('questions.store');
+    Route::get('questions/{id}/edit', [App\Http\Controllers\Admin\Quiz\QuestionController::class, 'edit'])
+        ->name('questions.edit')
+        ->where('id', '[0-9]+');
+    Route::put('questions/{id}', [App\Http\Controllers\Admin\Quiz\QuestionController::class, 'update'])
+        ->name('questions.update')
+        ->where('id', '[0-9]+');
+    Route::delete('questions/{id}', [App\Http\Controllers\Admin\Quiz\QuestionController::class, 'destroy'])
+        ->name('questions.destroy')
+        ->where('id', '[0-9]+');
+    Route::patch('questions/{id}/toggle', [App\Http\Controllers\Admin\Quiz\QuestionController::class, 'toggleActive'])
+        ->name('questions.toggle')
+        ->where('id', '[0-9]+');
+    
+    Route::get('categories', fn() => view('admin.quiz.categories.index'))
+        ->name('categories.index');
+    Route::get('quizzes', fn() => view('admin.quiz.quizzes.index'))
+        ->name('quizzes.index');
+});
     });

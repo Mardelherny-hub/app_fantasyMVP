@@ -166,3 +166,28 @@ Route::middleware(['web', 'auth', 'verified', 'role:manager'])
             })->name('index');
         });
 
+    // ========================================
+    // EDUCATION ROUTES (Módulo Educativo)
+    // ========================================
+    Route::middleware(['web', 'auth', 'verified', 'role:manager'])
+        ->prefix('{locale}/manager/education')
+        ->where(['locale' => 'es|en|fr'])
+        ->as('manager.education.')
+        ->group(function () {
+            
+            // Hub educativo (página principal)
+            Route::get('/', [App\Http\Controllers\Dashboard\Education\EducationController::class, 'index'])
+                ->name('index');
+            
+            // Resultados de un quiz específico
+            Route::get('/results/{attempt}', [App\Http\Controllers\Dashboard\Education\EducationController::class, 'results'])
+                ->name('results');
+            
+            // Ranking global
+            Route::get('/ranking', [App\Http\Controllers\Dashboard\Education\EducationController::class, 'ranking'])
+                ->name('ranking');
+            
+            // Estadísticas personales
+            Route::get('/stats', [App\Http\Controllers\Dashboard\Education\EducationController::class, 'stats'])
+                ->name('stats');
+        });

@@ -7,6 +7,7 @@ use App\Models\Question;
 use App\Models\QuizAttempt;
 use App\Models\QuizAttemptAnswer;
 use App\Models\QuizCategory;
+use App\Models\Setting;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 
@@ -217,8 +218,7 @@ class QuizAnalyticsService
     public function getLeaderboard(int $limit = 100, string $period = 'all_time'): array
     {
         $cacheKey = "quiz_leaderboard_{$period}_{$limit}";
-        $cacheDuration = (int) settings('quiz.leaderboard.cache_minutes', 10);
-
+        $cacheDuration = (int) Setting::get('quiz.leaderboard.cache_minutes', 10);
         return Cache::remember(
             $cacheKey,
             now()->addMinutes($cacheDuration),

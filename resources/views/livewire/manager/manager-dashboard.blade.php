@@ -1,5 +1,8 @@
 <div class="min-h-screen bg-slate-900 text-white py-8 px-4">
-    {{-- Header --}}
+    
+    {{-- ========================================
+         HEADER SECTION
+         ======================================== --}}
     <div class="max-w-7xl mx-auto mb-8">
         <div class="flex items-center justify-between mb-6">
             <div>
@@ -9,14 +12,21 @@
             
             {{-- Quick Actions --}}
             <div class="flex gap-3">
-                <a href="{{ route('manager.dashboard', ['locale' => app()->getLocale()]) }}" 
+                <a href="{{ route('manager.education.index', ['locale' => app()->getLocale()]) }}" 
+                   class="px-4 py-2 bg-emerald-500/20 border border-emerald-500/50 text-emerald-400 rounded-lg hover:bg-emerald-500/30 transition text-sm font-semibold">
+                    <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                    </svg>
+                    {{ __('Education') }}
+                </a>
+                <a href="{{ route('manager.onboarding.welcome', ['locale' => app()->getLocale()]) }}" 
                    class="px-4 py-2 bg-white/5 border border-white/20 text-white rounded-lg hover:bg-white/10 transition text-sm">
                     {{ __('Unirse a otra liga') }}
                 </a>
             </div>
         </div>
 
-        {{-- Selector de Liga (si tiene múltiples) --}}
+        {{-- League Selector (si tiene múltiples) --}}
         @if($leagueMembers->count() > 1)
         <div class="bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl p-4 mb-6">
             <label class="block text-sm font-medium text-gray-400 mb-2">{{ __('Seleccionar liga') }}</label>
@@ -36,6 +46,9 @@
         @endif
     </div>
 
+    {{-- ========================================
+         MAIN CONTENT (SI HAY LIGA SELECCIONADA)
+         ======================================== --}}
     @if($selectedMember)
     <div class="max-w-7xl mx-auto space-y-6">
         
@@ -44,8 +57,11 @@
             <x-manager.deadline-alert :leagueMember="$selectedMember" />
         @endif
 
-        {{-- Stats Cards --}}
+        {{-- ========================================
+             STATS CARDS (4 columnas)
+             ======================================== --}}
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            
             {{-- Puntos Totales --}}
             <div class="bg-gradient-to-br from-cyan-500/10 to-blue-500/10 border border-cyan-500/30 rounded-xl p-6">
                 <div class="flex items-center justify-between mb-2">
@@ -59,6 +75,19 @@
                 </div>
             </div>
 
+            {{-- Posición en Liga --}}
+            <div class="bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-purple-500/30 rounded-xl p-6">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm text-gray-400">{{ __('Posición') }}</span>
+                    <svg class="w-8 h-8 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                    </svg>
+                </div>
+                <div class="text-3xl font-black text-white">
+                    #{{ $userPosition ?? '-' }}
+                </div>
+            </div>
+
             {{-- Presupuesto --}}
             <div class="bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-xl p-6">
                 <div class="flex items-center justify-between mb-2">
@@ -68,44 +97,33 @@
                     </svg>
                 </div>
                 <div class="text-3xl font-black text-white">
-                    ${{ $selectedTeam ? number_format($selectedTeam->budget, 2) : '100.00' }}
+                    ${{ $selectedTeam ? number_format($selectedTeam->budget, 2) : '0.00' }}
                 </div>
             </div>
 
-            {{-- Posición --}}
+            {{-- Valor del Equipo --}}
             <div class="bg-gradient-to-br from-yellow-500/10 to-orange-500/10 border border-yellow-500/30 rounded-xl p-6">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="text-sm text-gray-400">{{ __('Posición') }}</span>
+                    <span class="text-sm text-gray-400">{{ __('Valor del Equipo') }}</span>
                     <svg class="w-8 h-8 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
                     </svg>
                 </div>
                 <div class="text-3xl font-black text-white">
-                    @php
-                        $position = $standings->where('fantasy_team_id', $selectedTeam?->id)->first()?->position ?? '-';
-                    @endphp
-                    {{ $position }}°
+                    ${{ $selectedTeam ? number_format($selectedTeam->team_value, 2) : '0.00' }}
                 </div>
             </div>
 
-            {{-- Gameweek Actual --}}
-            <div class="bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-purple-500/30 rounded-xl p-6">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="text-sm text-gray-400">{{ __('Gameweek') }}</span>
-                    <svg class="w-8 h-8 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                    </svg>
-                </div>
-                <div class="text-3xl font-black text-white">
-                    GW{{ $currentGameweek?->number ?? 1 }}
-                </div>
-            </div>
         </div>
 
-        {{-- Main Content Grid --}}
+        {{-- ========================================
+             TWO COLUMN LAYOUT
+             ======================================== --}}
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
-            {{-- Left Column: Team Info --}}
+            {{-- ========================================
+                 LEFT COLUMN (2/3)
+                 ======================================== --}}
             <div class="lg:col-span-2 space-y-6">
                 
                 {{-- Team Card --}}
@@ -139,50 +157,26 @@
                                 <p class="text-white font-semibold">{{ $selectedMember->league->season->name }}</p>
                             </div>
                         </div>
+                        
+                        <div class="pt-3">
+                            <a href="{{ route('manager.lineup.index', ['locale' => app()->getLocale()]) }}" 
+                               class="block w-full text-center px-4 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-bold rounded-lg hover:shadow-lg hover:shadow-cyan-500/30 transition">
+                                {{ __('Ver Alineación') }}
+                            </a>
+                        </div>
                     </div>
-
-                    {{-- Actions --}}
-                    <div class="flex gap-3 mt-6">
-                        @if(!$selectedTeam->is_squad_complete)
-                        <a href="{{ route('manager.squad-builder.index', ['locale' => app()->getLocale()]) }}" 
-                           class="flex-1 px-4 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-bold rounded-lg hover:shadow-lg hover:shadow-cyan-500/30 transition text-center">
-                            {{ __('Armar Plantilla') }}
-                        </a>
-                        @else
-                        <a href="{{ route('manager.lineup.index', ['locale' => app()->getLocale()]) }}" 
-                        class="flex items-center justify-between p-4 bg-gradient-to-r from-emerald-500/10 to-cyan-500/10 border border-emerald-500/30 rounded-xl hover:border-emerald-400 transition group">
-                            <div class="flex items-center space-x-3">
-                                <div class="w-12 h-12 bg-emerald-500/20 rounded-lg flex items-center justify-center group-hover:bg-emerald-500/30 transition">
-                                    <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                                    </svg>
-                                </div>
-                                <div>
-                                    <h3 class="font-bold text-white">{{ __('Mi Alineación') }}</h3>
-                                    <p class="text-xs text-gray-400">{{ __('Gestionar titulares y suplentes') }}</p>
-                                </div>
-                            </div>
-                            <svg class="w-5 h-5 text-emerald-400 group-hover:translate-x-1 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                            </svg>
-                        </a>
-
-                        <button class="flex-1 px-4 py-3 bg-white/5 border border-white/20 text-white font-semibold rounded-lg hover:bg-white/10 transition">
-                            {{ __('Transferencias') }}
-                        </button>
-                        @endif
-                    </div>
-                    @else
-                    <p class="text-gray-400 text-center py-8">{{ __('No se encontró equipo para esta liga') }}</p>
                     @endif
                 </div>
 
                 {{-- Gameweek Info --}}
                 @if($currentGameweek)
                 <div class="bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl p-6">
-                    <h2 class="text-xl font-bold text-white mb-4">{{ __('Gameweek :number', ['number' => $currentGameweek->number]) }}</h2>
-                    
+                    <h2 class="text-xl font-bold text-white mb-4">{{ __('Jornada Actual') }}</h2>
                     <div class="space-y-3">
+                        <div class="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                            <span class="text-gray-400">{{ __('Jornada') }}</span>
+                            <span class="text-white font-semibold">{{ $currentGameweek->name }}</span>
+                        </div>
                         <div class="flex items-center justify-between p-3 bg-white/5 rounded-lg">
                             <span class="text-gray-400">{{ __('Inicio') }}</span>
                             <span class="text-white font-semibold">{{ $currentGameweek->starts_at->format('d/m/Y H:i') }}</span>
@@ -191,72 +185,95 @@
                             <span class="text-gray-400">{{ __('Fin') }}</span>
                             <span class="text-white font-semibold">{{ $currentGameweek->ends_at->format('d/m/Y H:i') }}</span>
                         </div>
-                        <div class="flex items-center justify-between p-3 bg-white/5 rounded-lg">
-                            <span class="text-gray-400">{{ __('Estado') }}</span>
-                            @if($currentGameweek->is_active)
-                            <span class="px-3 py-1 bg-green-500/20 border border-green-500/50 text-green-400 text-xs font-semibold rounded-full">
-                                {{ __('En Curso') }}
-                            </span>
-                            @else
-                            <span class="px-3 py-1 bg-gray-500/20 border border-gray-500/50 text-gray-400 text-xs font-semibold rounded-full">
-                                {{ __('Próxima') }}
-                            </span>
-                            @endif
-                        </div>
                     </div>
                 </div>
                 @endif
+
             </div>
 
-            {{-- Right Column: Standings --}}
+            {{-- ========================================
+                 RIGHT COLUMN (1/3)
+                 ======================================== --}}
             <div class="space-y-6">
+                
+                {{-- Education Card (NUEVA) --}}
+                <div class="bg-gradient-to-br from-emerald-500/10 to-teal-500/10 backdrop-blur-lg border border-emerald-500/30 rounded-xl p-6 hover:border-emerald-500/50 transition-all duration-300">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-emerald-500/20 rounded-lg mr-3">
+                                <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-base font-bold text-white">{{ __('Education') }}</h3>
+                                <p class="text-xs text-gray-400">{{ __('Learn & Earn') }}</p>
+                            </div>
+                        </div>
+                        <span class="px-2 py-1 bg-emerald-500/20 text-emerald-400 text-[10px] font-bold rounded-full uppercase">{{ __('New') }}</span>
+                    </div>
+
+                    <div class="space-y-2 mb-4">
+                        <div class="flex items-center text-xs text-gray-300">
+                            <svg class="w-3 h-3 text-emerald-400 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span>{{ __('Quick quizzes & trivia') }}</span>
+                        </div>
+                        <div class="flex items-center text-xs text-gray-300">
+                            <svg class="w-3 h-3 text-emerald-400 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span>{{ __('Earn coins & rewards') }}</span>
+                        </div>
+                        <div class="flex items-center text-xs text-gray-300">
+                            <svg class="w-3 h-3 text-emerald-400 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span>{{ __('Compete in rankings') }}</span>
+                        </div>
+                    </div>
+
+                    <a href="{{ route('manager.education.index', ['locale' => app()->getLocale()]) }}" 
+                       class="block w-full px-4 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-sm font-bold rounded-lg text-center hover:shadow-lg hover:shadow-emerald-500/30 transition-all duration-300">
+                        {{ __('Start Now') }}
+                        <svg class="w-4 h-4 inline ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                        </svg>
+                    </a>
+                </div>
+
+                {{-- Standings --}}
                 <div class="bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl p-6">
                     <h2 class="text-xl font-bold text-white mb-4">{{ __('Tabla de Posiciones') }}</h2>
                     
                     @if($standings->isNotEmpty())
                     <div class="space-y-2">
-                        @foreach($standings as $standing)
+                        @foreach($standings->take(5) as $standing)
                         <div class="flex items-center justify-between p-3 rounded-lg {{ $standing->fantasy_team_id === $selectedTeam?->id ? 'bg-cyan-500/20 border-2 border-cyan-500' : 'bg-white/5' }}">
                             <div class="flex items-center gap-3">
                                 <span class="w-8 h-8 flex items-center justify-center rounded-full font-bold {{ $standing->position <= 3 ? 'bg-yellow-500/20 text-yellow-400' : 'bg-white/10 text-gray-400' }}">
                                     {{ $standing->position }}
                                 </span>
                                 <div>
-                                    <p class="font-semibold text-white text-sm">{{ $standing->fantasyTeam->name }}</p>
-                                    <p class="text-xs text-gray-400">{{ $standing->played }}J | {{ $standing->points_league }}pts</p>
+                                    <p class="text-white font-semibold text-sm">{{ $standing->fantasyTeam->name }}</p>
+                                    <p class="text-gray-400 text-xs">{{ $standing->points }} pts</p>
                                 </div>
                             </div>
-                            <div class="text-right">
-                                <p class="font-bold text-white">{{ number_format($standing->points_fantasy) }}</p>
-                                <p class="text-xs text-gray-400">{{ __('pts') }}</p>
-                            </div>
+                            <span class="text-emerald-400 font-bold">{{ $standing->fantasy_points }}</span>
                         </div>
                         @endforeach
                     </div>
-
-                    <button class="w-full mt-4 px-4 py-2 bg-white/5 border border-white/20 text-white text-sm font-semibold rounded-lg hover:bg-white/10 transition">
-                        {{ __('Ver tabla completa') }}
-                    </button>
                     @else
-                    <p class="text-gray-400 text-center py-8 text-sm">{{ __('Aún no hay clasificación disponible') }}</p>
+                    <p class="text-gray-400 text-sm text-center py-4">{{ __('No hay datos disponibles') }}</p>
                     @endif
                 </div>
+
             </div>
+
         </div>
-    </div>
-    @else
-    <div class="max-w-7xl mx-auto">
-        <div class="bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl p-12 text-center">
-            <svg class="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
-            </svg>
-            <h3 class="text-xl font-bold text-white mb-2">{{ __('No tienes ligas activas') }}</h3>
-            <p class="text-gray-400 mb-6">{{ __('Únete o crea una liga para comenzar a competir') }}</p>
-            <a href="{{ route('manager.dashboard', ['locale' => app()->getLocale()]) }}" 
-               class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-bold rounded-lg hover:shadow-lg hover:shadow-cyan-500/30 transition">
-                {{ __('Explorar ligas') }}
-            </a>
-        </div>
+
     </div>
     @endif
+
 </div>

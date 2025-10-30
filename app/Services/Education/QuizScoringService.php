@@ -5,6 +5,7 @@ namespace App\Services\Education;
 use App\Models\QuizAttempt;
 use App\Models\QuizAttemptAnswer;
 use App\Models\Question;
+use App\Models\Setting;
 
 /**
  * Servicio de cálculo de puntuación para el módulo educativo.
@@ -99,9 +100,9 @@ class QuizScoringService
     protected function getBasePoints(int $difficulty): int
     {
         return match ($difficulty) {
-            Question::DIFFICULTY_EASY => (int) settings('quiz.points.easy', 10),
-            Question::DIFFICULTY_MEDIUM => (int) settings('quiz.points.medium', 20),
-            Question::DIFFICULTY_HARD => (int) settings('quiz.points.hard', 30),
+            Question::DIFFICULTY_EASY => (int) Setting::get('quiz.points.easy', 10),
+            Question::DIFFICULTY_MEDIUM => (int) Setting::get('quiz.points.medium', 20),
+            Question::DIFFICULTY_HARD => (int) Setting::get('quiz.points.hard', 30),
             default => 10,
         };
     }
@@ -112,16 +113,16 @@ class QuizScoringService
             return 0;
         }
 
-        $speedThreshold = (int) settings('quiz.points.speed_threshold', 10) * 1000;
-        $speedBonus = (int) settings('quiz.points.speed_bonus', 5);
+        $speedThreshold = (int) Setting::get('quiz.points.speed_threshold', 10) * 1000;
+        $speedBonus = (int) Setting::get('quiz.points.speed_bonus', 5);
 
         return ($timeMs < $speedThreshold) ? $speedBonus : 0;
     }
 
     protected function calculateStreakBonus(int $currentStreak): int
     {
-        $streakThreshold = (int) settings('quiz.points.streak_threshold', 5);
-        $streakBonus = (int) settings('quiz.points.streak_bonus', 10);
+        $streakThreshold = (int) Setting::get('quiz.points.streak_threshold', 5);
+        $streakBonus = (int) Setting::get('quiz.points.streak_bonus', 10);
 
         $nextStreak = $currentStreak + 1;
         
@@ -133,7 +134,7 @@ class QuizScoringService
         
         return $streakBonus * $multiplier;
     }
-
+    
     /**
      * Actualiza el attempt con los puntos calculados.
      * USA LOS CAMPOS REALES: score, correct_count, wrong_count

@@ -189,6 +189,9 @@ Route::middleware(['web', 'auth', 'verified', 'role:admin'])
             // Questions
             Route::get('questions', [App\Http\Controllers\Admin\Quiz\QuestionController::class, 'index'])
                 ->name('questions.index');
+            Route::get('questions/{id}', [App\Http\Controllers\Admin\Quiz\QuestionController::class, 'show'])
+                ->name('questions.show')
+                ->where('id', '[0-9]+');
             Route::get('questions/create', [App\Http\Controllers\Admin\Quiz\QuestionController::class, 'create'])
                 ->name('questions.create');
             Route::post('questions', [App\Http\Controllers\Admin\Quiz\QuestionController::class, 'store'])
@@ -226,6 +229,10 @@ Route::middleware(['web', 'auth', 'verified', 'role:admin'])
             // Quizzes
             Route::get('quizzes', [App\Http\Controllers\Admin\Quiz\QuizController::class, 'index'])
                 ->name('quizzes.index');
+            // Show
+            Route::get('quizzes/{id}', [App\Http\Controllers\Admin\Quiz\QuizController::class, 'show'])
+                ->name('quizzes.show')
+                ->where('id', '[0-9]+');
             Route::get('quizzes/create', [App\Http\Controllers\Admin\Quiz\QuizController::class, 'create'])
                 ->name('quizzes.create');
             Route::post('quizzes', [App\Http\Controllers\Admin\Quiz\QuizController::class, 'store'])

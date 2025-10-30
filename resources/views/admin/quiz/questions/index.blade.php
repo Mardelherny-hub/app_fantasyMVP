@@ -36,55 +36,88 @@
                 <div class="p-6 text-gray-900">
                     
                     {{-- Filtros --}}
-                    <div class="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <div>
-                            <label for="filter-category" class="block text-sm font-medium text-gray-700 mb-1">
-                                {{ __('Category') }}
-                            </label>
-                            <select id="filter-category" 
-                                    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                <option value="">{{ __('All Categories') }}</option>
-                                @foreach(\App\Models\QuizCategory::with('translations')->get() as $category)
-                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
-                                @endforeach
-                            </select>
+                    <form method="GET" action="{{ route('admin.quiz.questions.index') }}" class="mb-6">
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div>
+                                <label for="category" class="block text-sm font-medium text-gray-700 mb-1">
+                                    {{ __('Category') }}
+                                </label>
+                                <select name="category" 
+                                        id="category" 
+                                        onchange="this.form.submit()"
+                                        class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                    <option value="">{{ __('All Categories') }}</option>
+                                    @foreach($categories as $category)
+                                        <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
+                                            {{ $category->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div>
+                                <label for="difficulty" class="block text-sm font-medium text-gray-700 mb-1">
+                                    {{ __('Difficulty') }}
+                                </label>
+                                <select name="difficulty" 
+                                        id="difficulty" 
+                                        onchange="this.form.submit()"
+                                        class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                    <option value="">{{ __('All Difficulties') }}</option>
+                                    <option value="1" {{ request('difficulty') == '1' ? 'selected' : '' }}>{{ __('Easy') }}</option>
+                                    <option value="2" {{ request('difficulty') == '2' ? 'selected' : '' }}>{{ __('Medium') }}</option>
+                                    <option value="3" {{ request('difficulty') == '3' ? 'selected' : '' }}>{{ __('Hard') }}</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label for="status" class="block text-sm font-medium text-gray-700 mb-1">
+                                    {{ __('Status') }}
+                                </label>
+                                <select name="status" 
+                                        id="status" 
+                                        onchange="this.form.submit()"
+                                        class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                    <option value="">{{ __('All') }}</option>
+                                    <option value="1" {{ request('status') == '1' ? 'selected' : '' }}>{{ __('Active') }}</option>
+                                    <option value="0" {{ request('status') == '0' ? 'selected' : '' }}>{{ __('Inactive') }}</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label for="search" class="block text-sm font-medium text-gray-700 mb-1">
+                                    {{ __('Search') }}
+                                </label>
+                                <div class="flex space-x-2">
+                                    <input type="text" 
+                                        name="search" 
+                                        id="search" 
+                                        value="{{ request('search') }}"
+                                        placeholder="{{ __('Search questions...') }}"
+                                        class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                    <button type="submit" 
+                                            class="inline-flex items-center px-3 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
 
-                        <div>
-                            <label for="filter-difficulty" class="block text-sm font-medium text-gray-700 mb-1">
-                                {{ __('Difficulty') }}
-                            </label>
-                            <select id="filter-difficulty" 
-                                    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                <option value="">{{ __('All Difficulties') }}</option>
-                                <option value="1">{{ __('Easy') }}</option>
-                                <option value="2">{{ __('Medium') }}</option>
-                                <option value="3">{{ __('Hard') }}</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label for="filter-status" class="block text-sm font-medium text-gray-700 mb-1">
-                                {{ __('Status') }}
-                            </label>
-                            <select id="filter-status" 
-                                    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                <option value="">{{ __('All') }}</option>
-                                <option value="1">{{ __('Active') }}</option>
-                                <option value="0">{{ __('Inactive') }}</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label for="filter-search" class="block text-sm font-medium text-gray-700 mb-1">
-                                {{ __('Search') }}
-                            </label>
-                            <input type="text" 
-                                   id="filter-search" 
-                                   placeholder="{{ __('Search questions...') }}"
-                                   class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                        </div>
-                    </div>
+                        {{-- Botón limpiar filtros --}}
+                        @if(request()->hasAny(['category', 'difficulty', 'status', 'search']))
+                            <div class="mt-3 flex justify-end">
+                                <a href="{{ route('admin.quiz.questions.index') }}" 
+                                class="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                    </svg>
+                                    {{ __('Clear Filters') }}
+                                </a>
+                            </div>
+                        @endif
+                    </form>
 
                     {{-- Tabla de preguntas --}}
                     <div class="overflow-x-auto">
@@ -218,10 +251,11 @@
                     </div>
 
                     {{-- Paginación --}}
-                    <div class="mt-4">
-                        {{ \App\Models\Question::paginate(15)->links() }}
-                    </div>
-
+                    @if($questions->hasPages())
+                        <div class="mt-6">
+                            {{ $questions->links() }}
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>

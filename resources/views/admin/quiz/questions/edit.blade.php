@@ -1,7 +1,7 @@
 <x-admin-layout>
     <x-slot name="header">
         <div class="flex items-center justify-between">
-            {{ dd($question) }}
+            
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 {{ __('Edit Question') }} #{{ $question->id }}
             </h2>

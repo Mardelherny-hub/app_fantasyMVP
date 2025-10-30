@@ -184,30 +184,69 @@ Route::middleware(['web', 'auth', 'verified', 'role:admin'])
         });
         
         // QUIZ MODULE - VERSIÓN SIMPLE CON IDs
-Route::prefix('quiz')->as('quiz.')->group(function () {
-    
-    Route::get('questions', [App\Http\Controllers\Admin\Quiz\QuestionController::class, 'index'])
-        ->name('questions.index');
-    Route::get('questions/create', [App\Http\Controllers\Admin\Quiz\QuestionController::class, 'create'])
-        ->name('questions.create');
-    Route::post('questions', [App\Http\Controllers\Admin\Quiz\QuestionController::class, 'store'])
-        ->name('questions.store');
-    Route::get('questions/{id}/edit', [App\Http\Controllers\Admin\Quiz\QuestionController::class, 'edit'])
-        ->name('questions.edit')
-        ->where('id', '[0-9]+');
-    Route::put('questions/{id}', [App\Http\Controllers\Admin\Quiz\QuestionController::class, 'update'])
-        ->name('questions.update')
-        ->where('id', '[0-9]+');
-    Route::delete('questions/{id}', [App\Http\Controllers\Admin\Quiz\QuestionController::class, 'destroy'])
-        ->name('questions.destroy')
-        ->where('id', '[0-9]+');
-    Route::patch('questions/{id}/toggle', [App\Http\Controllers\Admin\Quiz\QuestionController::class, 'toggleActive'])
-        ->name('questions.toggle')
-        ->where('id', '[0-9]+');
-    
-    Route::get('categories', fn() => view('admin.quiz.categories.index'))
-        ->name('categories.index');
-    Route::get('quizzes', fn() => view('admin.quiz.quizzes.index'))
-        ->name('quizzes.index');
-});
+        Route::prefix('quiz')->as('quiz.')->group(function () {
+            
+            // Questions
+            Route::get('questions', [App\Http\Controllers\Admin\Quiz\QuestionController::class, 'index'])
+                ->name('questions.index');
+            Route::get('questions/create', [App\Http\Controllers\Admin\Quiz\QuestionController::class, 'create'])
+                ->name('questions.create');
+            Route::post('questions', [App\Http\Controllers\Admin\Quiz\QuestionController::class, 'store'])
+                ->name('questions.store');
+            Route::get('questions/{id}/edit', [App\Http\Controllers\Admin\Quiz\QuestionController::class, 'edit'])
+                ->name('questions.edit')
+                ->where('id', '[0-9]+');
+            Route::put('questions/{id}', [App\Http\Controllers\Admin\Quiz\QuestionController::class, 'update'])
+                ->name('questions.update')
+                ->where('id', '[0-9]+');
+            Route::delete('questions/{id}', [App\Http\Controllers\Admin\Quiz\QuestionController::class, 'destroy'])
+                ->name('questions.destroy')
+                ->where('id', '[0-9]+');
+            Route::patch('questions/{id}/toggle', [App\Http\Controllers\Admin\Quiz\QuestionController::class, 'toggleActive'])
+                ->name('questions.toggle')
+                ->where('id', '[0-9]+');
+            
+            // Categories - orden correcto: create ANTES de {id}
+            Route::get('categories', [App\Http\Controllers\Admin\Quiz\CategoryController::class, 'index'])
+                ->name('categories.index');
+            Route::get('categories/create', [App\Http\Controllers\Admin\Quiz\CategoryController::class, 'create'])
+                ->name('categories.create');
+            Route::post('categories', [App\Http\Controllers\Admin\Quiz\CategoryController::class, 'store'])
+                ->name('categories.store');
+            Route::get('categories/{id}/edit', [App\Http\Controllers\Admin\Quiz\CategoryController::class, 'edit'])
+                ->name('categories.edit')
+                ->where('id', '[0-9]+');
+            Route::put('categories/{id}', [App\Http\Controllers\Admin\Quiz\CategoryController::class, 'update'])
+                ->name('categories.update')
+                ->where('id', '[0-9]+');
+            Route::delete('categories/{id}', [App\Http\Controllers\Admin\Quiz\CategoryController::class, 'destroy'])
+                ->name('categories.destroy')
+                ->where('id', '[0-9]+');
+            
+            // Quizzes
+            Route::get('quizzes', [App\Http\Controllers\Admin\Quiz\QuizController::class, 'index'])
+                ->name('quizzes.index');
+            Route::get('quizzes/create', [App\Http\Controllers\Admin\Quiz\QuizController::class, 'create'])
+                ->name('quizzes.create');
+            Route::post('quizzes', [App\Http\Controllers\Admin\Quiz\QuizController::class, 'store'])
+                ->name('quizzes.store');
+            Route::get('quizzes/{id}/edit', [App\Http\Controllers\Admin\Quiz\QuizController::class, 'edit'])
+                ->name('quizzes.edit')
+                ->where('id', '[0-9]+');
+            Route::put('quizzes/{id}', [App\Http\Controllers\Admin\Quiz\QuizController::class, 'update'])
+                ->name('quizzes.update')
+                ->where('id', '[0-9]+');
+            Route::delete('quizzes/{id}', [App\Http\Controllers\Admin\Quiz\QuizController::class, 'destroy'])
+                ->name('quizzes.destroy')
+                ->where('id', '[0-9]+');
+            Route::patch('quizzes/{id}/toggle', [App\Http\Controllers\Admin\Quiz\QuizController::class, 'toggleActive'])
+                ->name('quizzes.toggle')
+                ->where('id', '[0-9]+');
+            Route::post('quizzes/{id}/assign-questions', [App\Http\Controllers\Admin\Quiz\QuizController::class, 'assignQuestions'])
+                ->name('quizzes.assign-questions')
+                ->where('id', '[0-9]+');
+            Route::post('quizzes/{id}/auto-assign-questions', [App\Http\Controllers\Admin\Quiz\QuizController::class, 'autoAssignQuestions'])
+                ->name('quizzes.auto-assign-questions')
+                ->where('id', '[0-9]+');
+        });
     });

@@ -13,20 +13,46 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class QuestionController extends Controller
-{
-   
+{   
 
     /**
      * Display a listing of questions.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $questions = Question::with(['category.translations', 'translations'])
-            ->orderBy('created_at', 'desc')
-            ->paginate(15);
+        $query = Question::with(['category.translations', 'translations']);
+
+        // Filtro por categoría
+        if ($request->filled('category')) {
+            $query->where('category_id', $request->category);
+        }
+
+        // Filtro por dificultad
+        if ($request->filled('difficulty')) {
+            $query->where('difficulty', $request->difficulty);
+        }
+
+        // Filtro por estado
+        if ($request->filled('status')) {
+            $query->where('is_active', $request->status);
+        }
+
+        // Búsqueda
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->whereHas('translations', function($q) use ($search) {
+                $q->where('text', 'like', '%' . $search . '%');
+            });
+        }
+
+        $questions = $query->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
         
-        return view('admin.quiz.questions.index', compact('questions'));
+        $categories = QuizCategory::with('translations')->get();
+        
+        return view('admin.quiz.questions.index', compact('questions', 'categories'));
     }
+
+    
 
     /**
      * Show the form for creating a new question.
@@ -118,18 +144,18 @@ class QuestionController extends Controller
     /**
      * Show the form for editing the specified question.
      */
-    public function edit($id)
-{
-    $question = Question::with([
-        'translations',
-        'options.translations'
-    ])->findOrFail($id);
-    
-    $categories = QuizCategory::with('translations')->get();
-    $difficulties = Question::DIFFICULTIES;
-    
-    return view('admin.quiz.questions.edit', compact('question', 'categories', 'difficulties'));
-}
+    public function edit($locale, $id)
+    {
+        $question = Question::with([
+            'translations',
+            'options.translations'
+        ])->findOrFail($id);
+        
+        $categories = QuizCategory::with('translations')->get();
+        $difficulties = Question::DIFFICULTIES;
+        
+        return view('admin.quiz.questions.edit', compact('question', 'categories', 'difficulties'));
+    }
 
     /**
      * Update the specified question in storage.

@@ -26,6 +26,10 @@ use App\Http\Controllers\Admin\ScoringController;
 use App\Http\Controllers\Admin\CPL\RealMatchController as CPLMatchController;
 use App\Http\Controllers\Admin\CPL\RealPlayerEventController;
 use App\Http\Controllers\Admin\Quiz\QuestionController;
+use App\Http\Controllers\Admin\Quiz\CategoryController;
+use App\Http\Controllers\Admin\Quiz\QuizController;
+use App\Http\Controllers\Admin\RealCompetitionTeamController;
+
 
 
 /* ========================================
@@ -78,6 +82,14 @@ Route::middleware(['web', 'auth', 'verified', 'role:admin'])
         //admin.real-competitions.toggle
         Route::patch('/real-competitions/{realCompetition}/toggle', [RealCompetitionController::class, 'toggle'])->name('real-competitions.toggle');
         
+        // Real Competition Teams Management
+        Route::prefix('/real-competitions/{realCompetition}/teams')->as('real-competitions.teams.')->group(function () {
+            Route::get('/', [RealCompetitionTeamController::class, 'index'])->name('index');
+            Route::get('/create', [RealCompetitionTeamController::class, 'create'])->name('create');
+            Route::post('/', [RealCompetitionTeamController::class, 'store'])->name('store');
+            Route::delete('/{realTeam}', [RealCompetitionTeamController::class, 'destroy'])->name('destroy');
+        });
+
         // Real Teams
         Route::get('/real-teams', [RealTeamController::class, 'index'])->name('real-teams.index');
         Route::get('/real-teams/create', [RealTeamController::class, 'create'])->name('real-teams.create');

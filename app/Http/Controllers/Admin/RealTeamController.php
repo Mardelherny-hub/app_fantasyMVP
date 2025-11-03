@@ -151,4 +151,33 @@ class RealTeamController extends Controller
 
         return back()->with('success', __('Equipo restaurado correctamente.'));
     }
+
+    /**
+     * Display players for the team.
+     */
+    public function playersIndex(Request $request, string $locale, RealTeam $realTeam)
+    {
+        app()->setLocale($locale);
+
+        $seasonId = $request->input('season_id');
+        
+        $query = $realTeam->memberships()
+            ->with(['player', 'season'])
+            ->whereNull('to_date')
+            ->orderBy('shirt_number');
+
+        if ($seasonId) {
+            $query->where('season_id', $seasonId);
+        }
+
+        $memberships = $query->get();
+        $seasons = \App\Models\Season::orderBy('starts_at', 'desc')->get();
+
+        return view('admin.real-teams.players.index', compact(
+            'realTeam',
+            'memberships',
+            'seasons',
+            'seasonId'
+        ));
+    }
 }

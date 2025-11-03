@@ -29,7 +29,7 @@ use App\Http\Controllers\Admin\Quiz\QuestionController;
 use App\Http\Controllers\Admin\Quiz\CategoryController;
 use App\Http\Controllers\Admin\Quiz\QuizController;
 use App\Http\Controllers\Admin\RealCompetitionTeamController;
-
+use App\Http\Controllers\Admin\RealTeamPlayerController;
 
 
 /* ========================================
@@ -98,9 +98,13 @@ Route::middleware(['web', 'auth', 'verified', 'role:admin'])
         Route::get('/real-teams/{realTeam}/edit', [RealTeamController::class, 'edit'])->name('real-teams.edit');
         Route::put('/real-teams/{realTeam}', [RealTeamController::class, 'update'])->name('real-teams.update');
         Route::delete('/real-teams/{realTeam}', [RealTeamController::class, 'destroy'])->name('real-teams.destroy');
-        // admin.real-teams.players.index
-        Route::get('/real-teams/{realTeam}/players', [RealTeamController::class, 'playersIndex'])->name('real-teams.players.index');
-
+        // Real Team Players Management
+        Route::prefix('/real-teams/{realTeam}/players')->as('real-teams.players.')->group(function () {
+            Route::get('/', [RealTeamPlayerController::class, 'index'])->name('index');
+            Route::get('/create', [RealTeamPlayerController::class, 'create'])->name('create');
+            Route::post('/', [RealTeamPlayerController::class, 'store'])->name('store');
+            Route::delete('/{realPlayer}', [RealTeamPlayerController::class, 'destroy'])->name('destroy');
+        });
         // Real Players
         Route::get('/real-players', [RealPlayerController::class, 'index'])->name('real-players.index');
         Route::get('/real-players/create', [RealPlayerController::class, 'create'])->name('real-players.create');

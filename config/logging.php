@@ -127,6 +127,13 @@ return [
             'path' => storage_path('logs/laravel.log'),
         ],
 
+        'economy' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/economy.log'),
+            'level' => 'info',
+            'days' => 14,
+        ],
+
     ],
 
     'moderation' => [

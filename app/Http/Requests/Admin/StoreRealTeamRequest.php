@@ -22,6 +22,7 @@ class StoreRealTeamRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'external_id' => ['nullable', 'integer', 'unique:real_teams,external_id'],
             'name' => ['required', 'string', 'max:255'],
             'short_name' => ['required', 'string', 'max:10'],
             'country' => ['required', 'string', 'size:2', 'regex:/^[A-Z]{2}$/'],
@@ -38,6 +39,7 @@ class StoreRealTeamRequest extends FormRequest
     public function attributes(): array
     {
         return [
+            'external_id' => __('ID externo'),
             'name' => __('nombre'),
             'short_name' => __('nombre corto'),
             'country' => __('país'),
@@ -54,6 +56,8 @@ class StoreRealTeamRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'external_id.integer' => __('El ID externo debe ser un número entero.'),
+            'external_id.unique' => __('Este ID externo ya está registrado.'),
             'name.required' => __('El nombre del equipo es obligatorio.'),
             'short_name.required' => __('El nombre corto es obligatorio.'),
             'short_name.max' => __('El nombre corto no puede tener más de 10 caracteres.'),

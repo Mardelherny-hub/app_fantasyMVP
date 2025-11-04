@@ -114,7 +114,7 @@ class QuizAnalyticsService
 
                     $statsByCategory[] = [
                         'category_id' => $categoryId,
-                        'category_name' => $category->getName(app()->getLocale()),
+                        'category_name' => $category->name,
                         'total_questions' => $totalQuestions,
                         'correct_answers' => $correctAnswers,
                         'incorrect_answers' => $totalQuestions - $correctAnswers,

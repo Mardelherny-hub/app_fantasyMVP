@@ -5,6 +5,7 @@ namespace App\Livewire\Dashboard\Education;
 use App\Models\QuizAttempt;
 use App\Services\Education\LeaderboardService;
 use App\Services\Education\QuizScoringService;
+use App\Services\Education\QuizAnalyticsService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
@@ -29,13 +30,16 @@ class UserStats extends Component
 
     protected LeaderboardService $leaderboardService;
     protected QuizScoringService $scoringService;
+    protected QuizAnalyticsService $analyticsService;
 
     public function boot(
         LeaderboardService $leaderboardService,
-        QuizScoringService $scoringService
+        QuizScoringService $scoringService,
+        QuizAnalyticsService $analyticsService
     ) {
         $this->leaderboardService = $leaderboardService;
         $this->scoringService = $scoringService;
+        $this->analyticsService = $analyticsService;
     }
 
     public function mount()
@@ -61,10 +65,13 @@ class UserStats extends Component
         $user = Auth::user();
 
         // Estadísticas generales
-        $this->generalStats = $this->scoringService->getUserStats($user->id);
+        $this->generalStats = $this->analyticsService->getUserStats($user);
 
         // Mejor intento
-        $this->bestAttempt = $this->scoringService->getUserBestAttempt($user->id);
+        $this->bestAttempt = QuizAttempt::where('user_id', $user->id)
+            ->where('status', QuizAttempt::STATUS_FINISHED)
+            ->orderByDesc('score')
+            ->first();
 
         // Historial reciente (últimos 10)
         $this->recentAttempts = QuizAttempt::where('user_id', $user->id)

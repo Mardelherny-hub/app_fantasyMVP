@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\QuizAttempt;
 use App\Services\Education\LeaderboardService;
 use App\Services\Education\QuizScoringService;
+use App\Services\Education\QuizAnalyticsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -37,45 +38,45 @@ class EducationController extends Controller
      * @return \Illuminate\View\View
      */
     public function index()
-{
-    $user = Auth::user();
-    
-    $analyticsService = app(\App\Services\Education\QuizAnalyticsService::class);
-    
-    // Obtener estadísticas del usuario
-    $stats = $analyticsService->getUserStats($user);
-    
-    // Mapear las claves para que coincidan con la vista
-    $userStats = [
-        'total_attempts' => $stats['total_attempts'] ?? 0,
-        'total_score' => $stats['total_points_earned'] ?? 0,
-        'average_score' => $stats['average_points_per_attempt'] ?? 0,
-        'accuracy_rate' => $stats['overall_accuracy'] ?? 0,
-        'correct_answers' => $stats['total_correct_answers'] ?? 0,
-        'total_answers' => $stats['total_questions_answered'] ?? 0,
-    ];
-    
-    // Top 5 del ranking
-    $topUsers = $this->leaderboardService
-        ->getLeaderboard('all_time', 5);
-    
-    // Posición del usuario
-    $userPosition = $this->leaderboardService
-        ->getUserPosition($user, 'all_time');
-    
-    // Último intento
-    $lastAttempt = QuizAttempt::where('user_id', $user->id)
-        ->where('status', QuizAttempt::STATUS_FINISHED)
-        ->latest('finished_at')
-        ->first();
-    
-    return view('manager.education.index', compact(
-        'userStats',
-        'topUsers',
-        'userPosition',
-        'lastAttempt'
-    ));
-}
+    {
+        $user = Auth::user();
+        
+        $analyticsService = app(\App\Services\Education\QuizAnalyticsService::class);
+        
+        // Obtener estadísticas del usuario
+        $stats = $analyticsService->getUserStats($user);
+        
+        // Mapear las claves para que coincidan con la vista
+        $userStats = [
+            'total_attempts' => $stats['total_attempts'] ?? 0,
+            'total_score' => $stats['total_points_earned'] ?? 0,
+            'average_score' => $stats['average_points_per_attempt'] ?? 0,
+            'accuracy_rate' => $stats['overall_accuracy'] ?? 0,
+            'correct_answers' => $stats['total_correct_answers'] ?? 0,
+            'total_answers' => $stats['total_questions_answered'] ?? 0,
+        ];
+        
+        // Top 5 del ranking
+        $topUsers = $this->leaderboardService
+            ->getLeaderboard('all_time', 5);
+        
+        // Posición del usuario
+        $userPosition = $this->leaderboardService
+            ->getUserPosition($user, 'all_time');
+        
+        // Último intento
+        $lastAttempt = QuizAttempt::where('user_id', $user->id)
+            ->where('status', QuizAttempt::STATUS_FINISHED)
+            ->latest('finished_at')
+            ->first();
+        
+        return view('manager.education.index', compact(
+            'userStats',
+            'topUsers',
+            'userPosition',
+            'lastAttempt'
+        ));
+    }
 
     /**
      * Muestra los resultados de un intento de quiz.
@@ -83,9 +84,12 @@ class EducationController extends Controller
      * @param QuizAttempt $attempt
      * @return \Illuminate\View\View
      */
-    public function results(QuizAttempt $attempt)
+    public function results($attemptId)
     {
         $user = Auth::user();
+
+        $attempt = QuizAttempt::with('user')
+            ->findOrFail($attemptId);
 
         // Verificar que el intento pertenece al usuario autenticado
         if ($attempt->user_id !== $user->id) {
@@ -158,7 +162,7 @@ class EducationController extends Controller
         // Obtener usuarios alrededor del usuario actual (para destacar)
         $usersAroundUser = $this->leaderboardService->getLeaderboardAroundUser($user, $period, 2);
 
-        return view('dashboard.education.ranking', compact(
+        return view('manager.education.ranking', compact(
             'leaderboard',
             'userStats',
             'period',
@@ -193,4 +197,6 @@ class EducationController extends Controller
             'progressData'
         ));
     }
+
+    
 }

@@ -196,7 +196,7 @@ class QuizRewardsService
         return DB::table('wallet_transactions')
             ->where('wallet_id', $wallet->id)
             ->where('reference_type', QuizAttempt::class)
-            ->where('type', 'credit') // Solo créditos
+            ->where('type', 1) // Solo créditos
             ->sum('amount');
     }
 

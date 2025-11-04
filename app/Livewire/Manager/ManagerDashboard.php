@@ -2,86 +2,136 @@
 
 namespace App\Livewire\Manager;
 
+use App\Models\League;
 use App\Models\LeagueMember;
 use App\Models\FantasyTeam;
-use App\Models\Gameweek;
+use App\Models\LeagueStanding;
+use App\Models\QuizAttempt;
+use App\Services\Education\QuizRewardsService;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
-use Illuminate\Support\Collection;
 
 class ManagerDashboard extends Component
 {
-    public Collection $leagueMembers;
-    public ?int $selectedLeagueId = null;
-    public ?LeagueMember $selectedMember = null;
-    public ?FantasyTeam $selectedTeam = null;
-    public ?Gameweek $currentGameweek = null;
+    public $leagueMembers;
+    public $selectedLeagueId;
+    public $selectedLeague;
+    public $fantasyTeam;
+    public $hasSquad = false;
+    public $standings;
+    public $stats = [];
+    public $educationStats = [];
 
     public function mount()
     {
-        // Cargar todas las ligas del usuario con relaciones necesarias
-        $this->leagueMembers = auth()->user()->leagueMembers()
-            ->with([
-                'league.season',
-                'league.standings' => function($query) {
-                    $query->orderBy('position')->limit(5);
-                }
-            ])
+        $user = Auth::user();
+
+        // Obtener todas las ligas del usuario
+        $this->leagueMembers = LeagueMember::with(['league.season'])
+            ->where('user_id', $user->id)
             ->where('is_active', true)
             ->get();
 
         // Seleccionar la primera liga por defecto
         if ($this->leagueMembers->isNotEmpty()) {
             $this->selectedLeagueId = $this->leagueMembers->first()->league_id;
-            $this->loadSelectedLeague();
+            $this->loadLeagueData();
         }
+
+        // Cargar stats de education
+        $this->loadEducationStats();
     }
 
     public function selectLeague($leagueId)
     {
         $this->selectedLeagueId = $leagueId;
-        $this->loadSelectedLeague();
+        $this->loadLeagueData();
     }
 
-    protected function loadSelectedLeague()
+    protected function loadLeagueData()
     {
-        $this->selectedMember = $this->leagueMembers
+        $user = Auth::user();
+        $this->selectedLeague = League::with('season')->find($this->selectedLeagueId);
+
+        if (!$this->selectedLeague) {
+            return;
+        }
+
+        // Obtener el fantasy team del usuario en esta liga
+        $this->fantasyTeam = FantasyTeam::where('user_id', $user->id)
             ->where('league_id', $this->selectedLeagueId)
             ->first();
 
-        if ($this->selectedMember) {
-            // Cargar el equipo fantasy del usuario en esta liga
-            // SIEMPRE obtener datos frescos de la BD
-            $this->selectedTeam = FantasyTeam::where('league_id', $this->selectedLeagueId)
-                ->where('user_id', auth()->id())
+        // Verificar si tiene squad completo (usar el campo de BD)
+        if ($this->fantasyTeam) {
+            $this->hasSquad = $this->fantasyTeam->is_squad_complete ?? false;
+        }
+
+        // Obtener standings
+        $this->standings = LeagueStanding::with('fantasyTeam')
+            ->where('league_id', $this->selectedLeagueId)
+            ->orderBy('position', 'asc')
+            ->limit(10)
+            ->get();
+
+        // Stats del equipo
+        if ($this->fantasyTeam) {
+            $currentStanding = LeagueStanding::where('fantasy_team_id', $this->fantasyTeam->id)
+                ->orderBy('gameweek_id', 'desc')
                 ->first();
 
-            // Cargar gameweek actual de la temporada
-            $this->currentGameweek = Gameweek::where('season_id', $this->selectedMember->league->season_id)
-                ->whereDate('starts_at', '<=', now())
-                ->whereDate('ends_at', '>=', now())
-                ->first();
+            $this->stats = [
+                'total_points' => $this->fantasyTeam->total_points ?? 0,
+                'position' => $currentStanding->position ?? '-',
+                'budget' => $this->fantasyTeam->budget ?? 100.00,
+                'team_value' => 0.00,
+            ];
+        } else {
+            $this->stats = [
+                'total_points' => 0,
+                'position' => '-',
+                'budget' => 100.00,
+                'team_value' => 0.00,
+            ];
+        }
+    }
+
+    protected function loadEducationStats()
+    {
+        try {
+            $user = Auth::user();
+            
+            // Obtener servicio de rewards
+            $rewardsService = app(QuizRewardsService::class);
+            $rewardStats = $rewardsService->getUserRewardStats($user);
+            
+            // Obtener total de quizzes completados
+            $totalQuizzes = QuizAttempt::where('user_id', $user->id)
+                ->where('status', QuizAttempt::STATUS_FINISHED)
+                ->count();
+            
+            $this->educationStats = [
+                'total_coins_earned' => $rewardStats['total_coins_earned'] ?? 0,
+                'current_balance' => $rewardStats['current_balance'] ?? 0,
+                'total_points_earned' => $rewardStats['total_points_earned'] ?? 0,
+                'total_quizzes' => $totalQuizzes,
+            ];
+            
+        } catch (\Exception $e) {
+            // En caso de error, valores por defecto
+            \Log::error('Error loading education stats: ' . $e->getMessage());
+            
+            $this->educationStats = [
+                'total_coins_earned' => 0,
+                'current_balance' => 0,
+                'total_points_earned' => 0,
+                'total_quizzes' => 0,
+            ];
         }
     }
 
     public function render()
     {
-        // 🆕 REFRESCAR EQUIPO ANTES DE RENDERIZAR
-        // Esto asegura que siempre tengamos datos actualizados
-        if ($this->selectedTeam) {
-            $this->selectedTeam = $this->selectedTeam->fresh();
-        }
-
-        // 🆕 REFRESCAR MEMBER PARA VERIFICAR DEADLINE
-        if ($this->selectedMember) {
-            $this->selectedMember = $this->selectedMember->fresh();
-        }
-
-        return view('livewire.manager.manager-dashboard', [
-            'hasIncompleteSquad' => $this->selectedTeam && !$this->selectedTeam->is_squad_complete,
-            'hasDeadline' => $this->selectedMember && $this->selectedMember->squad_deadline_at,
-            'standings' => $this->selectedMember 
-                ? $this->selectedMember->league->standings()->orderBy('position')->limit(5)->get()
-                : collect(),
-        ]);
+        return view('livewire.manager.manager-dashboard');
     }
 }

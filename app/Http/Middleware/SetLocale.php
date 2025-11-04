@@ -4,7 +4,8 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\URL; // 👈 import
+use Illuminate\Support\Facades\URL;
+use Carbon\Carbon; // 👈 Agregar
 
 class SetLocale
 {
@@ -22,8 +23,10 @@ class SetLocale
         }
 
         App::setLocale($locale);
+        
+        // 👇 Configurar Carbon con el mismo locale
+        Carbon::setLocale($locale);
 
-        // 👇 Esto hace que route('...') ya incluya {locale} automáticamente
         URL::defaults(['locale' => $locale]);
 
         return $next($request);

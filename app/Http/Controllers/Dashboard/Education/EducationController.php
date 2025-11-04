@@ -84,12 +84,13 @@ class EducationController extends Controller
      * @param QuizAttempt $attempt
      * @return \Illuminate\View\View
      */
-    public function results($attemptId)
+    public function results(Request $request, $lang, $attempt)
     {
+        
         $user = Auth::user();
 
-        $attempt = QuizAttempt::with('user')
-            ->findOrFail($attemptId);
+        // Buscar el intento por ID
+        $attempt = QuizAttempt::with('user')->findOrFail($attempt);
 
         // Verificar que el intento pertenece al usuario autenticado
         if ($attempt->user_id !== $user->id) {
@@ -98,7 +99,7 @@ class EducationController extends Controller
 
         // Verificar que el intento está finalizado
         if ($attempt->status !== QuizAttempt::STATUS_FINISHED) {
-            return redirect()->route('dashboard.education.index')
+            return redirect()->route('manager.education.index')
                 ->with('error', __('This quiz attempt is not finished yet.'));
         }
 
@@ -124,7 +125,7 @@ class EducationController extends Controller
             'reward_paid' => $attempt->reward_paid,
         ];
 
-        return view('dashboard.education.results', compact(
+        return view('manager.education.results', compact(
             'attempt',
             'userPosition',
             'attemptStats'

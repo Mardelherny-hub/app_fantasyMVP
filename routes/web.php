@@ -32,8 +32,8 @@ Route::group([
     });
 
     // Socialite
-    Route::get('auth/google', [SocialiteController::class, 'redirect']);
-    Route::get('auth/google/callback', [SocialiteController::class, 'callback']);
+    //Route::get('auth/google', [SocialiteController::class, 'redirect']);
+    //Route::get('auth/google/callback', [SocialiteController::class, 'callback']);
 });
 
 // ========================================

@@ -41,7 +41,6 @@ class QuickQuiz extends Component
     public $timeRemaining = 30;
     public $quizStarted = false;
     public $quizFinished = false;
-    public $resultsUrl = null;
 
     // Respuestas del usuario
     public $selectedOptionId = null;
@@ -295,44 +294,47 @@ class QuickQuiz extends Component
      * 🔧 CORRECCIÓN: Pasando scoreData correctamente a updateAttemptScore
      */
     public function finishQuiz()
-{
-    \Log::info('finishQuiz INICIO', ['attemptId' => $this->attemptId]);
-    
-    try {
-        $user = Auth::user();
-        $attempt = QuizAttempt::find($this->attemptId);
+    {
+        try {
+            $user = Auth::user();
+            $attempt = QuizAttempt::find($this->attemptId);
 
-        if (!$attempt) {
-            \Log::error('Attempt no encontrado', ['attemptId' => $this->attemptId]);
-            $this->errorMessage = 'No se encontró el intento de quiz.';
-            return;
+            if (!$attempt) {
+                $this->errorMessage = 'No se encontró el intento de quiz.';
+                return;
+            }
+
+            DB::transaction(function () use ($attempt, $user) {
+                // ✅ Preparar datos de score para actualizar el attempt
+                $scoreData = [
+                    'total_points' => $this->totalScore,
+                    'total_correct' => $this->correctCount,
+                    'total_wrong' => $this->wrongCount,
+                ];
+
+                // Actualizar score del attempt con los datos correctos
+                $this->scoringService->updateAttemptScore($attempt, $scoreData);
+
+                // Finalizar attempt
+                $this->sessionService->finishAttempt($attempt);
+
+                // Otorgar recompensas
+                $this->rewardsService->awardCoins($user, $this->totalScore, $attempt); // ✅
+            });
+
+            // Marcar como finalizado
+            $this->quizFinished = true;
+
+            // Redirigir a resultados después de 2 segundos
+            return redirect()->route('manager.education.results', [
+                'locale' => app()->getLocale(),
+                'attempt' => $this->attemptId
+            ]);
+
+        } catch (\Exception $e) {
+            $this->errorMessage = 'Error al finalizar el quiz: ' . $e->getMessage();
         }
-
-        DB::transaction(function () use ($attempt, $user) {
-            // ... todo igual
-        });
-
-        \Log::info('Transaction OK');
-
-        // Marcar como finalizado
-        $this->quizFinished = true;
-        
-        // URL directa
-        $this->resultsUrl = route('manager.education.results', ['attempt' => $this->attemptId]);
-        
-        \Log::info('finishQuiz FIN', [
-            'quizFinished' => $this->quizFinished,
-            'resultsUrl' => $this->resultsUrl
-        ]);
-
-    } catch (\Exception $e) {
-        \Log::error('finishQuiz ERROR', [
-            'error' => $e->getMessage(),
-            'trace' => $e->getTraceAsString()
-        ]);
-        $this->errorMessage = 'Error al finalizar el quiz: ' . $e->getMessage();
     }
-}
 
     /**
      * Calcula la racha actual de respuestas correctas.

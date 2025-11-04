@@ -166,11 +166,30 @@
         </div>
     @endif
 
-  {{-- Quiz finalizado --}}
-@if($quizFinished && $resultsUrl)
-    <script>
-        window.location.replace('{{ $resultsUrl }}');
-    </script>
+    {{-- Quiz finalizado --}}
+    @if($quizFinished)
+    <div class="bg-white rounded-lg shadow-lg p-8 text-center"
+         x-data="{ 
+             attemptId: @entangle('attemptId'),
+             locale: '{{ app()->getLocale() }}'
+         }"
+         x-init="
+             console.log('Attempt ID:', attemptId);
+             console.log('Locale:', locale);
+             let url = '/' + locale + '/manager/education/results/' + attemptId;
+             console.log('Redirecting to:', url);
+             setTimeout(() => { 
+                 window.location.href = url;
+             }, 2000);
+         ">
+        <div class="mb-6">
+            <svg class="w-24 h-24 mx-auto text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+        </div>
+        <h2 class="text-3xl font-bold text-gray-800 mb-4">{{ __('Quiz Completed!') }}</h2>
+        <p class="text-gray-600 mb-6">{{ __('Redirecting to results...') }}</p>
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500 mx-auto"></div>
+    </div>
 @endif
-    
 </div>

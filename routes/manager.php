@@ -43,7 +43,6 @@ Route::middleware(['web', 'auth', 'verified', 'role:manager'])
         Route::get('/dashboard', [ManagerDashboardController::class, 'index'])->name('dashboard');
     });
 
-
 // ========================================
 // SQUAD BUILDER ROUTES (Armado de Plantilla Inicial)
 // ========================================
@@ -62,132 +61,133 @@ Route::middleware(['web', 'auth', 'verified', 'role:manager'])
         // Nota: Los componentes Livewire manejan las acciones automáticamente
     });
 
-    // ========================================
-    // LINEUP MANAGEMENT ROUTES
-    // ========================================
-    Route::middleware(['web', 'auth', 'verified', 'role:manager'])
-        ->prefix('{locale}/manager/lineup')
-        ->where(['locale' => 'es|en|fr'])
-        ->as('manager.lineup.')
-        ->group(function () {
-            Route::get('/', function() {
-                return view('manager.lineup.index');
-            })->name('index');
-        });
+// ========================================
+// LINEUP MANAGEMENT ROUTES
+// ========================================
+Route::middleware(['web', 'auth', 'verified', 'role:manager'])
+    ->prefix('{locale}/manager/lineup')
+    ->where(['locale' => 'es|en|fr'])
+    ->as('manager.lineup.')
+    ->group(function () {
+        Route::get('/', function() {
+            return view('manager.lineup.index');
+        })->name('index');
+    });
 
-    // ========================================
-    // MARKET ROUTES (Transfer Market)
-    // ========================================
-    Route::middleware(['web', 'auth', 'verified', 'role:manager'])
-        ->prefix('{locale}/manager/market')
-        ->where(['locale' => 'es|en|fr'])
-        ->name('manager.market.')
-        ->group(function () {
-            Route::get('/', function() {
-                return view('manager.market.index');
-            })->name('index');
-        });
+// ========================================
+// MARKET ROUTES (Transfer Market)
+// ========================================
+Route::middleware(['web', 'auth', 'verified', 'role:manager'])
+    ->prefix('{locale}/manager/market')
+    ->where(['locale' => 'es|en|fr'])
+    ->name('manager.market.')
+    ->group(function () {
+        Route::get('/', function() {
+            return view('manager.market.index');
+        })->name('index');
+    });
 
-    // ========================================
-    // FIXTURES ROUTES (Calendario de Partidos)
-    // ========================================
-    Route::middleware(['web', 'auth', 'verified', 'role:manager'])
-        ->prefix('{locale}/manager/fixtures')
-        ->where(['locale' => 'es|en|fr'])
-        ->as('manager.fixtures.')
-        ->group(function () {
-            Route::get('/', function() {
-                return view('manager.fixtures.index');
-            })->name('index');
-        });
+// ========================================
+// FIXTURES ROUTES (Calendario de Partidos)
+// ========================================
+Route::middleware(['web', 'auth', 'verified', 'role:manager'])
+    ->prefix('{locale}/manager/fixtures')
+    ->where(['locale' => 'es|en|fr'])
+    ->as('manager.fixtures.')
+    ->group(function () {
+        Route::get('/', function() {
+            return view('manager.fixtures.index');
+        })->name('index');
+    });
 
-    // ========================================
-    // SCORES ROUTES (Puntos Detallados)
-    // ========================================
-    Route::middleware(['web', 'auth', 'verified', 'role:manager'])
-        ->prefix('{locale}/manager/scores')
-        ->where(['locale' => 'es|en|fr'])
-        ->as('manager.scores.')
-        ->group(function () {
-            Route::get('/', function() {
-                return view('manager.scores.index');
-            })->name('index');
-        });
+// ========================================
+// SCORES ROUTES (Puntos Detallados)
+// ========================================
+Route::middleware(['web', 'auth', 'verified', 'role:manager'])
+    ->prefix('{locale}/manager/scores')
+    ->where(['locale' => 'es|en|fr'])
+    ->as('manager.scores.')
+    ->group(function () {
+        Route::get('/', function() {
+            return view('manager.scores.index');
+        })->name('index');
+    });
 
-    // ========================================
-    // LEAGUE ROUTES (Clasificación)
-    // ========================================
-    Route::middleware(['web', 'auth', 'verified', 'role:manager'])
-        ->prefix('{locale}/manager/league')
-        ->where(['locale' => 'es|en|fr'])
-        ->as('manager.league.')
-        ->group(function () {
-            Route::get('/standings', function() {
-                return view('manager.league.standings');
-            })->name('standings');
-        });
+// ========================================
+// LEAGUE ROUTES (Clasificación)
+// ========================================
+Route::middleware(['web', 'auth', 'verified', 'role:manager'])
+    ->prefix('{locale}/manager/league')
+    ->where(['locale' => 'es|en|fr'])
+    ->as('manager.league.')
+    ->group(function () {
+        Route::get('/standings', function() {
+            return view('manager.league.standings');
+        })->name('standings');
+    });
 
-    // ========================================
-    // CALENDAR ROUTES (Calendario de Jornadas)
-    // ========================================
-    Route::middleware(['web', 'auth', 'verified', 'role:manager'])
-        ->prefix('{locale}/manager/calendar')
-        ->where(['locale' => 'es|en|fr'])
-        ->as('manager.calendar.')
-        ->group(function () {
-            Route::get('/', function() {
-                return view('manager.calendar.index');
-            })->name('index');
-        });
+// ========================================
+// CALENDAR ROUTES (Calendario de Jornadas)
+// ========================================
+Route::middleware(['web', 'auth', 'verified', 'role:manager'])
+    ->prefix('{locale}/manager/calendar')
+    ->where(['locale' => 'es|en|fr'])
+    ->as('manager.calendar.')
+    ->group(function () {
+        Route::get('/', function() {
+            return view('manager.calendar.index');
+        })->name('index');
+    });
 
-    // ========================================
-    // STATS ROUTES (Estadísticas)
-    // ========================================
-    Route::middleware(['web', 'auth', 'verified', 'role:manager'])
-        ->prefix('{locale}/manager/stats')
-        ->where(['locale' => 'es|en|fr'])
-        ->as('manager.stats.')
-        ->group(function () {
-            Route::get('/', function() {
-                return view('manager.stats.index');
-            })->name('index');
-        });
+// ========================================
+// STATS ROUTES (Estadísticas)
+// ========================================
+Route::middleware(['web', 'auth', 'verified', 'role:manager'])
+    ->prefix('{locale}/manager/stats')
+    ->where(['locale' => 'es|en|fr'])
+    ->as('manager.stats.')
+    ->group(function () {
+        Route::get('/', function() {
+            return view('manager.stats.index');
+        })->name('index');
+    });
 
-    // ========================================
-    // SETTINGS ROUTES (Configuración)
-    // ========================================
-    Route::middleware(['web', 'auth', 'verified', 'role:manager'])
-        ->prefix('{locale}/manager/settings')
-        ->where(['locale' => 'es|en|fr'])
-        ->as('manager.settings.')
-        ->group(function () {
-            Route::get('/', function() {
-                return view('manager.settings.index');
-            })->name('index');
-        });
+// ========================================
+// SETTINGS ROUTES (Configuración)
+// ========================================
+Route::middleware(['web', 'auth', 'verified', 'role:manager'])
+    ->prefix('{locale}/manager/settings')
+    ->where(['locale' => 'es|en|fr'])
+    ->as('manager.settings.')
+    ->group(function () {
+        Route::get('/', function() {
+            return view('manager.settings.index');
+        })->name('index');
+    });
 
-    // ========================================
-    // EDUCATION ROUTES (Módulo Educativo)
-    // ========================================
-    Route::middleware(['web', 'auth', 'verified', 'role:manager'])
-        ->prefix('{locale}/manager/education')
-        ->where(['locale' => 'es|en|fr'])
-        ->as('manager.education.')
-        ->group(function () {
-            
-            // Hub educativo (página principal)
-            Route::get('/', [App\Http\Controllers\Dashboard\Education\EducationController::class, 'index'])
-                ->name('index');
-            
-            // Resultados de un quiz específico
-            Route::get('/results/{attempt}', [App\Http\Controllers\Dashboard\Education\EducationController::class, 'results'])
-                ->name('results');
-            
-            // Ranking global
-            Route::get('/ranking', [App\Http\Controllers\Dashboard\Education\EducationController::class, 'ranking'])
-                ->name('ranking');
-            
-            // Estadísticas personales
-            Route::get('/stats', [App\Http\Controllers\Dashboard\Education\EducationController::class, 'stats'])
-                ->name('stats');
-        });
+// ========================================
+// EDUCATION ROUTES (Módulo Educativo)
+// ========================================
+Route::middleware(['web', 'auth', 'verified', 'role:manager'])
+    ->prefix('{locale}/manager/education')
+    ->where(['locale' => 'es|en|fr'])
+    ->as('manager.education.')
+    ->group(function () {
+        
+        // Hub educativo (página principal)
+        Route::get('/', [App\Http\Controllers\Dashboard\Education\EducationController::class, 'index'])
+            ->name('index');
+        
+        // Resultados de un quiz específico
+        Route::get('/results/{attempt}', [App\Http\Controllers\Dashboard\Education\EducationController::class, 'results'])
+            ->where('attempt', '[0-9]+')
+            ->name('results');
+        
+        // Ranking global
+        Route::get('/ranking', [App\Http\Controllers\Dashboard\Education\EducationController::class, 'ranking'])
+            ->name('ranking');
+        
+        // Estadísticas personales
+        Route::get('/stats', [App\Http\Controllers\Dashboard\Education\EducationController::class, 'stats'])
+            ->name('stats');
+    });

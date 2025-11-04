@@ -1,8 +1,8 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        <span class="bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent font-black">
             {{ __('Global Ranking') }}
-        </h2>
+        </span>
     </x-slot>
 
     <div class="py-12">

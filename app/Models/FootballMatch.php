@@ -70,6 +70,11 @@ class FootballMatch extends Model
     // RELACIONES
     // ========================================
 
+    public function playerStats(): HasMany
+    {
+        return $this->hasMany(PlayerMatchStats::class, 'match_id');
+    }
+
     /**
      * Get the season for this match.
      */
@@ -94,13 +99,6 @@ class FootballMatch extends Model
         return $this->belongsTo(RealTeam::class, 'away_team_id');
     }
 
-    /**
-     * Get the player stats for this match.
-     */
-    public function playerStats(): HasMany
-    {
-        return $this->hasMany(PlayerMatchStats::class, 'match_id');
-    }
 
     // ========================================
     // SCOPES

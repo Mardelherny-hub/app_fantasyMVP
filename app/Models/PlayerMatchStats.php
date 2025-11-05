@@ -18,7 +18,7 @@ class PlayerMatchStats extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'real_match_id',  // ✅ CORREGIDO: era match_id
+        'real_match_id',        
         'player_id',
         'minutes',
         'goals',
@@ -56,6 +56,11 @@ class PlayerMatchStats extends Model
     // RELACIONES
     // ========================================
 
+    public function match(): BelongsTo
+    {
+        return $this->belongsTo(RealMatch::class, 'match_id');
+    }
+
     /**
      * Get the real match for these stats.
      * ✅ CORREGIDO: Ahora apunta a RealMatch en lugar de FootballMatch
@@ -83,6 +88,11 @@ class PlayerMatchStats extends Model
     public function scopePlayer($query, int $playerId)
     {
         return $query->where('player_id', $playerId);
+    }
+
+    public function scopeMatch($query, int $matchId)
+    {
+        return $query->where('match_id', $matchId);
     }
 
     /**

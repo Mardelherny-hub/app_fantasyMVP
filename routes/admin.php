@@ -113,6 +113,15 @@ Route::middleware(['web', 'auth', 'verified', 'role:admin'])
         Route::get('/real-players/{realPlayer}/edit', [RealPlayerController::class, 'edit'])->name('real-players.edit');
         Route::put('/real-players/{realPlayer}', [RealPlayerController::class, 'update'])->name('real-players.update');
         Route::delete('/real-players/{realPlayer}', [RealPlayerController::class, 'destroy'])->name('real-players.destroy');
+
+        // Player Match Stats (estadísticas manuales)
+        Route::prefix('player-match-stats')->as('player-match-stats.')->group(function () {
+            Route::get('/', [App\Http\Controllers\Admin\PlayerMatchStatsController::class, 'index'])->name('index');
+            Route::get('{realMatch}/manage',    [App\Http\Controllers\Admin\PlayerMatchStatsController::class, 'manage'])->name('manage');
+            Route::post('/', [App\Http\Controllers\Admin\PlayerMatchStatsController::class, 'store'])->name('store');
+            Route::delete('{playerMatchStat}', [App\Http\Controllers\Admin\PlayerMatchStatsController::class, 'destroy'])->name('destroy');
+            Route::get('{realMatch}/scoring', [App\Http\Controllers\Admin\PlayerMatchStatsController::class, 'scoring'])->name('scoring');
+        });
         
         // Real Fixtures
         Route::get('/real-fixtures', [RealFixtureController::class, 'index'])->name('real-fixtures.index');

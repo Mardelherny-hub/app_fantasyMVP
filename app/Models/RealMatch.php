@@ -58,6 +58,11 @@ class RealMatch extends Model
         return $this->belongsTo(RealFixture::class, 'real_fixture_id');
     }
 
+    public function playerStats(): HasMany
+    {
+        return $this->hasMany(PlayerMatchStats::class, 'real_match_id');
+    }
+
     /**
      * Get the lineups for this match.
      */

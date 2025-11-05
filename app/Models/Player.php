@@ -210,6 +210,24 @@ class Player extends Model
     // ACCESSORS & MUTATORS
     // ========================================
 
+    public function teamHistories(): HasMany
+{
+    return $this->hasMany(PlayerTeamHistory::class);
+}
+
+
+
+    public function getPositionName(): string
+    {
+        return match($this->position) {
+            self::POSITION_GK => 'GK',
+            self::POSITION_DF => 'DF',
+            self::POSITION_MF => 'MF',
+            self::POSITION_FW => 'FW',
+            default => 'N/A'
+        };
+    }
+
     /**
      * Get the player's display name.
      */

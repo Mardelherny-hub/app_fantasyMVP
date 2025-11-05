@@ -1476,9 +1476,25 @@
   "Success!": "¡Éxito!",
   "Error!": "¡Error!",
   "Warning": "Advertencia",
-  "Info": "Información"
+  "Info": "Información",
 
 
+  "Cupos": "Cupos",
+  "Privada": "Privada",
+  "Pública": "Pública",
+  "Abierta": "Abierta",
+  "Cerrada": "Cerrada",
+  "Locked": "Bloqueada",
+  "Open": "Abierta",
+  "Acciones": "Acciones",
+  "Ver": "Ver",
+  "Editar": "Editar",
+  "Eliminar": "Eliminar",
+  "No hay ligas registradas": "No hay ligas registradas",
+  "quizzes": "cuestionarios",
+  "No quiz activity yet": "No hay actividad de cuestionarios aún",
+  "No leagues created yet": "No hay ligas creadas aún",
+  "Participants": "Participantes"
 
 }
 

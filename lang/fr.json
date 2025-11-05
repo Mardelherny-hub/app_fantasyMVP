@@ -1170,8 +1170,24 @@
   "Elige bien a tu capitán": "Choisissez bien votre capitaine",
   "Puedes guardar y continuar después": "Vous pouvez enregistrer et continuer plus tard",
   "Home": "Accueil",
-  "Mi Equipo": "Mon Équipe"
+  "Mi Equipo": "Mon Équipe",
 
+  "Cupos": "Places",
+  "Privada": "Privée",
+  "Pública": "Publique",
+  "Abierta": "Ouverte",
+  "Cerrada": "Fermée",
+  "Locked": "Verrouillée",
+  "Open": "Ouverte",
+  "Acciones": "Actions",
+  "Ver": "Voir",
+  "Editar": "Modifier",
+  "Eliminar": "Supprimer",
+  "No hay ligas registradas": "Aucune ligue enregistrée",
+  "quizzes": "quiz",
+  "No quiz activity yet": "Aucune activité de quiz pour le moment",
+  "No leagues created yet": "Aucune ligue créée pour le moment",
+  "Participants": "Participants"
 
 
 }

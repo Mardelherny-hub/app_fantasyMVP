@@ -1173,8 +1173,24 @@
   "Elige bien a tu capitán": "Choose your captain wisely",
   "Puedes guardar y continuar después": "You can save and continue later",
   "Home": "Home",
-  "Mi Equipo": "My Team"
+  "Mi Equipo": "My Team",
 
 
+  "Cupos": "Slots",
+  "Privada": "Private",
+  "Pública": "Public",
+  "Abierta": "Open",
+  "Cerrada": "Closed",
+  "Locked": "Locked",
+  "Open": "Open",
+  "Acciones": "Actions",
+  "Ver": "View",
+  "Editar": "Edit",
+  "Eliminar": "Delete",
+  "No hay ligas registradas": "No leagues registered",
+  "quizzes": "quizzes",
+  "No quiz activity yet": "No quiz activity yet",
+  "No leagues created yet": "No leagues created yet",
+  "Participants": "Participants"
 
 }

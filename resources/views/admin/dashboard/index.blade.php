@@ -143,13 +143,19 @@
                 @forelse($topUsers as $index => $user)
                     <div class="flex items-center justify-between py-2">
                         <div class="flex items-center">
+                            {{-- Avatar del usuario --}}
+                            <img src="{{ $user->avatar ?? $user->profile_photo_url }}" 
+                                alt="{{ $user->name }}" 
+                                class="w-10 h-10 rounded-full object-cover mr-3">
+                            
+                            {{-- Badge de posición --}}
                             <div class="flex-shrink-0">
                                 <span class="flex items-center justify-center w-8 h-8 rounded-full 
                                             {{ 
                                                 $index === 0 ? 'bg-yellow-100 text-yellow-600' : 
                                                 ($index === 1 ? 'bg-gray-100 text-gray-600' : 
                                                 ($index === 2 ? 'bg-orange-100 text-orange-600' : 'bg-gray-50 text-gray-500')) 
-                                            }}
+                                            }}">
                                     {{ $index + 1 }}
                                 </span>
                             </div>
@@ -173,7 +179,7 @@
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-semibold text-gray-900">{{ __('Recent Leagues') }}</h3>
-            <a href="{{-- r·oute('admin.fantasy.leagues.index', ['locale' => app()->getLocale()]) --}}·" 
+            <a href="{{ route('admin.fantasy.leagues.index', ['locale' => app()->getLocale()]) }}" 
                class="text-sm font-medium text-blue-600 hover:text-blue-700">
                 {{ __('View all') }} →
             </a>

@@ -2,14 +2,14 @@
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ __('Crear Jornada') }}</h2>
-            <a href="{{ route('admin.gameweeks.index', app()->getLocale()) }}" class="text-sm text-gray-600 hover:underline">{{ __('Volver') }}</a>
-        </div>
+            <a href="{{ route('admin.fantasy.gameweeks.index', app()->getLocale()) }}" class="text-sm text-gray-600 hover:underline">{{ __('Volver') }}</a>
+        </div> 
     </x-slot>
 
     <div class="py-6">
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white p-6 rounded-xl shadow">
-                <form method="POST" action="{{ route('admin.gameweeks.store', app()->getLocale()) }}">
+                <form method="POST" action="{{ route('admin.fantasy.gameweeks.store', app()->getLocale()) }}">
                     @csrf
 
                     {{-- Temporada --}}
@@ -132,7 +132,7 @@
 
                     {{-- Botones --}}
                     <div class="flex items-center justify-end gap-3">
-                        <a href="{{ route('admin.gameweeks.index', app()->getLocale()) }}" 
+                        <a href="{{ route('admin.fantasy.gameweeks.index', app()->getLocale()) }}" 
                            class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition">
                             {{ __('Cancelar') }}
                         </a>

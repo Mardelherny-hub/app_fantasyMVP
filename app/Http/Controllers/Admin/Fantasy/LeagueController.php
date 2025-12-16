@@ -176,7 +176,7 @@ class LeagueController extends Controller
 
         $league->update($data);
 
-        return redirect()->route('admin.leagues.index', $locale)
+        return redirect()->route('admin.fantasy.leagues.index', $locale)
             ->with('success', __('Liga actualizada correctamente.'));
     }
 

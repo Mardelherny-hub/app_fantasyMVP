@@ -35,9 +35,10 @@ class CanadianFixturesSeeder extends Seeder
         // Get seasons
         $season2024 = Season::where('name', '2024')->first();
         $season2025 = Season::where('name', '2025')->first();
+        $season2026 = Season::where('name', '2026')->first();
 
-        if (!$season2024 || !$season2025) {
-            $this->command->error('❌ No se encontraron las temporadas 2024 y 2025.');
+        if (!$season2024 || !$season2025 || !$season2026) {
+            $this->command->error('❌ No se encontraron las temporadas 2024, 2025 y 2026.');
             return;
         }
 

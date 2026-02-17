@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\PlayerController;
 use App\Http\Controllers\Admin\SeasonController;
 use App\Http\Controllers\Admin\RealTeamController;
 use App\Http\Controllers\Admin\RealPlayerController;
@@ -113,6 +114,23 @@ Route::middleware(['web', 'auth', 'verified', 'role:admin'])
         Route::get('/real-players/{realPlayer}/edit', [RealPlayerController::class, 'edit'])->name('real-players.edit');
         Route::put('/real-players/{realPlayer}', [RealPlayerController::class, 'update'])->name('real-players.update');
         Route::delete('/real-players/{realPlayer}', [RealPlayerController::class, 'destroy'])->name('real-players.destroy');
+
+        // Fantasy Players (Jugadores Fantasy)
+        Route::prefix('players')->as('players.')->group(function () {
+            Route::get('/', [PlayerController::class, 'index'])->name('index');
+            Route::get('/create', [PlayerController::class, 'create'])->name('create');
+            Route::post('/', [PlayerController::class, 'store'])->name('store');
+            Route::get('/{player}/edit', [PlayerController::class, 'edit'])->name('edit');
+            Route::put('/{player}', [PlayerController::class, 'update'])->name('update');
+            Route::delete('/{player}', [PlayerController::class, 'destroy'])->name('destroy');
+            Route::patch('/{player}/toggle', [PlayerController::class, 'toggle'])->name('toggle');
+            Route::post('/{player}/restore', [PlayerController::class, 'restore'])->name('restore');
+            // Import
+            Route::get('/import', [App\Http\Controllers\Admin\Imports\PlayersImportController::class, 'index'])->name('import');
+            Route::post('/import', [App\Http\Controllers\Admin\Imports\PlayersImportController::class, 'store'])->name('import.store');
+            Route::get('/import/template', [App\Http\Controllers\Admin\Imports\PlayersImportController::class, 'template'])->name('import.template');
+            Route::get('/import/template-csv', [App\Http\Controllers\Admin\Imports\PlayersImportController::class, 'templateCsv'])->name('import.template_csv');
+            });
 
         // Player Match Stats (estadísticas manuales)
         Route::prefix('player-match-stats')->as('player-match-stats.')->group(function () {

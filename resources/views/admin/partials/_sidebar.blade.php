@@ -155,6 +155,15 @@
                 </a>
             </li>
             <li>
+                <a href="{{ route('admin.players.index', ['locale' => app()->getLocale()]) }}" 
+                   class="flex items-center px-3 py-2 text-sm rounded-lg transition-colors
+                          {{ request()->routeIs('admin.players.*') 
+                             ? 'bg-gray-700 text-white' 
+                             : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
+                    {{ __('Jugadores') }}
+                </a>
+            </li>
+            <li>
                 <a href="{{ route('admin.fantasy.fixtures.index', ['locale' => app()->getLocale()]) }}" 
                    class="flex items-center px-3 py-2 text-sm rounded-lg transition-colors
                           {{ request()->routeIs('admin.fantasy.fixtures.*') 

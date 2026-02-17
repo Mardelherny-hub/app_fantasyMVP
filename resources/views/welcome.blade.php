@@ -713,9 +713,20 @@
                         <a href="#modes" class="px-8 py-4 glass-card border border-white/20 font-bold text-lg rounded-full hover:bg-white/5 transition inline-flex items-center justify-center space-x-2">
                             <i class="fas fa-info-circle"></i>
                             <span x-text="translations[currentLang].cta_button_info">Más Información</span>
-                        </a>
+                        </a>                        
                     </div>
                 </div>
+            </div>
+            <!-- Botón de Donación PayPal -->
+            <div 
+                class="max-w-4xl mx-auto mt-12 glass-card rounded-3xl p-8 border border-white/10 text-center relative overflow-hidden">
+
+                        <div class="flex flex-col items-center gap-2">
+                            <form action="https://www.paypal.com/ncp/payment/C8XTSYNUSZ2WA" method="post" target="_blank" style="display:inline-grid;justify-items:center;align-content:start;gap:0.5rem;">
+                                <input class="pp-C8XTSYNUSZ2WA" type="submit" value="Realizar Donación" style="text-align:center;border:none;border-radius:0.25rem;min-width:11.625rem;padding:0 2rem;height:2.625rem;font-weight:bold;background-color:#FFD140;color:#000000;font-family:'Helvetica Neue',Arial,sans-serif;font-size:1rem;line-height:1.25rem;cursor:pointer;" />
+                                <img src="https://www.paypalobjects.com/images/Debit_Credit_APM.svg" alt="cards" />
+                            </form>
+                        </div>
             </div>
         </div>
     </section>
@@ -790,6 +801,12 @@
                     <a href="#" class="w-9 h-9 glass-card rounded-full flex items-center justify-center hover:bg-white/10 transition">
                         <i class="fab fa-youtube text-gray-400 hover:text-emerald-400 transition"></i>
                     </a>
+                    <!-- //donate -->
+                    <div class="flex flex-col items-center gap-2">
+                            <form action="https://www.paypal.com/ncp/payment/C8XTSYNUSZ2WA" method="post" target="_blank" style="display:inline-grid;justify-items:center;align-content:start;gap:0.5rem;">
+                                <input class="pp-C8XTSYNUSZ2WA" type="submit" value="Realizar Donación" style="text-align:center;border:none;border-radius:0.25rem;min-width:11.625rem;padding:0 2rem;height:2.625rem;font-weight:bold;background-color:#FFD140;color:#000000;font-family:'Helvetica Neue',Arial,sans-serif;font-size:1rem;line-height:1.25rem;cursor:pointer;" />
+                            </form>
+                        </div>
                 </div>
             </div>
         </div>

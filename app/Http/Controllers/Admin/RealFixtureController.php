@@ -14,7 +14,7 @@ class RealFixtureController extends Controller
     {
         app()->setLocale($locale);
 
-        $query = RealFixture::with(['competition', 'season', 'homeTeam', 'awayTeam']);
+        $query = RealFixture::with(['competition', 'season', 'homeTeam', 'awayTeam', 'match']);
 
         // Filtro por competición
         if ($request->filled('competition')) {

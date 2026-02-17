@@ -185,6 +185,69 @@
                 </div>
             </div>
 
+            {{-- Cargar Resultado (solo si está scheduled y no tiene match) --}}
+            @if($realFixture->status === 'scheduled' && !$realFixture->match)
+                <div class="bg-white rounded-lg shadow-sm border border-green-200 p-6 mb-6">
+                    <h3 class="text-sm font-semibold text-gray-900 mb-4">{{ __('Record Result') }}</h3>
+                    <form action="{{ route('admin.real-matches.store', app()->getLocale()) }}" method="POST" class="space-y-4">
+                        @csrf
+                        <input type="hidden" name="real_fixture_id" value="{{ $realFixture->id }}">
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                            {{-- Home Score --}}
+                            <div class="text-center">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">{{ $realFixture->homeTeam->name }}</label>
+                                <input type="number" name="home_score" value="0" min="0" max="20" required
+                                       class="w-24 mx-auto text-center text-2xl font-bold rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                            </div>
+
+                            <div class="text-center text-gray-400 text-2xl font-bold">—</div>
+
+                            {{-- Away Score --}}
+                            <div class="text-center">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">{{ $realFixture->awayTeam->name }}</label>
+                                <input type="number" name="away_score" value="0" min="0" max="20" required
+                                       class="w-24 mx-auto text-center text-2xl font-bold rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            {{-- Status --}}
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Status') }}</label>
+                                <select name="status" required class="w-full rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                                    <option value="finished">{{ __('Finished') }}</option>
+                                    <option value="live">{{ __('Live') }}</option>
+                                    <option value="ht">{{ __('Half Time') }}</option>
+                                    <option value="postponed">{{ __('Postponed') }}</option>
+                                </select>
+                            </div>
+
+                            {{-- Started At --}}
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Started At') }}</label>
+                                <input type="datetime-local" name="started_at_utc" 
+                                       value="{{ $realFixture->match_date_utc->format('Y-m-d') }}T{{ $realFixture->match_time_utc ? $realFixture->match_time_utc->format('H:i') : '19:00' }}"
+                                       class="w-full rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                            </div>
+
+                            {{-- Finished At --}}
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Finished At') }}</label>
+                                <input type="datetime-local" name="finished_at_utc"
+                                       class="w-full rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                            </div>
+                        </div>
+
+                        <div class="flex justify-end pt-4 border-t">
+                            <button type="submit" class="px-6 py-2 bg-green-600 text-white rounded-md text-sm font-medium hover:bg-green-700">
+                                {{ __('Save Result') }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            @endif
+
             {{-- Partido Jugado --}}
             @if($realFixture->match)
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">

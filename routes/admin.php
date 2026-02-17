@@ -129,10 +129,11 @@ Route::middleware(['web', 'auth', 'verified', 'role:admin'])
             Route::patch('/{player}/toggle', [PlayerController::class, 'toggle'])->name('toggle');
             Route::post('/{player}/restore', [PlayerController::class, 'restore'])->name('restore');
             // Import
-            Route::get('/import', [App\Http\Controllers\Admin\Imports\PlayersImportController::class, 'index'])->name('import');
+           /*  Route::get('/import', [App\Http\Controllers\Admin\Imports\PlayersImportController::class, 'index'])->name('import');
             Route::post('/import', [App\Http\Controllers\Admin\Imports\PlayersImportController::class, 'store'])->name('import.store');
             Route::get('/import/template', [App\Http\Controllers\Admin\Imports\PlayersImportController::class, 'template'])->name('import.template');
             Route::get('/import/template-csv', [App\Http\Controllers\Admin\Imports\PlayersImportController::class, 'templateCsv'])->name('import.template_csv');
+             */
             });
 
         // Player Match Stats (estadísticas manuales)
@@ -140,8 +141,10 @@ Route::middleware(['web', 'auth', 'verified', 'role:admin'])
             Route::get('/', [App\Http\Controllers\Admin\PlayerMatchStatsController::class, 'index'])->name('index');
             Route::get('{realMatch}/manage',    [App\Http\Controllers\Admin\PlayerMatchStatsController::class, 'manage'])->name('manage');
             Route::post('/', [App\Http\Controllers\Admin\PlayerMatchStatsController::class, 'store'])->name('store');
-            Route::delete('{playerMatchStat}', [App\Http\Controllers\Admin\PlayerMatchStatsController::class, 'destroy'])->name('destroy');
+            Route::post('bulk', [App\Http\Controllers\Admin\PlayerMatchStatsController::class, 'storeBulk'])->name('store-bulk');
+            Route::delete('{realPlayerStat}', [App\Http\Controllers\Admin\PlayerMatchStatsController::class, 'destroy'])->name('destroy');
             Route::get('{realMatch}/scoring', [App\Http\Controllers\Admin\PlayerMatchStatsController::class, 'scoring'])->name('scoring');
+            Route::post('{realMatch}/sync-fantasy', [App\Http\Controllers\Admin\PlayerMatchStatsController::class, 'syncToFantasy'])->name('sync-fantasy');
         });
         
         // Real Fixtures

@@ -8,7 +8,7 @@
 
         <div class="flex space-x-2">
             <!-- Botón Importar (SVG inline) -->
-            <a href="{{ route('admin.players.import', app()->getLocale()) }}"
+           {{--  <a href="{{ route('admin.players.import', app()->getLocale()) }}"
                class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                 <svg class="w-4 h-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -17,7 +17,7 @@
                     <line x1="12" y1="15" x2="12" y2="3"/>
                 </svg>
                 {{ __('Importar') }}
-            </a>
+            </a> 
 
             <!-- Botón Nuevo (SVG inline) -->
             <a href="{{ route('admin.players.create', app()->getLocale()) }}"
@@ -28,7 +28,7 @@
                     <line x1="5" y1="12" x2="19" y2="12"/>
                 </svg>
                 {{ __('Nuevo') }}
-            </a>
+            </a> --}}
         </div>
     </div>
 </x-slot>

@@ -110,6 +110,9 @@ Route::middleware(['web', 'auth', 'verified', 'role:admin'])
         Route::get('/real-players', [RealPlayerController::class, 'index'])->name('real-players.index');
         Route::get('/real-players/create', [RealPlayerController::class, 'create'])->name('real-players.create');
         Route::post('/real-players', [RealPlayerController::class, 'store'])->name('real-players.store');
+        Route::get('/real-players/bulk-create', [RealPlayerController::class, 'bulkCreate'])->name('real-players.bulk-create');
+        Route::post('/real-players/bulk-store', [RealPlayerController::class, 'bulkStore'])->name('real-players.bulk-store');
+        Route::get('/real-players/download-template', [RealPlayerController::class, 'downloadTemplate'])->name('real-players.download-template');
         Route::get('/real-players/{realPlayer}', [RealPlayerController::class, 'show'])->name('real-players.show');
         Route::get('/real-players/{realPlayer}/edit', [RealPlayerController::class, 'edit'])->name('real-players.edit');
         Route::put('/real-players/{realPlayer}', [RealPlayerController::class, 'update'])->name('real-players.update');

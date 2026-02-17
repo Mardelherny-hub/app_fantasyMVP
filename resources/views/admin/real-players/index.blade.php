@@ -13,10 +13,16 @@
                             <span>{{ __('Real Players') }}</span>
                         </nav>
                     </div>
-                    <a href="{{ route('admin.real-players.create', app()->getLocale()) }}" 
-                       class="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700">
-                        {{ __('Create Player') }}
-                    </a>
+                    <div class="flex space-x-2">
+                        <a href="{{ route('admin.real-players.bulk-create', app()->getLocale()) }}" 
+                           class="px-4 py-2 bg-green-600 text-white rounded-md text-sm font-medium hover:bg-green-700">
+                            {{ __('Bulk Upload') }}
+                        </a>
+                        <a href="{{ route('admin.real-players.create', app()->getLocale()) }}" 
+                           class="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700">
+                            {{ __('Create Player') }}
+                        </a>
+                    </div>
                 </div>
             </div>
 
@@ -27,9 +33,14 @@
                 </div>
             @endif
 
-            @if(session('error'))
-                <div class="mb-6 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg">
-                    {{ session('error') }}
+            @if(session('bulk_errors'))
+                <div class="mb-6 bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-lg">
+                    <p class="font-medium mb-2">{{ __('Errores en la carga masiva:') }}</p>
+                    <ul class="list-disc list-inside text-sm">
+                        @foreach(session('bulk_errors') as $err)
+                            <li>{{ $err }}</li>
+                        @endforeach
+                    </ul>
                 </div>
             @endif
 
@@ -88,6 +99,7 @@
                             </label>
                             <select name="team" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                 <option value="">{{ __('All') }}</option>
+                                <option value="free" {{ request('team') === 'free' ? 'selected' : '' }}>{{ __('Free Agents') }}</option>
                                 @foreach($teams as $team)
                                     <option value="{{ $team->id }}" {{ request('team') == $team->id ? 'selected' : '' }}>
                                         {{ $team->name }}

@@ -43,7 +43,16 @@
                 </a>
             </li>
             <li>
-                <a href="{{ route('admin.real-teams.index', ['locale' => app()->getLocale()]) }}" 
+                <a href="{{ route('admin.seasons.index', ['locale' => app()->getLocale()]) }}" 
+                   class="flex items-center px-3 py-2 text-sm rounded-lg transition-colors
+                          {{ request()->routeIs('admin.seasons.*') 
+                             ? 'bg-gray-700 text-white' 
+                             : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
+                    {{ __('Seasons') }}
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('admin.real-teams.index', ['locale' => app()->getLocale()]) }}"
                    class="flex items-center px-3 py-2 text-sm rounded-lg transition-colors
                           {{ request()->routeIs('admin.real-teams.*') 
                              ? 'bg-gray-700 text-white' 

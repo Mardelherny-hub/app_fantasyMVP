@@ -18,37 +18,31 @@ class RealTeamPlayerController extends Controller
      */
     public function index(Request $request, string $locale, RealTeam $realTeam)
     {
-        $q          = trim((string)$request->get('q'));
-        $position   = $request->get('position');      // tinyint
-        $nationality= $request->get('nationality');   // ISO-2
-        $perPage    = (int)($request->get('per_page', 20));
+        $q           = trim((string)$request->get('q'));
+        $position    = $request->get('position');
+        $nationality = $request->get('nationality');
+        $perPage     = (int)($request->get('per_page', 20));
 
         // Subquery: jugadores con membresía activa (to_date IS NULL)
-        $activeMembership = DB::table('player_team_history')
-            ->select('player_id')
+        $activeMembership = DB::table('real_team_memberships')
+            ->select('real_player_id')
             ->whereNull('to_date');
 
-        $players = DB::table('players')
-            ->whereNull('deleted_at')
-            ->where('is_active', 1)
-            // disponibles = NO están en activeMembership
+        $players = DB::table('real_players')
             ->whereNotIn('id', $activeMembership)
             ->when($q, function ($query) use ($q) {
-                $query->where(function ($qq) use ($q) {
-                    $qq->where('full_name', 'like', "%{$q}%")
-                       ->orWhere('known_as', 'like', "%{$q}%");
-                });
+                $query->where('full_name', 'like', "%{$q}%");
             })
-            ->when(strlen((string)$position), fn($query) => $query->where('position', (int)$position))
+            ->when($position, fn($query) => $query->where('position', $position))
             ->when($nationality, fn($query) => $query->where('nationality', strtoupper($nationality)))
             ->orderBy('full_name')
             ->paginate($perPage)
             ->appends($request->query());
 
         return view('admin.real-teams.players.available', [
-            'team'      => $realTeam,
-            'players'   => $players,
-            'filters'   => [
+            'team'    => $realTeam,
+            'players' => $players,
+            'filters' => [
                 'q' => $q,
                 'position' => $position,
                 'nationality' => $nationality,
@@ -73,9 +67,8 @@ class RealTeamPlayerController extends Controller
         // Validación base
         $validator = Validator::make($request->all(), [
             'player_ids'   => ['required', 'array', 'min:1'],
-            'player_ids.*' => ['integer', 'distinct', Rule::exists('players', 'id')],
+            'player_ids.*' => ['integer', 'distinct', Rule::exists('real_players', 'id')],
             'from_date'    => ['nullable', 'date_format:Y-m-d'],
-            'shirt_number' => ['nullable', 'integer', 'between:1,99'],
         ], [
             'player_ids.required'   => 'Seleccioná al menos un jugador.',
             'player_ids.array'      => 'Formato inválido.',
@@ -84,7 +77,7 @@ class RealTeamPlayerController extends Controller
             'from_date.date_format' => 'La fecha debe tener formato YYYY-MM-DD.',
         ]);
 
-        // Regla extra: NO permitir jugadores con membresía activa (to_date NULL) en ningún equipo
+        // Regla extra: NO permitir jugadores con membresía activa
         $validator->after(function ($v) use ($request) {
             $ids = collect((array) $request->input('player_ids'))
                 ->filter()->unique()->values();
@@ -93,8 +86,8 @@ class RealTeamPlayerController extends Controller
                 return;
             }
 
-            $countActive = DB::table('player_team_history')
-                ->whereIn('player_id', $ids)
+            $countActive = DB::table('real_team_memberships')
+                ->whereIn('real_player_id', $ids)
                 ->whereNull('to_date')
                 ->count();
 
@@ -105,31 +98,31 @@ class RealTeamPlayerController extends Controller
 
         $validator->validate();
 
-        // Parse de fecha correcto
         $fromDateInput = $request->input('from_date');
         $fromDate = $fromDateInput ? Carbon::parse($fromDateInput) : Carbon::today();
 
-        DB::transaction(function () use ($playerIds, $realTeam, $fromDate, $request) {
+        // Obtener temporada activa
+        $activeSeason = DB::table('seasons')->where('is_active', true)->first();
+
+        DB::transaction(function () use ($playerIds, $realTeam, $fromDate, $activeSeason) {
             foreach ($playerIds as $pid) {
-                // Doble check dentro de la transacción (race condition)
-                $alreadyActive = DB::table('player_team_history')
-                    ->where('player_id', (int) $pid)
+                $alreadyActive = DB::table('real_team_memberships')
+                    ->where('real_player_id', (int) $pid)
                     ->whereNull('to_date')
                     ->exists();
 
                 if ($alreadyActive) {
-                    // Podés optar por saltar o lanzar excepción; acá saltamos silenciosamente
                     continue;
                 }
 
-                DB::table('player_team_history')->insert([
-                    'player_id'    => (int) $pid,
-                    'real_team_id' => (int) $realTeam->id,
-                    'from_date'    => $fromDate->toDateString(),
-                    'to_date'      => null,
-                    'shirt_number' => $request->input('shirt_number'), // opcional si agregás de a uno
-                    'created_at'   => now(),
-                    'updated_at'   => now(),
+                DB::table('real_team_memberships')->insert([
+                    'real_player_id' => (int) $pid,
+                    'real_team_id'   => (int) $realTeam->id,
+                    'season_id'      => $activeSeason ? $activeSeason->id : null,
+                    'from_date'      => $fromDate->toDateString(),
+                    'to_date'        => null,
+                    'created_at'     => now(),
+                    'updated_at'     => now(),
                 ]);
             }
         });

@@ -83,12 +83,12 @@ class RealCompetitionController extends Controller
         app()->setLocale($locale);
         
         $data = $request->validate([
-            'external_id' => ['required', 'integer', 'unique:real_competitions,external_id'],
+            'external_id' => ['nullable', 'integer', 'unique:real_competitions,external_id'],
             'name' => ['required', 'string', 'max:255'],
             'country' => ['nullable', 'string', 'max:100'],
             'type' => ['required', 'in:league,cup'],
             'active' => ['boolean'],
-            'external_source' => ['required', 'string', 'max:50'],
+            'external_source' => ['nullable', 'string', 'max:50'],
         ]);
 
         // Establecer valor por defecto para active si no viene
@@ -145,12 +145,12 @@ class RealCompetitionController extends Controller
         app()->setLocale($locale);
         
         $data = $request->validate([
-            'external_id' => ['required', 'integer', 'unique:real_competitions,external_id,' . $realCompetition->id],
+            'external_id' => ['nullable', 'integer', 'unique:real_competitions,external_id,' . $realCompetition->id],
             'name' => ['required', 'string', 'max:255'],
             'country' => ['nullable', 'string', 'max:100'],
             'type' => ['required', 'in:league,cup'],
             'active' => ['boolean'],
-            'external_source' => ['required', 'string', 'max:50'],
+            'external_source' => ['nullable', 'string', 'max:50'],
         ]);
 
         $realCompetition->update($data);

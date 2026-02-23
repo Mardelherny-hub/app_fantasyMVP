@@ -199,6 +199,11 @@ class PlayerMatchStatsController extends Controller
                 $created++;
             }
 
+            // Determinar clean_sheet y conceded según equipo del jugador
+            $isHome = ($stat->real_team_id == $realMatch->fixture->home_team_id);
+            $goalsConc = $isHome ? ($realMatch->away_score ?? 0) : ($realMatch->home_score ?? 0);
+            $cleanSheet = ($goalsConc == 0 && ($stat->minutes ?? 0) >= 60);
+
             // Crear/actualizar player_match_stats
             PlayerMatchStats::updateOrCreate(
                 [
@@ -213,8 +218,8 @@ class PlayerMatchStatsController extends Controller
                     'saves' => 0,
                     'yellow' => $stat->yellow_cards ?? 0,
                     'red' => $stat->red_cards ?? 0,
-                    'clean_sheet' => false,
-                    'conceded' => 0,
+                    'clean_sheet' => $cleanSheet,
+                    'conceded' => $goalsConc,
                     'rating' => $stat->rating ? round($stat->rating, 2) : null,
                 ]
             );
@@ -290,9 +295,11 @@ class PlayerMatchStatsController extends Controller
         $points = 0;
 
         switch($rule->code) {
-            case 'minutes_played':
+            case 'minutes_0_59':
+                if ($stats->minutes > 0 && $stats->minutes < 60) $points = $rule->points;
+                break;
+            case 'minutes_60_plus':
                 if ($stats->minutes >= 60) $points = $rule->points;
-                elseif ($stats->minutes > 0) $points = 1;
                 break;
             case 'goal_gk':
                 if ($player->position === 1) $points = $stats->goals * $rule->points;
@@ -318,13 +325,19 @@ class PlayerMatchStatsController extends Controller
             case 'cs_mf':
                 if ($player->position === 3 && $stats->clean_sheet) $points = $rule->points;
                 break;
-            case 'save_3':
+            case 'save_per_3':
                 if ($player->position === 1) $points = intval($stats->saves / 3) * $rule->points;
                 break;
-            case 'yellow':
+            case 'penalty_saved':
+                $points = ($stats->raw['penalty_saved'] ?? 0) * $rule->points;
+                break;
+            case 'penalty_missed':
+                $points = ($stats->raw['penalty_missed'] ?? 0) * $rule->points;
+                break;
+            case 'yellow_card':
                 $points = $stats->yellow * $rule->points;
                 break;
-            case 'red':
+            case 'red_card':
                 $points = $stats->red * $rule->points;
                 break;
             case 'goals_conceded_2_gk':

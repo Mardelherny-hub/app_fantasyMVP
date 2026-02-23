@@ -86,12 +86,22 @@ class ScoringController extends Controller
         $gameweek = Gameweek::findOrFail($gameweek);
         
         try {
-            $scoringResults = $this->scoringService->processGameweekScoring($gameweek);
-            $fixtureResults = $this->fixtureService->processCompletedGameweek($gameweek);
+            $exitCode = \Artisan::call('fantasy:process-gameweek', [
+                'gameweek_id' => $gameweek->id,
+                '--force' => $request->has('force'),
+            ]);
+            
+            $output = \Artisan::output();
+            
+            if ($exitCode === 0) {
+                return redirect()
+                    ->route('admin.scoring.show', ['locale' => $locale, 'gameweek' => $gameweek->id])
+                    ->with('success', "Gameweek {$gameweek->number} procesado exitosamente.");
+            }
             
             return redirect()
-                ->route('admin.scoring.show', ['locale' => $locale, 'gameweek' => $gameweek->id])
-                ->with('success', "Gameweek {$gameweek->number} procesado exitosamente. {$scoringResults['teams_processed']} equipos, {$fixtureResults['fixtures_processed']} fixtures.");
+                ->back()
+                ->with('error', "Error procesando gameweek: {$output}");
                 
         } catch (\Exception $e) {
             return redirect()
@@ -117,15 +127,20 @@ class ScoringController extends Controller
         $gameweek = Gameweek::findOrFail($gameweek);
         
         try {
-            \DB::table('fantasy_roster_scores')
-                ->where('gameweek_id', $gameweek->id)
-                ->delete();
+            $exitCode = \Artisan::call('fantasy:process-gameweek', [
+                'gameweek_id' => $gameweek->id,
+                '--force' => true,
+            ]);
             
-            $results = $this->scoringService->processGameweekScoring($gameweek);
+            if ($exitCode === 0) {
+                return redirect()
+                    ->route('admin.scoring.show', ['locale' => $locale, 'gameweek' => $gameweek->id])
+                    ->with('success', "Puntos recalculados para GW{$gameweek->number}.");
+            }
             
             return redirect()
-                ->route('admin.scoring.show', ['locale' => $locale, 'gameweek' => $gameweek->id])
-                ->with('success', "Puntos recalculados: {$results['teams_processed']} equipos, {$results['total_points_calculated']} puntos.");
+                ->back()
+                ->with('error', "Error recalculando: " . \Artisan::output());
                 
         } catch (\Exception $e) {
             return redirect()

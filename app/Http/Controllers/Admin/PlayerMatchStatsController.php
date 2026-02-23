@@ -159,6 +159,8 @@ class PlayerMatchStatsController extends Controller
     {
         app()->setLocale($locale);
 
+        $realMatch->load('fixture');
+
         $realStats = RealPlayerStat::where('real_match_id', $realMatch->id)->get();
 
         if ($realStats->isEmpty()) {

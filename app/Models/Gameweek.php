@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\RealMatch;
 
 class Gameweek extends Model
 {
@@ -89,6 +90,19 @@ class Gameweek extends Model
     public function fixtures(): HasMany
     {
         return $this->hasMany(Fixture::class);
+    }
+
+    /**
+     * Get real matches that fall within this gameweek's date range.
+     */
+    public function getRealMatchesAttribute()
+    {
+        return RealMatch::whereHas('fixture', function ($q) {
+            $q->whereBetween('match_date_utc', [
+                $this->starts_at->toDateString(),
+                $this->ends_at->toDateString(),
+            ]);
+        })->get();
     }
 
     // ========================================

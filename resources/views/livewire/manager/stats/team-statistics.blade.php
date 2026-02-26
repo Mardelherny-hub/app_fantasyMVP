@@ -242,7 +242,7 @@
                     <div class="bg-white rounded-lg shadow p-8 text-center">
                         <div class="text-sm text-gray-600 mb-4">{{ __('Tu Posición en la Liga') }}</div>
                         <div class="text-6xl font-bold text-blue-600 mb-2">{{ $leaguePosition }}°</div>
-                        <div class="text-gray-600">{{ __('de') }} {{ FantasyTeam::where('league_id', $league->id)->count() }} {{ __('equipos') }}</div>
+                        <div class="text-gray-600">{{ __('de') }} {{ \App\Models\FantasyTeam::where('league_id', $league->id)->count() }} {{ __('equipos') }}</div>
                     </div>
 
                     {{-- Comparativa con Promedio --}}

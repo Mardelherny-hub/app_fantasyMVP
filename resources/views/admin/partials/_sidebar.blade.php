@@ -181,6 +181,15 @@
                     {{ __('Fixtures') }}
                 </a>
             </li>
+             <li>
+                <a href="{{ route('admin.scoring.index', ['locale' => app()->getLocale()]) }}" 
+                   class="flex items-center px-3 py-2 text-sm rounded-lg transition-colors
+                          {{ request()->routeIs('admin.scoring.*') 
+                             ? 'bg-gray-700 text-white' 
+                             : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
+                    {{ __('Scoring') }}
+                </a>
+            </li>
         </ul>
     </li>
 
@@ -203,6 +212,15 @@
         </button>
         
         <ul x-show="open && sidebarOpen" x-collapse class="mt-1 space-y-1 ml-4">
+            <li>
+                <a href="{{ route('admin.market.prices.index', ['locale' => app()->getLocale()]) }}" 
+                   class="flex items-center px-3 py-2 text-sm rounded-lg transition-colors
+                          {{ request()->routeIs('admin.market.prices.*') 
+                             ? 'bg-gray-700 text-white' 
+                             : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
+                    {{ __('Prices') }}
+                </a>
+            </li>
             <li>
                 <a href="{{ route('admin.market.listings.index', ['locale' => app()->getLocale()]) }}" 
                    class="flex items-center px-3 py-2 text-sm rounded-lg transition-colors

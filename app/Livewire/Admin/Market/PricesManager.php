@@ -148,11 +148,12 @@ class PricesManager extends Component
     /**
      * Iniciar edición de precio
      */
-    public function editPrice(int $playerId): void
+    public function startEdit(int $playerId): void
     {
         $player = Player::findOrFail($playerId);
         $this->editingPlayerId = $playerId;
-        $this->editPrice = $player->marketValue($this->season->id) ?? 0;
+        $value = $player->marketValue($this->season->id);
+        $this->editPrice = $value !== null ? (float) $value : 0.50;
     }
 
     /**

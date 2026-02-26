@@ -66,29 +66,29 @@ class FixturesCalendar extends Component
     {
         $this->loading = true;
 
+        // Si hay filtro de status, solo cargar la sección correspondiente
+        $showPending = $this->statusFilter === 'all' || $this->statusFilter === 'pending';
+        $showFinished = $this->statusFilter === 'all' || $this->statusFilter === 'finished';
+
         // Próximos fixtures (pending)
-        $this->upcomingFixtures = $this->getFixturesQuery()
-            ->where('status', Fixture::STATUS_PENDING)
-            ->with([
-                'gameweek',
-                'homeTeam.user',
-                'awayTeam.user'
-            ])
-            ->orderBy('gameweek_id', 'asc')
-            ->limit(5)
-            ->get();
+        $this->upcomingFixtures = $showPending
+            ? $this->getFixturesQuery()
+                ->where('status', Fixture::STATUS_PENDING)
+                ->with(['gameweek', 'homeTeam.user', 'awayTeam.user'])
+                ->orderBy('gameweek_id', 'asc')
+                ->limit(5)
+                ->get()
+            : collect();
 
         // Resultados recientes (finished)
-        $this->recentFixtures = $this->getFixturesQuery()
-            ->where('status', Fixture::STATUS_FINISHED)
-            ->with([
-                'gameweek',
-                'homeTeam.user',
-                'awayTeam.user'
-            ])
-            ->orderBy('gameweek_id', 'desc')
-            ->limit(5)
-            ->get();
+        $this->recentFixtures = $showFinished
+            ? $this->getFixturesQuery()
+                ->where('status', Fixture::STATUS_FINISHED)
+                ->with(['gameweek', 'homeTeam.user', 'awayTeam.user'])
+                ->orderBy('gameweek_id', 'desc')
+                ->limit(5)
+                ->get()
+            : collect();
 
         $this->loading = false;
     }
@@ -146,6 +146,24 @@ class FixturesCalendar extends Component
     {
         $this->selectedGameweekId = null;
         $this->statusFilter = 'all';
+        $this->loadFixtures();
+        $this->resetPage();
+    }
+
+    /**
+     * Recargar al cambiar gameweek
+     */
+    public function updatedSelectedGameweekId(): void
+    {
+        $this->loadFixtures();
+        $this->resetPage();
+    }
+
+    /**
+     * Recargar al cambiar status
+     */
+    public function updatedStatusFilter(): void
+    {
         $this->loadFixtures();
         $this->resetPage();
     }

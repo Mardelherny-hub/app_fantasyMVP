@@ -220,7 +220,7 @@
                                     <p class="text-xs text-gray-500 mt-1">
                                         {{ __('Puntos') }}: 
                                         <span class="font-semibold">
-                                            {{ $fixture->homeTeam->fantasyPoints()->where('gameweek_id', $gameweek->id)->sum('points') ?? 0 }}
+                                            {{ $fixture->homeTeam->getGameweekPoints($gameweek->id) }}
                                         </span>
                                     </p>
                                 @endif
@@ -254,7 +254,7 @@
                                     <p class="text-xs text-gray-500 mt-1">
                                         {{ __('Puntos') }}: 
                                         <span class="font-semibold">
-                                            {{ $fixture->awayTeam->fantasyPoints()->where('gameweek_id', $gameweek->id)->sum('points') ?? 0 }}
+                                            {{ $fixture->awayTeam->getGameweekPoints($gameweek->id) }}
                                         </span>
                                     </p>
                                 @endif

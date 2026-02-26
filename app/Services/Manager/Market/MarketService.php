@@ -30,7 +30,7 @@ class MarketService
         return DB::transaction(function () use ($buyer, $player) {
             $this->validationService->validateFreeAgentPurchase($buyer, $player);
             
-            $price = $player->marketValue($buyer->league->season_id);
+            $price = $player->marketValue($buyer->league->season_id) ?? 0.50;
             $commission = $price * config('market.commission_rate', 0.05);
             $totalCost = $price + $commission;
             

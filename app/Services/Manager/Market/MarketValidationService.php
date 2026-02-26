@@ -157,7 +157,7 @@ class MarketValidationService
     {
         if (!$gameweek) return;
         
-        $count = $team->fantasyRosters()
+        $count = $team->rosters()
             ->where('gameweek_id', $gameweek->id)
             ->distinct('player_id')
             ->count();
@@ -175,7 +175,7 @@ class MarketValidationService
     {
         if (!$gameweek) return;
         
-        $count = $team->fantasyRosters()
+        $count = $team->rosters()
             ->where('gameweek_id', $gameweek->id)
             ->whereHas('player', fn($q) => $q->where('position', $position))
             ->count();
@@ -194,7 +194,7 @@ class MarketValidationService
     {
         if (!$gameweek) return;
         
-        $owned = $team->fantasyRosters()
+        $owned = $team->rosters()
             ->where('player_id', $player->id)
             ->where('gameweek_id', $gameweek->id)
             ->exists();
@@ -210,7 +210,7 @@ class MarketValidationService
     {
         if (!$gameweek) return;
         
-        $inRoster = $team->fantasyRosters()
+        $inRoster = $team->rosters()
             ->where('player_id', $player->id)
             ->where('gameweek_id', $gameweek->id)
             ->where('is_starter', true)
@@ -289,8 +289,8 @@ class MarketValidationService
     private function getCurrentGameweek(Season $season): ?Gameweek
     {
         return Gameweek::where('season_id', $season->id)
-            ->where('starts_at', '<=', now())
-            ->where('ends_at', '>=', now())
+            ->where('is_closed', false)
+            ->orderBy('number', 'asc')
             ->first();
     }
 }

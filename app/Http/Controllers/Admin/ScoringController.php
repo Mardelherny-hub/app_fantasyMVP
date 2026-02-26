@@ -7,6 +7,8 @@ use App\Models\Gameweek;
 use App\Services\Admin\Scoring\ScoringCalculationService;
 use App\Services\Admin\Fixtures\FixtureProcessingService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ScoringController extends Controller
 {

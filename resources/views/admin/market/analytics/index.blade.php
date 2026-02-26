@@ -4,9 +4,9 @@
     </x-slot>
 
     <div class="py-6">
-        @livewire('admin.market.analytics-panel', [
-            'selectedLeague' => $selectedLeague ?? null,
-            'currentSeason' => $currentSeason
-        ])
+        @livewire('App\\Livewire\\Admin\\Market\\AnalyticsPanel', [
+    'selectedLeague' => $selectedLeague ?? null,
+    'currentSeason' => $currentSeason
+])
     </div>
 </x-admin-layout>

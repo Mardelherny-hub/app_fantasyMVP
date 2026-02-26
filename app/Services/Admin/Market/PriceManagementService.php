@@ -34,13 +34,27 @@ class PriceManagementService
     {
         $this->validatePrice($newPrice);
 
-        $valuation = PlayerValuation::where('player_id', $player->id)
-            ->where('season_id', $season->id)
-            ->firstOrFail();
+        $valuation = PlayerValuation::firstOrCreate(
+            ['player_id' => $player->id, 'season_id' => $season->id],
+            ['market_value' => 0.50, 'updated_at' => now()]
+        );
 
         $oldPrice = $valuation->market_value;
 
         $valuation->update(['market_value' => $newPrice]);
+
+        // Registrar en historial como edición manual
+        $currentGameweek = \App\Models\Gameweek::where('season_id', $season->id)
+            ->where('is_closed', true)
+            ->orderBy('number', 'desc')
+            ->first();
+
+        if ($currentGameweek) {
+            \App\Models\PlayerValuationHistory::updateOrCreate(
+                ['player_id' => $player->id, 'season_id' => $season->id, 'gameweek_id' => $currentGameweek->id],
+                ['market_value' => $newPrice, 'previous_value' => $oldPrice, 'source' => 'manual']
+            );
+        }
 
         Log::info('Price updated manually', [
             'player_id' => $player->id,
@@ -230,9 +244,9 @@ class PriceManagementService
 
             $stats[$positionName] = [
                 'count' => $valuations->count(),
-                'avg' => round($valuations->avg('market_value'), 2),
-                'min' => round($valuations->min('market_value'), 2),
-                'max' => round($valuations->max('market_value'), 2),
+                'avg' => round($valuations->avg('market_value') ?? 0, 2),
+                'min' => round($valuations->min('market_value') ?? 0, 2),
+                'max' => round($valuations->max('market_value') ?? 0, 2),
             ];
         }
 

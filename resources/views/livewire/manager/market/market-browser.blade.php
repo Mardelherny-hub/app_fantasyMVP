@@ -160,7 +160,7 @@
                 <div wire:key="tab-{{ $activeTab }}">
                     @if($activeTab === 'free-agents')
                         <livewire:manager.market.free-agents-list 
-                            :team="$childProps['team']" 
+                            :teamId="$childProps['team']->id" 
                             :gameweek="$childProps['gameweek']" 
                             :marketOpen="$childProps['marketOpen']" 
                             :key="'free-agents-' . $childProps['team']->id" 

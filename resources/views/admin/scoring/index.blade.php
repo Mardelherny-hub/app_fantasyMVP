@@ -106,7 +106,7 @@
                             {{-- Número GW --}}
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center">
-                                    <div class="text-sm font-bold text-gray-900">GW{{ $gameweek->week_number }}</div>
+                                    <div class="text-sm font-bold text-gray-900">GW{{ $gameweek->number }}</div>
                                     @if($gameweek->is_playoff)
                                         <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
                                             {{ __('Playoff') }}

@@ -7,6 +7,5 @@
     </x-slot>
 
     <div class="py-6">
-        @livewire('admin.market.prices-manager')
-    </div>
+    @livewire('admin.market.prices-manager', ['season' => $currentSeason])    </div>
 </x-admin-layout>

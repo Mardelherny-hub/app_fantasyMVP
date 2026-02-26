@@ -192,6 +192,7 @@ class PlayerMatchStatsController extends Controller
                 $player = Player::create([
                     'real_player_id' => $realPlayer->id,
                     'full_name' => $realPlayer->full_name,
+                    'known_as' => $realPlayer->full_name,
                     'position' => $positionMap[strtoupper($realPlayer->position)] ?? Player::POSITION_MF,
                     'nationality' => $realPlayer->nationality,
                     'birthdate' => $realPlayer->birthdate,

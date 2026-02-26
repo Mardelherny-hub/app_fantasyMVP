@@ -184,7 +184,7 @@ class LeagueStanding extends Model
      */
     public static function calculateFor(int $leagueId, ?int $gameweekId = null): void
     {
-        $fixtures = Fixture::league($leagueId)
+        $fixtures = Fixture::where('league_id', $leagueId)
             ->finished()
             ->when($gameweekId, function($q) use ($gameweekId) {
                 return $q->where('gameweek_id', '<=', $gameweekId);
@@ -251,6 +251,9 @@ class LeagueStanding extends Model
         // Guardar posiciones
         $position = 1;
         foreach ($standings as $teamId => $data) {
+            // Quitar fantasy_team_id del data para evitar conflicto con unique constraint
+            unset($data['fantasy_team_id']);
+            
             self::updateOrCreate(
                 [
                     'league_id' => $leagueId,

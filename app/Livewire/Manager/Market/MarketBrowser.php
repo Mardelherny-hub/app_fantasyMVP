@@ -77,23 +77,23 @@ class MarketBrowser extends Component
      */
     public function loadMarketState(): void
     {
-        $marketService = app(MarketService::class);
-        
-        // Gameweek actual
+        // Gameweek actual: el primer GW no cerrado de la temporada
         $this->currentGameweek = Gameweek::where('season_id', $this->team->league->season_id)
-            ->where('starts_at', '<=', now())
-            ->where('ends_at', '>=', now())
+            ->where('is_closed', false)
+            ->orderBy('number', 'asc')
             ->first();
 
-        // Estado del mercado
-        $this->marketOpen = $this->currentGameweek 
-            ? $this->currentGameweek->starts_at->isFuture()
-            : false;
+        // Mercado abierto si hay GW disponible
+        $this->marketOpen = $this->currentGameweek !== null;
 
-        // Transferencias usadas
+        // Transferencias usadas en este GW
+        $this->transfersUsed = 0;
         if ($this->currentGameweek) {
-            $cacheKey = "transfers_count_{$this->team->id}_{$this->currentGameweek->id}";
-            $this->transfersUsed = Cache::get($cacheKey, 0);
+            $this->transfersUsed = \App\Models\Transfer::where('league_id', $this->team->league_id)
+                ->where('to_fantasy_team_id', $this->team->id)
+                ->where('effective_at', '>=', $this->currentGameweek->starts_at)
+                ->where('effective_at', '<=', $this->currentGameweek->ends_at)
+                ->count();
         }
 
         // Presupuesto disponible
@@ -140,7 +140,8 @@ class MarketBrowser extends Component
     public function handlePlayerPurchased($data): void
     {
         $this->successMessage = $data['message'] ?? __('Jugador fichado correctamente.');
-        $this->refreshMarket();
+        $this->loadMarketState();
+        $this->team = $this->team->fresh();
     }
 
     public function handleListingCreated($data): void

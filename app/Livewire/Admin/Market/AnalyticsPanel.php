@@ -10,7 +10,7 @@ use Livewire\Component;
 
 class AnalyticsPanel extends Component
 {
-    public ?League $selectedLeague = null;
+    public $selectedLeague = null;
     public Season $currentSeason;
     public array $topPlayers = [];
     public array $topTeams = [];
@@ -18,9 +18,9 @@ class AnalyticsPanel extends Component
     public array $transferTrends = [];
     public array $offerStats = [];
 
-    public function mount(?League $selectedLeague, Season $currentSeason): void
+    public function mount($selectedLeague = null, Season $currentSeason): void
     {
-        $this->selectedLeague = $selectedLeague;
+        $this->selectedLeague = $selectedLeague ? League::find($selectedLeague->id ?? $selectedLeague) : null;
         $this->currentSeason = $currentSeason;
         $this->loadAnalytics();
     }

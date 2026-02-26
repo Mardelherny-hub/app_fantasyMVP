@@ -8,6 +8,8 @@ use App\Models\Offer;
 use App\Models\Transfer;
 use App\Models\Player;
 use App\Models\FantasyTeam;
+use App\Models\Season;
+use App\Models\PlayerValuation;
 use Illuminate\Support\Facades\DB;
 
 class MarketAnalyticsService

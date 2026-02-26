@@ -10,6 +10,8 @@ use App\Models\League;
 use App\Models\PlayerMatchStats;
 use App\Models\ScoringRule;
 use App\Models\Season;
+use App\Models\Fixture;
+use App\Models\LeagueStanding;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -77,8 +79,60 @@ class ProcessGameweek extends Command
         DB::transaction(function () use ($gameweek, $leagues, $realMatchIds, $scoringRules, $force) {
 
             if ($force) {
+                // Obtener equipos afectados y recalcular total_points desde cero
+                $affectedTeamIds = FantasyRosterScore::where('gameweek_id', $gameweek->id)
+                    ->distinct()
+                    ->pluck('fantasy_team_id');
+
+                // Borrar scores de este gameweek
                 FantasyRosterScore::where('gameweek_id', $gameweek->id)->delete();
-                $this->info("Scores previos eliminados.");
+
+                // Recalcular total_points de cada equipo basado en scores restantes
+                foreach ($affectedTeamIds as $teamId) {
+                    $correctTotal = FantasyRosterScore::where('fantasy_team_id', $teamId)
+                        ->sum('final_points');
+                    FantasyTeam::where('id', $teamId)->update(['total_points' => $correctTotal]);
+                }
+
+                $this->info("Scores previos eliminados y total_points recalculados.");
+            }
+
+            // Propagar rosters: si un equipo no tiene roster para este GW, copiar del anterior
+            $previousGw = Gameweek::where('season_id', $gameweek->season_id)
+                ->where('number', '<', $gameweek->number)
+                ->orderBy('number', 'desc')
+                ->first();
+
+            if ($previousGw) {
+                foreach ($leagues as $league) {
+                    $teamIds = FantasyTeam::where('league_id', $league->id)->pluck('id');
+                    foreach ($teamIds as $teamId) {
+                        $hasRoster = FantasyRoster::where('fantasy_team_id', $teamId)
+                            ->where('gameweek_id', $gameweek->id)
+                            ->exists();
+
+                        if (!$hasRoster) {
+                            $prevRosters = FantasyRoster::where('fantasy_team_id', $teamId)
+                                ->where('gameweek_id', $previousGw->id)
+                                ->get();
+
+                            foreach ($prevRosters as $prev) {
+                                FantasyRoster::create([
+                                    'fantasy_team_id' => $prev->fantasy_team_id,
+                                    'player_id' => $prev->player_id,
+                                    'gameweek_id' => $gameweek->id,
+                                    'slot' => $prev->slot,
+                                    'is_starter' => $prev->is_starter,
+                                    'captaincy' => $prev->captaincy,
+                                ]);
+                            }
+
+                            if ($prevRosters->count() > 0) {
+                                $this->line("  Roster propagado: team {$teamId} (GW{$previousGw->number} → GW{$gameweek->number}, {$prevRosters->count()} jugadores)");
+                            }
+                        }
+                    }
+                }
             }
 
             $teamsProcessed = 0;
@@ -155,6 +209,25 @@ class ProcessGameweek extends Command
 
             $this->info("Equipos procesados: {$teamsProcessed}");
             $this->info("Scores creados: {$scoresCreated}");
+
+            // Resolver fixtures H2H de este gameweek
+            $fixtures = Fixture::where('gameweek_id', $gameweek->id)->get();
+            foreach ($fixtures as $fixture) {
+                $fixture->calculateGoals();
+                $fixture->markAsFinished();
+                $this->line("  Fixture: {$fixture->homeTeam->name} {$fixture->home_goals}-{$fixture->away_goals} {$fixture->awayTeam->name}");
+            }
+            $this->info("Fixtures resueltos: {$fixtures->count()}");
+
+            // Calcular standings para cada liga
+            foreach ($leagues as $league) {
+                LeagueStanding::calculateFor($league->id, $gameweek->id);
+                $this->info("Standings actualizados para liga: {$league->name}");
+            }
+
+            // Actualizar valores de mercado
+            $this->info("Actualizando valores de mercado...");
+            $this->call('calculate:market-values', ['--gameweek' => $gameweek->id]);
 
             // Cerrar gameweek
             $gameweek->close();

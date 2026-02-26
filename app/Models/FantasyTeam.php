@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
+use App\Models\FantasyRosterScore;
 
 class FantasyTeam extends Model
 {
@@ -314,8 +315,8 @@ class FantasyTeam extends Model
      */
     public function getGameweekPoints(int $gameweekId): int
     {
-        return $this->fantasyPoints()
+        return (int) FantasyRosterScore::where('fantasy_team_id', $this->id)
                     ->where('gameweek_id', $gameweekId)
-                    ->sum('total_points');
+                    ->sum('final_points');
     }
 }

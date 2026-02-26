@@ -110,4 +110,168 @@
             </button>
         </div>
         @endif
+
+        <!-- Tabla de jugadores -->
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th wire:click="sortBy('full_name')" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase cursor-pointer hover:text-gray-700">
+                            {{ __('Jugador') }}
+                            @if($sortBy === 'full_name')
+                                <span>{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                            @endif
+                        </th>
+                        <th wire:click="sortBy('position')" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase cursor-pointer hover:text-gray-700">
+                            {{ __('Posición') }}
+                            @if($sortBy === 'position')
+                                <span>{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                            @endif
+                        </th>
+                        <th wire:click="sortBy('market_value')" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase cursor-pointer hover:text-gray-700">
+                            {{ __('Valor de Mercado') }}
+                            @if($sortBy === 'market_value')
+                                <span>{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                            @endif
+                        </th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                            {{ __('Acciones') }}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @forelse($players as $player)
+                        @php
+                            $valuation = $player->valuations->first();
+                            $currentPrice = $valuation ? (float) $valuation->market_value : 0.50;
+                        @endphp
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="font-medium text-gray-900">{{ $player->known_as ?: $player->full_name }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 py-1 text-xs font-semibold rounded-full
+                                    @switch($player->position)
+                                        @case(1) bg-yellow-100 text-yellow-800 @break
+                                        @case(2) bg-blue-100 text-blue-800 @break
+                                        @case(3) bg-green-100 text-green-800 @break
+                                        @case(4) bg-red-100 text-red-800 @break
+                                    @endswitch
+                                ">
+                                    {{ $positions[$player->position] ?? '-' }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right">
+                                @if($editingPlayerId === $player->id)
+                                    <div class="flex items-center justify-end space-x-2">
+                                        <span class="text-gray-500">$</span>
+                                        <input type="number" 
+                                            wire:model="editPrice" 
+                                            step="0.01" 
+                                            min="0.50"
+                                            class="w-28 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-right text-sm">
+                                        <button wire:click="savePrice" class="p-1 text-green-600 hover:text-green-800">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                            </svg>
+                                        </button>
+                                        <button wire:click="cancelEdit" class="p-1 text-red-600 hover:text-red-800">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                @else
+                                    <span class="text-lg font-semibold text-gray-900">${{ number_format($currentPrice, 2) }}</span>
+                                @endif
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right">
+                                @if($editingPlayerId !== $player->id)
+                                    <button wire:click="startEdit({{ $player->id }})" 
+                                            class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                        {{ __('Editar') }}
+                                    </button>
+                                @endif
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="4" class="px-6 py-12 text-center text-gray-500">
+                                {{ __('No se encontraron jugadores') }}
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+
+            <!-- Paginación -->
+            <div class="px-6 py-4 border-t border-gray-200">
+                {{ $players->links() }}
+            </div>
+        </div>
+
+        <!-- Modal Ajuste Masivo -->
+        @if($showBulkModal)
+        <div class="fixed inset-0 z-50 overflow-y-auto" aria-modal="true">
+            <div class="flex items-center justify-center min-h-screen px-4">
+                <div class="fixed inset-0 bg-gray-500 bg-opacity-75" wire:click="closeBulkModal"></div>
+                
+                <div class="relative bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">{{ __('Ajuste Masivo de Precios') }}</h3>
+                    
+                    <!-- Tipo de ajuste -->
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('Tipo de Ajuste') }}</label>
+                        <select wire:model.live="bulkType" class="w-full rounded-md border-gray-300">
+                            <option value="position">{{ __('Por Posición') }}</option>
+                            <option value="range">{{ __('Por Rango de Precio') }}</option>
+                        </select>
+                    </div>
+
+                    @if($bulkType === 'position')
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('Posición') }}</label>
+                        <select wire:model="bulkPosition" class="w-full rounded-md border-gray-300">
+                            <option value="">{{ __('Seleccionar...') }}</option>
+                            @foreach($positions as $id => $name)
+                            <option value="{{ $id }}">{{ $name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    @else
+                    <div class="mb-4 grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Precio Mín') }}</label>
+                            <input type="number" wire:model="bulkMinPrice" step="0.01" class="w-full rounded-md border-gray-300">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Precio Máx') }}</label>
+                            <input type="number" wire:model="bulkMaxPrice" step="0.01" class="w-full rounded-md border-gray-300">
+                        </div>
+                    </div>
+                    @endif
+
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('Porcentaje de Ajuste') }}</label>
+                        <div class="flex items-center space-x-2">
+                            <input type="number" wire:model="bulkPercentage" step="0.1" min="-50" max="100" 
+                                class="w-full rounded-md border-gray-300">
+                            <span class="text-gray-500 font-medium">%</span>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">{{ __('Negativo = reducción, Positivo = aumento. Rango: -50% a +100%') }}</p>
+                    </div>
+
+                    <div class="flex justify-end space-x-3">
+                        <button wire:click="closeBulkModal" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                            {{ __('Cancelar') }}
+                        </button>
+                        <button wire:click="executeBulkAdjustment" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                            {{ __('Aplicar Ajuste') }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif
+    </div>
     </div>

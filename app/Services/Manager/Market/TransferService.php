@@ -109,8 +109,8 @@ class TransferService
     private function getNextGameweek(Season $season): ?Gameweek
     {
         return Gameweek::where('season_id', $season->id)
-            ->where('starts_at', '>', now())
-            ->orderBy('starts_at')
+            ->where('is_closed', false)
+            ->orderBy('number', 'asc')
             ->first();
     }
     

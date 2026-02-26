@@ -8,15 +8,14 @@ use App\Models\Gameweek;
 use App\Services\Manager\Market\MarketService;
 use Livewire\Component;
 use Livewire\WithPagination;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class FreeAgentsList extends Component
 {
     use WithPagination;
 
-    public FantasyTeam $team;
-    public ?Gameweek $currentGameweek = null;
+    public int $teamId;
+    public ?int $currentGameweekId = null;
     public bool $marketOpen = false;
     
     // Filtros
@@ -27,17 +26,11 @@ class FreeAgentsList extends Component
     
     // Estado
     public bool $loading = false;
-    
-    protected $queryString = [
-        'search' => ['except' => ''],
-        'positionFilter' => ['except' => null],
-        'sortBy' => ['except' => 'price'],
-    ];
 
-    public function mount(FantasyTeam $team, ?Gameweek $gameweek, bool $marketOpen)
+    public function mount(int $teamId, $gameweek = null, bool $marketOpen = false)
     {
-        $this->team = $team;
-        $this->currentGameweek = $gameweek;
+        $this->teamId = $teamId;
+        $this->currentGameweekId = $gameweek?->id ?? ($gameweek ? (int)$gameweek : null);
         $this->marketOpen = $marketOpen;
     }
 
@@ -70,7 +63,8 @@ class FreeAgentsList extends Component
 
     public function buyPlayer(int $playerId)
     {
-        if (!$this->marketOpen) {
+        
+        if (!$this->currentGameweekId) {
             $this->dispatch('notify', message: __('El mercado está cerrado.'), type: 'error');
             return;
         }
@@ -78,14 +72,14 @@ class FreeAgentsList extends Component
         try {
             $this->loading = true;
             
+            $team = FantasyTeam::findOrFail($this->teamId);
             $player = Player::findOrFail($playerId);
             $marketService = app(MarketService::class);
             
-            $result = $marketService->buyFreeAgent($this->team, $player);
+            $result = $marketService->buyFreeAgent($team, $player);
             
-            $this->dispatch('notify', message: $result['message'], type: 'success');
             $this->dispatch('playerPurchased', data: $result);
-            $this->resetPage();
+            //$this->resetPage();
             
         } catch (\Exception $e) {
             Log::error('Error buying free agent: ' . $e->getMessage());
@@ -97,15 +91,16 @@ class FreeAgentsList extends Component
 
     public function render()
     {
-        $seasonId = $this->team->league->season_id;
+        $team = FantasyTeam::with('league')->findOrFail($this->teamId);
+        $seasonId = $team->league->season_id;
         
-        $query = Player::where('is_active', true)
+        $query = Player::select('players.*')->where('is_active', true)
             ->with(['valuations' => function($q) use ($seasonId) {
                 $q->where('season_id', $seasonId);
             }])
-            ->whereDoesntHave('rosters', function($q) {
-                $q->where('fantasy_team_id', $this->team->id)
-                  ->where('gameweek_id', '>=', optional($this->currentGameweek)->id);
+            ->whereDoesntHave('fantasyRosters', function($q) {
+                $q->where('fantasy_team_id', $this->teamId)
+                  ->where('gameweek_id', '>=', $this->currentGameweekId);
             });
 
         if ($this->search) {
@@ -132,6 +127,7 @@ class FreeAgentsList extends Component
 
         return view('livewire.manager.market.free-agents-list', [
             'players' => $players,
+            'team' => $team,
         ]);
     }
 }

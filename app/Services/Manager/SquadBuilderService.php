@@ -147,6 +147,10 @@ public function completeSquad(FantasyTeam $team, array $captainData): array
             'is_completed' => true,
             'completed_at' => now(),
         ]);
+
+        // Generar FantasyRoster para GW1 desde el draft
+        $rosterGenerator = app(RosterGeneratorService::class);
+        $rosterGenerator->generateFromDraft($team, $draft, $captainData);
         
         // Marcar equipo como completo
         $team->update(['is_squad_complete' => true]);

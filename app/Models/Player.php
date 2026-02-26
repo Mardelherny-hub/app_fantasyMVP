@@ -99,6 +99,14 @@ class Player extends Model
     }
 
     /**
+     * Get the fantasy rosters for this player.
+     */
+    public function fantasyRosters(): HasMany
+    {
+        return $this->hasMany(FantasyRoster::class);
+    }
+
+    /**
      * Get the listings where this player is for sale.
      */
     public function listings(): HasMany

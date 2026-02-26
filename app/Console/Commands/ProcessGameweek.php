@@ -232,6 +232,17 @@ class ProcessGameweek extends Command
             // Cerrar gameweek
             $gameweek->close();
             $this->info("GW{$gameweek->number} cerrado.");
+
+            // Propagar rosters al siguiente gameweek
+            $nextGw = Gameweek::where('season_id', $gameweek->season_id)
+                ->where('number', '>', $gameweek->number)
+                ->orderBy('number', 'asc')
+                ->first();
+
+            if ($nextGw) {
+                $this->info("Propagando rosters a GW{$nextGw->number}...");
+                $this->call('fantasy:propagate-rosters', ['gameweek_id' => $nextGw->id]);
+            }
         });
 
         $this->info('Procesamiento completado.');
